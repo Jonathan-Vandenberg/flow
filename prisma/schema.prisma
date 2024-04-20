@@ -1,0 +1,482 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DocStatus {
+  PENDING
+  COMPLETE
+  FAILED
+  EXPIRED
+}
+
+enum AreaOfExpertise {
+  VISA
+  CONSALTANCY
+  MARKETING
+}
+
+enum SubStatus {
+  PENDING
+  SUBSCRIBED
+  EXPIRED
+}
+
+enum DirectoryStatus {
+  IN_PROGRESS
+  COMPLETE
+}
+
+enum StudentStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum RequirementStatus {
+  NOT_REQUIRED
+  REQUIRED
+  PROCESSING
+  PASSED
+  FAILED
+}
+
+enum RequirementType {
+  COE_ENGLISH
+  COE_EDUCATION
+  VISA
+}
+
+model Organisation {
+  id String @id @default(uuid())
+
+  name      String     @unique
+  country   Country
+  subStatus SubStatus? @default(PENDING)
+  imageUrl  String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @default(now())
+
+  admin        Admin[]
+  managers     Manager[]
+  courses      Course[]
+  requirements Requirement[]
+  students     Student[]
+}
+
+model Requirement {
+  id             String  @id @default(uuid())
+  organisationId String
+  courseId       String?
+  studentId      String?
+
+  details    String
+  status     RequirementStatus @default(REQUIRED)
+  type       RequirementType
+  created_at DateTime          @default(now())
+  updatedAt  DateTime          @default(now())
+
+  student      Student?     @relation(fields: [studentId], references: [id])
+  organisation Organisation @relation(fields: [organisationId], references: [id])
+  directory    Directory?
+  course       Course?      @relation(fields: [courseId], references: [id])
+}
+
+model Admin {
+  id             String @id @default(uuid())
+  organisationId String
+
+  name       String
+  email      String
+  mobile     String
+  created_at DateTime @default(now())
+  updatedAt  DateTime @default(now())
+
+  organisation Organisation @relation(fields: [organisationId], references: [id])
+}
+
+model CourseLocation {
+  id       String @id @default(uuid())
+  courseId String
+
+  location   String
+  created_at DateTime @default(now())
+  updatedAt  DateTime @default(now())
+
+  course Course @relation(fields: [courseId], references: [id])
+}
+
+model Manager {
+  id             String  @id @default(uuid())
+  socialMediaId  String? @unique
+  organisationId String  @unique
+
+  firstName  String
+  lastName   String
+  email      String
+  mobile     String
+  imageUrl   String?
+  created_at DateTime @default(now())
+  updatedAt  DateTime @default(now())
+
+  organisation  Organisation @relation(fields: [organisationId], references: [id])
+  managedAgents Agent[]      @relation("ManagerToAgent")
+}
+
+model Agent {
+  id        String @id @default(uuid())
+  managerId String
+
+  firstName     String
+  lastName      String
+  email         String
+  mobile        String
+  imageUrl      String?
+  expertiseArea AreaOfExpertise
+  created_at    DateTime        @default(now())
+  updatedAt     DateTime        @default(now())
+
+  manager     Manager       @relation("ManagerToAgent", fields: [managerId], references: [id])
+  socialMedia SocialMedia[] @relation("SocialMediaToAgent")
+  students    Student[]     @relation("AgentToStudent")
+}
+
+model Course {
+  id             String  @id @default(uuid())
+  organisationId String
+  studentId      String?
+
+  name        String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+
+  organisation Organisation     @relation(fields: [organisationId], references: [id])
+  locations    CourseLocation[]
+  students     Student[]
+  requirements Requirement[]
+}
+
+model Student {
+  id             String @id @default(uuid())
+  agentId        String
+  courseId       String
+  organisationId String
+
+  name               String?
+  age                Int?
+  country            String?
+  guardianMobile     String?
+  guardianEmail      String?
+  expAttendDate      DateTime?
+  gapYear            Boolean?
+  gapYearExplanation String?
+  previouslyRejected Boolean?
+  status             StudentStatus? @default(PENDING)
+  created_at         DateTime       @default(now())
+  updatedAt          DateTime       @default(now())
+
+  agent        Agent         @relation("AgentToStudent", fields: [agentId], references: [id])
+  course       Course        @relation(fields: [courseId], references: [id])
+  requirements Requirement[]
+  directories  Directory[]   @relation("StudentDocsToStudent")
+  organisation Organisation  @relation(fields: [organisationId], references: [id])
+}
+
+model Document {
+  id          String @id @default(uuid())
+  directoryId String
+
+  url         String?
+  name        String
+  description String
+  status      DocStatus? @default(PENDING)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now())
+
+  directory Directory @relation(fields: [directoryId], references: [id])
+}
+
+model Directory {
+  id            String @id @default(uuid())
+  requirementId String @unique
+  studentId     String
+
+  status     DirectoryStatus? @default(IN_PROGRESS)
+  documents  Document[]
+  created_at DateTime         @default(now())
+  updatedAt  DateTime         @default(now())
+
+  requirement Requirement @relation(fields: [requirementId], references: [id])
+  student     Student     @relation("StudentDocsToStudent", fields: [studentId], references: [id])
+}
+
+model SocialMedia {
+  id             String  @id @default(uuid())
+  agentId        String  @unique
+  agentProfileId String?
+
+  platform   String
+  username   String
+  created_at DateTime @default(now())
+  updatedAt  DateTime @default(now())
+
+  agent Agent @relation("SocialMediaToAgent", fields: [agentId], references: [id])
+}
+
+enum Country {
+  ABW
+  AFG
+  AGO
+  AIA
+  ALA
+  ALB
+  AND
+  ARE
+  ARG
+  ARM
+  ASM
+  ATA
+  ATF
+  ATG
+  AUS
+  AUT
+  AZE
+  BDI
+  BEL
+  BEN
+  BES
+  BFA
+  BGD
+  BGR
+  BHR
+  BHS
+  BIH
+  BLM
+  BLR
+  BLZ
+  BMU
+  BOL
+  BRA
+  BRB
+  BRN
+  BTN
+  BVT
+  BWA
+  CAF
+  CAN
+  CCK
+  CHE
+  CHL
+  CHN
+  CIV
+  CMR
+  COD
+  COG
+  COK
+  COL
+  COM
+  CPV
+  CRI
+  CUB
+  CUW
+  CXR
+  CYM
+  CYP
+  CZE
+  DEU
+  DJI
+  DMA
+  DNK
+  DOM
+  DZA
+  ECU
+  EGY
+  ERI
+  ESH
+  ESP
+  EST
+  ETH
+  FIN
+  FJI
+  FLK
+  FRA
+  FRO
+  FSM
+  GAB
+  GBR
+  GEO
+  GGY
+  GHA
+  GIB
+  GIN
+  GLP
+  GMB
+  GNB
+  GNQ
+  GRC
+  GRD
+  GRL
+  GTM
+  GUF
+  GUM
+  GUY
+  HKG
+  HMD
+  HND
+  HRV
+  HTI
+  HUN
+  IDN
+  IMN
+  IND
+  IOT
+  IRL
+  IRN
+  IRQ
+  ISL
+  ISR
+  ITA
+  JAM
+  JEY
+  JOR
+  JPN
+  KAZ
+  KEN
+  KGZ
+  KHM
+  KIR
+  KNA
+  KOR
+  KWT
+  LAO
+  LBN
+  LBR
+  LBY
+  LCA
+  LIE
+  LKA
+  LSO
+  LTU
+  LUX
+  LVA
+  MAC
+  MAF
+  MAR
+  MCO
+  MDA
+  MDG
+  MDV
+  MEX
+  MHL
+  MKD
+  MLI
+  MLT
+  MMR
+  MNE
+  MNG
+  MNP
+  MOZ
+  MRT
+  MSR
+  MTQ
+  MUS
+  MWI
+  MYS
+  MYT
+  NAM
+  NCL
+  NER
+  NFK
+  NGA
+  NIC
+  NIU
+  NLD
+  NOR
+  NPL
+  NRU
+  NZL
+  OMN
+  PAK
+  PAN
+  PCN
+  PER
+  PHL
+  PLW
+  PNG
+  POL
+  PRI
+  PRK
+  PRT
+  PRY
+  PSE
+  PYF
+  QAT
+  REU
+  ROU
+  RUS
+  RWA
+  SAU
+  SDN
+  SEN
+  SGP
+  SGS
+  SHN
+  SJM
+  SLB
+  SLE
+  SLV
+  SMR
+  SOM
+  SPM
+  SRB
+  SSD
+  STP
+  SUR
+  SVK
+  SVN
+  SWE
+  SWZ
+  SXM
+  SYC
+  SYR
+  TCA
+  TCD
+  TGO
+  THA
+  TJK
+  TKL
+  TKM
+  TLS
+  TON
+  TTO
+  TUN
+  TUR
+  TUV
+  TWN
+  TZA
+  UGA
+  UKR
+  UMI
+  URY
+  USA
+  UZB
+  VAT
+  VCT
+  VEN
+  VGB
+  VIR
+  VNM
+  VUT
+  WLF
+  WSM
+  YEM
+  ZAR
+  ZAF
+  ZMB
+  ZWE
+}
