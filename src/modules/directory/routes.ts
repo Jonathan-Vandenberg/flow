@@ -16,25 +16,25 @@ import {getStudentByIdController} from "../student/controllers";
 const router = express.Router();
 
 /**
- * Get directories by student ID
- */
-router.get(
-    '/:studentId',
-    getDirsByStudentIdRules,
-    // isAuthenticated,
-    // isValidationResult,
-    getDirsByStudentIdController
-);
-
-/**
  * Get directory by ID
  */
 router.get(
-    '/id/:id',
+    '/:id',
     getDirRules,
     // isAuthenticated,
     // isValidationResult,
     getDirController
+);
+
+/**
+ * Get directories by student ID
+ */
+router.get(
+    '/student/:studentId',
+    getDirsByStudentIdRules,
+    // isAuthenticated,
+    // isValidationResult,
+    getDirsByStudentIdController
 );
 
 /**

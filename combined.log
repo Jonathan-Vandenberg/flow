@@ -206,3 +206,16 @@
 {"level":"info","message":"Backend is running on port 8080"}
 {"level":"info","message":"\nInvalid `prisma.requirement.findUnique()` invocation in\n/Users/jonathanvandenberg/2024/rnbackend/src/modules/requirement/services.ts:48:50\n\n  45 \n  46 const getRequirementById = async (id: string\n  47 ) => {\n→ 48     const requirement = await prisma.requirement.findUnique({\n           where: {\n             id: undefined,\n         ?   AND?: RequirementWhereInput | RequirementWhereInput[],\n         ?   OR?: RequirementWhereInput[],\n         ?   NOT?: RequirementWhereInput | RequirementWhereInput[],\n         ?   organisationId?: StringFilter | String,\n         ?   courseId?: StringNullableFilter | String | Null,\n         ?   studentId?: StringNullableFilter | String | Null,\n         ?   details?: StringFilter | String,\n         ?   status?: EnumRequirementStatusFilter | RequirementStatus,\n         ?   type?: EnumRequirementTypeFilter | RequirementType,\n         ?   created_at?: DateTimeFilter | DateTime,\n         ?   updatedAt?: DateTimeFilter | DateTime,\n         ?   student?: StudentNullableRelationFilter | StudentWhereInput | Null,\n         ?   organisation?: OrganisationRelationFilter | OrganisationWhereInput,\n         ?   directory?: DirectoryNullableRelationFilter | DirectoryWhereInput | Null,\n         ?   course?: CourseNullableRelationFilter | CourseWhereInput | Null\n           }\n         })\n\nArgument `where` of type RequirementWhereUniqueInput needs at least one of `id` arguments. Available options are marked with ?."}
 {"level":"info","message":"Backend is running on port 8080"}
+{"level":"info","message":"Backend is running on port 8080"}
+{"clientVersion":"5.12.1","code":"P2025","level":"info","meta":{"cause":"Record to update not found.","modelName":"Manager"},"name":"PrismaClientKnownRequestError"}
+{"clientVersion":"5.12.1","code":"P2025","level":"info","meta":{"cause":"Record to update not found.","modelName":"Agent"},"name":"PrismaClientKnownRequestError"}
+{"level":"info"}
+{"clientVersion":"5.12.1","code":"P2025","level":"info","meta":{"cause":"Record to update not found.","modelName":"Document"},"name":"PrismaClientKnownRequestError"}
+{"clientVersion":"5.12.1","level":"info","name":"PrismaClientValidationError"}
+{"clientVersion":"5.12.1","code":"P2003","level":"info","meta":{"field_name":"Document_directoryId_fkey (index)","modelName":"Document"},"name":"PrismaClientKnownRequestError"}
+{"level":"info","message":"Backend is running on port 8080"}
+{"clientVersion":"5.12.1","code":"P2003","level":"info","meta":{"field_name":"Document_directoryId_fkey (index)","modelName":"Document"},"name":"PrismaClientKnownRequestError"}
+{"level":"info"}
+{"level":"info","message":"Backend is running on port 8080"}
+{"level":"info","message":"Backend is running on port 8080"}
+{"level":"info","message":"Backend is running on port 8080"}
