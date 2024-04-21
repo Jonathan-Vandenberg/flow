@@ -40,6 +40,7 @@ export const createStudentController = async (req: Request, res: Response) => {
             courseId,
             name,
             age,
+            country,
             guardianMobile,
             guardianEmail,
             expAttendDate,
@@ -55,6 +56,7 @@ export const createStudentController = async (req: Request, res: Response) => {
         courseId,
         name,
         age,
+        country,
         guardianMobile,
         guardianEmail,
         expAttendDate,
@@ -68,7 +70,6 @@ export const createStudentController = async (req: Request, res: Response) => {
         const data = await studentService.createStudent(createData);
         return res.status(200).json(data);
     } catch (e: any) {
-        logger.info(e);
         res.status(500).send('Unexpected error. Could not create student - ' + e.message);
     }
 };

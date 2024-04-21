@@ -82,7 +82,7 @@ model Requirement {
 
   student      Student?     @relation(fields: [studentId], references: [id])
   organisation Organisation @relation(fields: [organisationId], references: [id])
-  directory    Directory?
+  directory    Directory[]
   course       Course?      @relation(fields: [courseId], references: [id])
 }
 
@@ -203,14 +203,14 @@ model Document {
 
 model Directory {
   id            String @id @default(uuid())
-  requirementId String @unique
   studentId     String
+  requirementId String
 
   status     DirectoryStatus? @default(IN_PROGRESS)
-  documents  Document[]
   created_at DateTime         @default(now())
   updatedAt  DateTime         @default(now())
 
+  documents   Document[]
   requirement Requirement @relation(fields: [requirementId], references: [id])
   student     Student     @relation("StudentDocsToStudent", fields: [studentId], references: [id])
 }

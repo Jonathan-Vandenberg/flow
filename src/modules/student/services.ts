@@ -8,6 +8,13 @@ const getAllStudentsByAgentId = async (agentId: string
     const students = await prisma.student.findMany({
         where: {
             agentId
+        },
+        include: {
+            course: {
+                select: {
+                    name: true,
+                }
+            }
         }
     })
 
@@ -92,8 +99,8 @@ const createStudent = async (data: any) => {
                     }
                 });
             }
-        } catch (error) {
-            logger.error(`Error creating student: ${error}`);
+        } catch (error: any) {
+            logger.error(`Error creating student: ${error.message}`);
         }
     });
 

@@ -1,6 +1,4 @@
 import prisma from "../../../prisma/prisma";
-import { v4 as uuidv4 } from 'uuid';
-import {logger} from "../../utils/logger";
 import {DirectoryStatus} from "@prisma/client";
 
 const getDirsByStudentId = async (studentId: string
@@ -39,17 +37,18 @@ const getDir = async (id: string
 
 const createDir = async (studentId: string, requirementId: string
 ) => {
-    const directories = await prisma.directory.create({
+    let directory
+    try{directory = await prisma.directory.create({
         data: {
             studentId,
             requirementId,
             status: DirectoryStatus.IN_PROGRESS
         }
-    })
+    })}catch(e:any){console.log(e.message)}
 
     return {
-        data: directories,
-        isValid: !!directories
+        data: directory,
+        isValid: !!directory
     }
 };
 
