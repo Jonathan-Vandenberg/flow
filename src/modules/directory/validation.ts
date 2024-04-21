@@ -42,6 +42,15 @@ export const createDirRules = checkSchema({
         notEmpty: {
             errorMessage: 'The studentId field is required'
         }
+    },
+    requirementId: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The requirementId must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The requirementId field is required'
+        }
     }
 });
 
