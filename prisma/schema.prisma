@@ -113,7 +113,7 @@ model CourseLocation {
 model Manager {
   id             String  @id @default(uuid())
   socialMediaId  String? @unique
-  organisationId String  @unique
+  organisationId String
 
   firstName  String
   lastName   String

@@ -81,7 +81,7 @@ export const createManagerValidationRules = checkSchema({
 });
 
 /**
- * Create a Manager
+ * Update a Manager
  */
 export const updateManagerValidationRules = checkSchema({
     id: {
