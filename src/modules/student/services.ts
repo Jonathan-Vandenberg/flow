@@ -72,6 +72,7 @@ const createStudent = async (data: any) => {
                     name: data.name,
                     age: data.age,
                     country: data.country,
+                    expAttendDate: data.expAttendDate,
                     guardianMobile: data.guardianMobile,
                     guardianEmail: data.guardianEmail,
                     gapYearExplanation: data.gapYearExplanation,

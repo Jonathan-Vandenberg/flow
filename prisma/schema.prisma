@@ -125,6 +125,22 @@ model Manager {
 
   organisation  Organisation @relation(fields: [organisationId], references: [id])
   managedAgents Agent[]      @relation("ManagerToAgent")
+  Task          Task[]
+}
+
+model Task {
+  id        String @id @default(uuid())
+  managerId String
+
+  name        String
+  description String
+  imageUrl    String?
+  created_at  DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  tags        String[]
+
+  documents Document[] @relation("managerToTask")
+  manager   Manager    @relation(fields: [managerId], references: [id])
 }
 
 model Agent {
@@ -188,8 +204,9 @@ model Student {
 }
 
 model Document {
-  id          String @id @default(uuid())
+  id          String  @id @default(uuid())
   directoryId String
+  taskId      String?
 
   url         String?
   name        String
@@ -199,6 +216,7 @@ model Document {
   updatedAt   DateTime   @default(now())
 
   directory Directory @relation(fields: [directoryId], references: [id])
+  task      Task?     @relation("managerToTask", fields: [taskId], references: [id])
 }
 
 model Directory {
