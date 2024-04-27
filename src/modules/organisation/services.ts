@@ -30,7 +30,11 @@ const getOrganisationById = async (id: string
                 students: true,
                 managers: {
                     include: {
-                        managedAgencies: true
+                        managedAgencies: {
+                            include: {
+                                agents: true
+                            }
+                        }
                     }
                 },
                 courses: true,
