@@ -41,3 +41,18 @@ export const createOrganisationValidationRules = checkSchema({
         }
     }
 });
+
+/**
+ * Get organisation by ID
+ */
+export const getOrganisationByIdValidationRules = checkSchema({
+    id: {
+        in: ['params'],
+        isString: {
+            errorMessage: 'The organisation id must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The organisation id field is required'
+        }
+    }
+});

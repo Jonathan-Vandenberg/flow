@@ -1,6 +1,6 @@
 import express from 'express';
-import {createOrganisationController} from "./controllers";
-import {createOrganisationValidationRules} from "./validation";
+import {createOrganisationController, getOrganisationByIdController} from "./controllers";
+import {createOrganisationValidationRules, getOrganisationByIdValidationRules} from "./validation";
 
 const router = express.Router();
 //
@@ -14,15 +14,16 @@ const router = express.Router();
 //     // isValidationResult
 // );
 //
-// /**
-//  * Get organisation by ID
-//  */
-// router.get(
-//     '/',
-//     getOrganisationByIdValidationRules,
-//     // isAuthenticated,
-//     // isValidationResult
-// );
+/**
+ * Get organisation by ID
+ */
+router.get(
+    '/:id',
+    getOrganisationByIdValidationRules,
+    // isAuthenticated,
+    // isValidationResult,
+    getOrganisationByIdController
+);
 
 /**
  * Create organisation

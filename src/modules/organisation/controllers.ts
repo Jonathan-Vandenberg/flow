@@ -21,3 +21,17 @@ export const createOrganisationController = async (req: Request, res: Response) 
         res.status(500).send('Server error, check the backend');
     }
 };
+
+/**
+* Get Organisation by Id
+*/
+export const getOrganisationByIdController = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const data = await organisationService.getOrganisationById(id);
+        return res.status(200).json(data);
+    } catch (e: any) {
+        logger.info(e.message);
+        res.status(500).send('Server error, check the backend' + e.message);
+    }
+};
