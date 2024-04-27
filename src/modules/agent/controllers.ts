@@ -3,7 +3,7 @@ import { logger } from '../../utils/logger';
 import agentService from './services';
 
 /**
- * Get agents by manager ID
+ * Get agents by agency ID
  */
 export const getAgentsByAgencyIdController = async (req: Request, res: Response) => {
     const { agencyId } = req.params
@@ -17,7 +17,7 @@ export const getAgentsByAgencyIdController = async (req: Request, res: Response)
 };
 
 /**
- * Get user by ID
+ * Get agent by ID
  */
 export const getAgentByIdController = async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -31,7 +31,7 @@ export const getAgentByIdController = async (req: Request, res: Response) => {
 };
 
 /**
- * Get user by ID
+ * Create agent
  */
 export const createAgentController = async (req: Request, res: Response) => {
     const { managerId,
@@ -61,7 +61,7 @@ export const createAgentController = async (req: Request, res: Response) => {
 };
 
 /**
- * Get user by ID
+ * Update agent
  */
 export const updateAgentController = async (req: Request, res: Response) => {
     const { id,
