@@ -11,6 +11,8 @@ import {logger} from "./utils/logger";
 import organisation from '../src/modules/organisation/routes'
 import manager from './modules/manager/routes'
 import agent from './modules/agent/routes'
+import agency from './modules/agency/routes'
+import contact from './modules/contact/routes'
 import student from './modules/student/routes'
 import directory from './modules/directory/routes'
 import document from './modules/document/routes'
@@ -37,6 +39,8 @@ app.use(cors());
 app.use('/organisation', organisation);
 app.use('/manager', manager);
 app.use('/agent', agent);
+app.use('/agency', agency);
+app.use('/contact', contact);
 app.use('/student', student);
 app.use('/directory', directory);
 app.use('/document', document)
