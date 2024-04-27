@@ -2,14 +2,12 @@ import express from 'express';
 // import { isAuthenticated, isValidationResult } from '../../middleware';
 import {
     createAgentValidationRules,
-    getAgentByIdValidationRules,
-    getAgentsByManagerIdValidationRules,
+    getAgentByIdValidationRules, getAgentsByAgencyIdValidationRules,
     updateAgentValidationRules
 } from "./validation";
 import {
     createAgentController,
-    getAgentByIdController,
-    getAgentsByManagerIdController,
+    getAgentByIdController, getAgentsByAgencyIdController,
     updateAgentController
 } from "./controllers";
 
@@ -19,11 +17,11 @@ const router = express.Router();
  * Get agents by manager ID
  */
 router.get(
-    '/:managerId',
-    getAgentsByManagerIdValidationRules,
+    '/:agencyId',
+    getAgentsByAgencyIdValidationRules,
     // isAuthenticated,
     // isValidationResult,
-    getAgentsByManagerIdController
+    getAgentsByAgencyIdController
 );
 
 /**

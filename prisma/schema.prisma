@@ -164,22 +164,8 @@ model Agency {
   updatedAt  DateTime @default(now())
 
   contacts Contact[]
-  agents   Agent[]   @relation("AgencyToAgent")
+  agents   Agent[]
   manager  Manager   @relation(fields: [managerId], references: [id])
-}
-
-model Contact {
-  id       String @id @default(uuid())
-  agencyId String
-
-  name       String
-  email      String?
-  mobile     String?
-  role       String?
-  created_at DateTime @default(now())
-  updatedAt  DateTime @default(now())
-
-  agency Agency @relation(fields: [agencyId], references: [id])
 }
 
 model Agent {
@@ -195,9 +181,23 @@ model Agent {
   created_at    DateTime        @default(now())
   updatedAt     DateTime        @default(now())
 
-  agency      Agency        @relation("AgencyToAgent", fields: [agencyId], references: [id])
+  agency      Agency        @relation(fields: [agencyId], references: [id])
   socialMedia SocialMedia[] @relation("SocialMediaToAgent")
   students    Student[]     @relation("AgentToStudent")
+}
+
+model Contact {
+  id       String @id @default(uuid())
+  agencyId String
+
+  name       String
+  email      String?
+  mobile     String?
+  role       String?
+  created_at DateTime @default(now())
+  updatedAt  DateTime @default(now())
+
+  agency Agency @relation(fields: [agencyId], references: [id])
 }
 
 model Course {

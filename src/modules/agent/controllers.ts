@@ -5,10 +5,10 @@ import agentService from './services';
 /**
  * Get agents by manager ID
  */
-export const getAgentsByManagerIdController = async (req: Request, res: Response) => {
-    const { managerId } = req.params
+export const getAgentsByAgencyIdController = async (req: Request, res: Response) => {
+    const { agencyId } = req.params
     try {
-        const data = await agentService.getAgentsByManagerId(managerId);
+        const data = await agentService.getAgentsByAgencyId(agencyId);
         return res.status(200).json(data);
     } catch (e: any) {
         logger.info(e);

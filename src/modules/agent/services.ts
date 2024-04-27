@@ -2,11 +2,11 @@ import prisma from "../../../prisma/prisma";
 import {logger} from "../../utils/logger";
 import {Agent} from "@prisma/client";
 
-const getAgentsByManagerId = async (managerId: string
+const getAgentsByAgencyId = async (agencyId: string
 ) => {
     const agents = await prisma.agent.findMany({
         where: {
-            managerId
+            agencyId
         }
     })
 
@@ -58,7 +58,7 @@ const updateAgent = async (data: any
 };
 
 export default {
-    getAgentsByManagerId,
+    getAgentsByAgencyId,
     getAgentById,
     createAgent,
     updateAgent

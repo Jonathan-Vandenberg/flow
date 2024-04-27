@@ -3,14 +3,14 @@ import { checkSchema } from 'express-validator';
 /**
  * Get agents by manager ID
  */
-export const getAgentsByManagerIdValidationRules = checkSchema({
-    managerId: {
+export const getAgentsByAgencyIdValidationRules = checkSchema({
+    agencyId: {
         in: ['params'],
         isString: {
-            errorMessage: 'The managerId must be a string.'
+            errorMessage: 'The agencyId must be a string.'
         },
         notEmpty: {
-            errorMessage: 'The managerId field is required'
+            errorMessage: 'The agencyId field is required'
         }
     }
 });
