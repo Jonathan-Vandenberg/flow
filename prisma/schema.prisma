@@ -51,6 +51,12 @@ enum RequirementType {
   VISA
 }
 
+enum Sector {
+  VOCATIONAL
+  HIGH_EDUCATION
+  HIGH_SCHOOL
+}
+
 model Organisation {
   id String @id @default(uuid())
 
@@ -123,9 +129,9 @@ model Manager {
   created_at DateTime @default(now())
   updatedAt  DateTime @default(now())
 
-  organisation  Organisation @relation(fields: [organisationId], references: [id])
-  managedAgents Agent[]      @relation("ManagerToAgent")
-  Task          Task[]
+  organisation    Organisation @relation(fields: [organisationId], references: [id])
+  managedAgencies Agency[]
+  Task            Task[]
 }
 
 model Task {
@@ -143,9 +149,42 @@ model Task {
   manager   Manager    @relation(fields: [managerId], references: [id])
 }
 
-model Agent {
+model Agency {
   id        String @id @default(uuid())
   managerId String
+
+  name                 String
+  sector               Sector
+  country              Country?
+  district             String?
+  market               Country?
+  commissionPercentage Int?
+
+  created_at DateTime @default(now())
+  updatedAt  DateTime @default(now())
+
+  contacts Contact[]
+  agents   Agent[]   @relation("AgencyToAgent")
+  manager  Manager   @relation(fields: [managerId], references: [id])
+}
+
+model Contact {
+  id       String @id @default(uuid())
+  agencyId String
+
+  name       String
+  email      String?
+  mobile     String?
+  role       String?
+  created_at DateTime @default(now())
+  updatedAt  DateTime @default(now())
+
+  agency Agency @relation(fields: [agencyId], references: [id])
+}
+
+model Agent {
+  id       String @id @default(uuid())
+  agencyId String
 
   firstName     String
   lastName      String
@@ -156,7 +195,7 @@ model Agent {
   created_at    DateTime        @default(now())
   updatedAt     DateTime        @default(now())
 
-  manager     Manager       @relation("ManagerToAgent", fields: [managerId], references: [id])
+  agency      Agency        @relation("AgencyToAgent", fields: [agencyId], references: [id])
   socialMedia SocialMedia[] @relation("SocialMediaToAgent")
   students    Student[]     @relation("AgentToStudent")
 }
