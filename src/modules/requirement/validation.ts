@@ -95,6 +95,17 @@ export const createRequirementRules = checkSchema({
             errorMessage: 'The courseId must be a string.'
         }
     },
+    name:{
+        in: ['body'],
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        },
+        isString: {
+            errorMessage: 'The name must be a string.'
+        },
+    },
     details: {
         in: ['body'],
         isString: {
@@ -170,6 +181,17 @@ export const updateRequirementRules = checkSchema({
         isString: {
             errorMessage: 'The courseId must be a string.'
         }
+    },
+    name:{
+        in: ['body'],
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        },
+        isString: {
+            errorMessage: 'The name must be a string.'
+        },
     },
     details: {
         in: ['body'],

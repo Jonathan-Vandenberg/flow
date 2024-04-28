@@ -80,6 +80,7 @@ model Requirement {
   courseId       String?
   studentId      String?
 
+  name       String?
   details    String
   status     RequirementStatus @default(REQUIRED)
   type       RequirementType
