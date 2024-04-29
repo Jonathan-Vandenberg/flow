@@ -1,5 +1,5 @@
 import prisma from '../../../prisma/prisma';
-import {Role} from "@prisma/client";
+import {Role, User} from "@prisma/client";
 import {logger} from "../../utils/logger";
 import {UserArgs} from "@prisma/client/runtime/library";
 import {createOrganisationController} from "../organisation/controllers";
@@ -7,20 +7,23 @@ import {create} from "domain";
 
 const getUserById = async (
     id: string
-): Promise<{ isValid: boolean; message: string }> => {
+): Promise<{ isValid: boolean; message: string, data: any }> => {
     let user
+    let errorMessage
 
     try {
         user = await prisma.user.findUnique({
                 where: { id }
         })
     } catch(e: any){
+        errorMessage = e.message
         logger.error(`ERROR::getUserById::${e.message}`)
     }
 
     return {
         isValid: !!user,
-        message: user ? "Fetched User Successfully" : "Failed to fetch User"
+        message: user ? "Fetched User Successfully" : `Failed to fetch User: ${errorMessage}`,
+        data: user
     };
 };
 
