@@ -29,8 +29,9 @@ const getUserById = async (
 
 const createUser = async (
    createUserData: any
-): Promise<{ isValid: boolean; message: string }> => {
+): Promise<{ isValid: boolean; message: string, data: any }> => {
     let user
+    let errorMessage
 
     try{
         user = await prisma.user.create({
@@ -48,12 +49,14 @@ const createUser = async (
             }
         });
     }catch(e: any){
+        errorMessage = e.message
         console.log('ERROR::ADD_USER:', e.message)
     }
 
     return {
         isValid: !!user,
-        message: user ? 'Created User Successfully' : 'Failed to create User'
+        message: user ? "Created User Successfully" : `Created to fetch User: ${errorMessage}`,
+        data: user
     };
 };
 
