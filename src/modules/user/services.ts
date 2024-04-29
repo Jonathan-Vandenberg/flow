@@ -27,20 +27,26 @@ const getUserById = async (
 const createUser = async (
    createUserData: any
 ): Promise<{ isValid: boolean; message: string }> => {
-    const user = await prisma.user.create({
-        data: {
-            agencyId: createUserData.agencyId,
-            managerId: createUserData.managerId,
-            organisationId: createUserData.organisationId,
-            firstName: createUserData.firstName,
-            lastName: createUserData.lastName,
-            email: createUserData.email,
-            mobile: createUserData.mobile,
-            role: createUserData.role,
-            imageUrl: createUserData.imageUrl,
-            expertiseArea: createUserData.expertiseArea
-        }
-    });
+    let user
+
+    try{
+        user = await prisma.user.create({
+            data: {
+                agencyId: createUserData.agencyId,
+                managerId: createUserData.managerId,
+                organisationId: createUserData.organisationId,
+                firstName: createUserData.firstName,
+                lastName: createUserData.lastName,
+                email: createUserData.email,
+                mobile: createUserData.mobile,
+                role: createUserData.role,
+                imageUrl: createUserData.imageUrl,
+                expertiseArea: createUserData.expertiseArea
+            }
+        });
+    }catch(e: any){
+        console.log('ERROR::ADD_USER:', e.message)
+    }
 
     return {
         isValid: !!user,
