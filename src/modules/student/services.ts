@@ -103,6 +103,7 @@ const createStudent = async (data: any) => {
             }
         } catch (error: any) {
             logger.error(`Error creating student: ${error.message}`);
+            console.log(error.message)
         }
     });
 
