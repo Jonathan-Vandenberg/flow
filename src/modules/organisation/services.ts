@@ -26,6 +26,13 @@ const getOrganisationById = async (id: string
             where: {
                 id
             },
+            include: {
+                users: true,
+                agencies: true,
+                students: true,
+                courses: true,
+                requirements: true
+            }
         })
 
     } catch(e: any) {
