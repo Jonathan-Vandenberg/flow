@@ -31,7 +31,8 @@ const getOrganisationById = async (id: string
                 agencies: true,
                 students: true,
                 courses: true,
-                requirements: true
+                requirements: true,
+                agenciesOnOrganisations: true
             }
         })
 
