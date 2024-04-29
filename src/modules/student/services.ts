@@ -66,9 +66,10 @@ const createStudent = async (data: any) => {
         try {
             student = await t.student.create({
                 data: {
-                    agentId: data.agentId,
                     organisationId: data.organisationId,
                     courseId: data.courseId,
+                    agentId: data.agentId,
+                    agencyId: data.agencyId,
                     name: data.name,
                     age: data.age,
                     country: data.country,

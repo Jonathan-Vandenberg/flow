@@ -1,73 +1,34 @@
 import express from 'express';
 
-import { isAuthenticated, isValidationResult } from '../../middleware';
 import {
-    checkAliasController, createUserController,
-    getUserByIdController
+    createUserController, getUserByIdController,
 } from './controller';
 import {
-    checkAliasValidationRules, createUserValidationRules, getUserByIdValidationRules,
+    createUserValidationRules, getUserByIdValidationRules,
 } from './validation';
 
 const router = express.Router();
 
 /**
- * Get all users
+ * Create User
  */
-// router.get('/', getAllUsersController);
-
-/**
- * Get user by address or alias
- */
-// router.get(
-//     '/:addressAlias',
-//     getUserAddressAliasValidationRules,
-//     isValidationResult,
-//     getUsersByAddressOrAliasController
-// );
-
-/**
- * Update user
- */
-// router.put(
-//     '/',
-//     updateUserValidationRules,
-//     isValidationResult,
-//     isAuthenticated,
-//     updateUserController
-// );
-
-/**
- * Check alias already exists
- */
-router.get(
-    '/check-alias/:alias',
-    checkAliasValidationRules,
-    isAuthenticated,
-    isValidationResult,
-    checkAliasController
-);
-
-/**
- * Get user by Id
- */
-router.get(
-    '/userById/:userId',
-    getUserByIdValidationRules,
+router.post(
+    '/',
+    createUserValidationRules,
     // isAuthenticated,
     // isValidationResult,
-    getUserByIdController
+    createUserController
 );
 
 /**
  * Create User
  */
-router.post(
-    '/create-user',
-    createUserValidationRules,
+router.get(
+    '/:id',
+    getUserByIdValidationRules,
     // isAuthenticated,
     // isValidationResult,
-    createUserController
+    getUserByIdController
 );
 
 export default router;

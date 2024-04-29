@@ -3,27 +3,12 @@ import { logger } from '../../utils/logger';
 import userService from './services';
 
 /**
- * Check alias already exists
- */
-export const checkAliasController = async (req: Request, res: Response) => {
-    const { alias } = req.params;
-    try {
-        const data = await userService.checkUserAlias(alias);
-        return res.status(200).json(data);
-    } catch (e) {
-        logger.info(e);
-        res.status(500).send('Server error, try again or contact support');
-    }
-};
-
-/**
  * Get user by ID
  */
 export const getUserByIdController = async (req: Request, res: Response) => {
-    const { userId } = req.params;
-    console.log('CONTROLLER USER ID: ', userId)
+    const { id } = req.params;
     try {
-        const data = await userService.getUserById(userId);
+        const data = await userService.getUserById(id);
         return res.status(200).json(data);
     } catch (e) {
         logger.info(e);
@@ -35,11 +20,33 @@ export const getUserByIdController = async (req: Request, res: Response) => {
  * Get user by ID
  */
 export const createUserController = async (req: Request, res: Response) => {
-    const { name, role } = req.body;
-    console.log(req)
-    console.log('DATA CONTROLLER: ', name, role)
+    const {
+        agencyId,
+        managerId,
+        organisationId,
+        firstName,
+        lastName,
+        email,
+        mobile,
+        role,
+        imageUrl,
+        expertiseArea,
+    } = req.body;
+
+    const createUserData = {
+        agencyId,
+        managerId,
+        organisationId,
+        firstName,
+        lastName,
+        email,
+        mobile,
+        role,
+        imageUrl,
+        expertiseArea,
+    }
     try {
-        const data = await userService.createUser(name, role);
+        const data = await userService.createUser(createUserData);
         return res.status(200).json(data);
     } catch (e) {
         logger.info(e);

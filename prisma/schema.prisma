@@ -57,6 +57,34 @@ enum Sector {
   HIGH_SCHOOL
 }
 
+enum Role {
+  ADMIN
+  MANAGER
+  AGENT
+}
+
+model User {
+  id             String  @id @default(uuid())
+  agencyId       String?
+  managerId      String?
+  organisationId String?
+
+  firstName     String
+  lastName      String
+  email         String
+  mobile        String
+  role          Role
+  imageUrl      String?
+  expertiseArea AreaOfExpertise?
+  created_at    DateTime         @default(now())
+  updatedAt     DateTime         @default(now())
+
+  managedStudents Student[]
+  managedAgencies Agency[]
+  socialMedia     SocialMedia[] @relation("SocialMediaToAgent")
+  organisation    Organisation? @relation(fields: [organisationId], references: [id])
+}
+
 model Organisation {
   id String @id @default(uuid())
 
@@ -67,10 +95,29 @@ model Organisation {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @default(now())
 
-  admin        Admin[]
-  managers     Manager[]
+  users        User[]
+  agencies     Agency[]
+  students     Student[]
   courses      Course[]
   requirements Requirement[]
+}
+
+model Agency {
+  id        String @id @default(uuid())
+  managerId String
+
+  name     String
+  sector   Sector?
+  country  Country?
+  district String?
+  market   Country?
+
+  created_at DateTime @default(now())
+  updatedAt  DateTime @default(now())
+
+  organisation Organisation[]
+  contacts     Contact[]
+  User         User[]
   students     Student[]
 }
 
@@ -93,19 +140,6 @@ model Requirement {
   course       Course?      @relation(fields: [courseId], references: [id])
 }
 
-model Admin {
-  id             String @id @default(uuid())
-  organisationId String
-
-  name       String
-  email      String
-  mobile     String
-  created_at DateTime @default(now())
-  updatedAt  DateTime @default(now())
-
-  organisation Organisation @relation(fields: [organisationId], references: [id])
-}
-
 model CourseLocation {
   id       String @id @default(uuid())
   courseId String
@@ -115,24 +149,6 @@ model CourseLocation {
   updatedAt  DateTime @default(now())
 
   course Course @relation(fields: [courseId], references: [id])
-}
-
-model Manager {
-  id             String  @id @default(uuid())
-  socialMediaId  String? @unique
-  organisationId String
-
-  firstName  String
-  lastName   String
-  email      String
-  mobile     String
-  imageUrl   String?
-  created_at DateTime @default(now())
-  updatedAt  DateTime @default(now())
-
-  organisation    Organisation @relation(fields: [organisationId], references: [id])
-  managedAgencies Agency[]
-  Task            Task[]
 }
 
 model Task {
@@ -146,45 +162,7 @@ model Task {
   updatedAt   DateTime @default(now())
   tags        String[]
 
-  documents Document[] @relation("managerToTask")
-  manager   Manager    @relation(fields: [managerId], references: [id])
-}
-
-model Agency {
-  id        String @id @default(uuid())
-  managerId String
-
-  name                 String
-  sector               Sector
-  country              Country?
-  district             String?
-  market               Country?
-  commissionPercentage Int?
-
-  created_at DateTime @default(now())
-  updatedAt  DateTime @default(now())
-
-  contacts Contact[]
-  agents   Agent[]
-  manager  Manager   @relation(fields: [managerId], references: [id])
-}
-
-model Agent {
-  id       String @id @default(uuid())
-  agencyId String
-
-  firstName     String
-  lastName      String
-  email         String
-  mobile        String
-  imageUrl      String?
-  expertiseArea AreaOfExpertise
-  created_at    DateTime        @default(now())
-  updatedAt     DateTime        @default(now())
-
-  agency      Agency        @relation(fields: [agencyId], references: [id])
-  socialMedia SocialMedia[] @relation("SocialMediaToAgent")
-  students    Student[]     @relation("AgentToStudent")
+  documents Document[] @relation("documentToTask")
 }
 
 model Contact {
@@ -194,7 +172,7 @@ model Contact {
   name       String
   email      String?
   mobile     String?
-  role       String?
+  position   String?
   created_at DateTime @default(now())
   updatedAt  DateTime @default(now())
 
@@ -202,9 +180,8 @@ model Contact {
 }
 
 model Course {
-  id             String  @id @default(uuid())
+  id             String @id @default(uuid())
   organisationId String
-  studentId      String?
 
   name        String
   description String
@@ -213,15 +190,16 @@ model Course {
 
   organisation Organisation     @relation(fields: [organisationId], references: [id])
   locations    CourseLocation[]
-  students     Student[]
   requirements Requirement[]
+  Student      Student[]
 }
 
 model Student {
   id             String @id @default(uuid())
-  agentId        String
-  courseId       String
   organisationId String
+  courseId       String
+  agencyId       String
+  agentId        String
 
   name               String?
   age                Int?
@@ -236,8 +214,9 @@ model Student {
   created_at         DateTime       @default(now())
   updatedAt          DateTime       @default(now())
 
-  agent        Agent         @relation("AgentToStudent", fields: [agentId], references: [id])
+  user         User          @relation(fields: [agentId], references: [id])
   course       Course        @relation(fields: [courseId], references: [id])
+  agency       Agency        @relation(fields: [agencyId], references: [id])
   requirements Requirement[]
   directories  Directory[]   @relation("StudentDocsToStudent")
   organisation Organisation  @relation(fields: [organisationId], references: [id])
@@ -256,7 +235,7 @@ model Document {
   updatedAt   DateTime   @default(now())
 
   directory Directory @relation(fields: [directoryId], references: [id])
-  task      Task?     @relation("managerToTask", fields: [taskId], references: [id])
+  task      Task?     @relation("documentToTask", fields: [taskId], references: [id])
 }
 
 model Directory {
@@ -275,7 +254,7 @@ model Directory {
 
 model SocialMedia {
   id             String  @id @default(uuid())
-  agentId        String  @unique
+  userId         String
   agentProfileId String?
 
   platform   String
@@ -283,7 +262,7 @@ model SocialMedia {
   created_at DateTime @default(now())
   updatedAt  DateTime @default(now())
 
-  agent Agent @relation("SocialMediaToAgent", fields: [agentId], references: [id])
+  user User @relation("SocialMediaToAgent", fields: [userId], references: [id])
 }
 
 enum Country {

@@ -9,8 +9,7 @@ import cron from 'node-cron';
 import userJobs from "./jobs/scanner";
 import {logger} from "./utils/logger";
 import organisation from '../src/modules/organisation/routes'
-import manager from './modules/manager/routes'
-import agent from './modules/agent/routes'
+import user from './modules/user/routes'
 import agency from './modules/agency/routes'
 import contact from './modules/contact/routes'
 import student from './modules/student/routes'
@@ -36,9 +35,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
+app.use('/user', user)
 app.use('/organisation', organisation);
-app.use('/manager', manager);
-app.use('/agent', agent);
 app.use('/agency', agency);
 app.use('/contact', contact);
 app.use('/student', student);

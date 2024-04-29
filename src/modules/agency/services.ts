@@ -1,6 +1,5 @@
 import prisma from "../../../prisma/prisma";
 import {logger} from "../../utils/logger";
-import {Agent} from "@prisma/client";
 
 const getAgenciesByManagerId = async (managerId: string
 ) => {
