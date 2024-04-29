@@ -43,6 +43,15 @@ export const createStudentValidationRules = checkSchema({
             errorMessage: 'The agentId field is required'
         }
     },
+    agencyId: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The agencyId must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The agencyId field is required'
+        }
+    },
     courseId: {
         in: ['body'],
         isString: {
