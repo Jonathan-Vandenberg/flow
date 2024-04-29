@@ -16,6 +16,21 @@ export const getUserByIdValidationRules = checkSchema({
 });
 
 /**
+ * Get User by Organisation ID rules
+ */
+export const getUsersByOrganisationIdValidationRules = checkSchema({
+    id: {
+        in: ['params'],
+        isString: {
+            errorMessage: 'The organisation Id must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The organisation Id field is required'
+        }
+    }
+});
+
+/**
  * Create User validation rules
  */
 export const createUserValidationRules = checkSchema({

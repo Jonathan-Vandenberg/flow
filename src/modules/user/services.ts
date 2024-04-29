@@ -27,6 +27,28 @@ const getUserById = async (
     };
 };
 
+const getUsersByOrganisationId = async (
+    id: string
+): Promise<{ isValid: boolean; message: string, data: any }> => {
+    let users
+    let errorMessage
+
+    try {
+        users = await prisma.user.findMany({
+            where: { organisationId: id }
+        })
+    } catch(e: any){
+        errorMessage = e.message
+        logger.error(`ERROR::getUserByOrganisationId::${e.message}`)
+    }
+
+    return {
+        isValid: !!users,
+        message: users ? "Fetched Users Successfully" : `Failed to fetch Users: ${errorMessage}`,
+        data: users
+    };
+};
+
 const createUser = async (
    createUserData: any
 ): Promise<{ isValid: boolean; message: string, data: any }> => {
@@ -62,5 +84,6 @@ const createUser = async (
 
 export default {
     createUser,
-    getUserById
+    getUserById,
+    getUsersByOrganisationId
 };

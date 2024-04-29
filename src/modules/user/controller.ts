@@ -17,6 +17,20 @@ export const getUserByIdController = async (req: Request, res: Response) => {
 };
 
 /**
+ * Get users organisation by ID
+ */
+export const getUsersByOrganisationIdController = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const data = await userService.getUsersByOrganisationId(id);
+        return res.status(200).json(data);
+    } catch (e) {
+        logger.info(e);
+        res.status(500).send('Server error, try again or contact support');
+    }
+};
+
+/**
  * Get user by ID
  */
 export const createUserController = async (req: Request, res: Response) => {

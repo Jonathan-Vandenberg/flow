@@ -1,10 +1,12 @@
 import express from 'express';
 
 import {
-    createUserController, getUserByIdController,
+    createUserController, getUserByIdController, getUsersByOrganisationIdController,
 } from './controller';
 import {
-    createUserValidationRules, getUserByIdValidationRules,
+    createUserValidationRules,
+    getUserByIdValidationRules,
+    getUsersByOrganisationIdValidationRules,
 } from './validation';
 
 const router = express.Router();
@@ -21,7 +23,7 @@ router.post(
 );
 
 /**
- * Create User
+ * Get User by id User
  */
 router.get(
     '/:id',
@@ -29,6 +31,17 @@ router.get(
     // isAuthenticated,
     // isValidationResult,
     getUserByIdController
+);
+
+/**
+ * Get User by Organisation id User
+ */
+router.get(
+    '/organisation/:id',
+    getUsersByOrganisationIdValidationRules,
+    // isAuthenticated,
+    // isValidationResult,
+    getUsersByOrganisationIdController
 );
 
 export default router;
