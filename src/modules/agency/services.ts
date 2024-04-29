@@ -1,17 +1,20 @@
 import prisma from "../../../prisma/prisma";
 import {logger} from "../../utils/logger";
 
-const getAgenciesByManagerId = async (managerId: string
+const getAgenciesOnOrganisations = async (agencyId: string, organisationId: string
 ) => {
-    const agencies = await prisma.agency.findMany({
-        where: {
-            managerId
-        }
+    const agenciesOnOrganisations = await prisma.agenciesOnOrganisations.findUnique({
+       where: {
+           agencyId_organisationId: {
+               agencyId,
+               organisationId
+           }
+       }
     })
 
     return {
-        isValid: !!agencies,
-        data: agencies
+        isValid: !!agenciesOnOrganisations,
+        data: agenciesOnOrganisations
     };
 };
 
@@ -32,7 +35,20 @@ const getAgencyById = async (id: string
 const createAgency = async (data: any
 ) => {
     const agency = await prisma.agency.create({
-        data
+        data: {
+            name: data.name,
+            sector: data.sector,
+            country: data.country,
+            district: data.district,
+            market: data.market,
+            commissionPercentage: data.commissionPercentage,
+            agenciesOnOrganisations: {
+                create: {
+                    managerId: data.managerId,
+                    organisationId: data.organisationId,
+                }
+            }
+        }
     })
 
     return {
@@ -57,7 +73,7 @@ const updateAgency = async (data: any
 };
 
 export default {
-    getAgenciesByManagerId,
+    getAgenciesOnOrganisations,
     getAgencyById,
     createAgency,
     updateAgency

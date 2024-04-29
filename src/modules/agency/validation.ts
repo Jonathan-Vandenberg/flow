@@ -3,14 +3,23 @@ import { checkSchema } from 'express-validator';
 /**
  * Get agency by manager ID
  */
-export const getAgencyByManagerIdValidationRules = checkSchema({
-    managerId: {
-        in: ['params'],
+export const getAgenciesOnOrganisationsValidationRules = checkSchema({
+    agencyId: {
+        in: ['body'],
         isString: {
-            errorMessage: 'The managerId must be a string.'
+            errorMessage: 'The agencyId must be a string.'
         },
         notEmpty: {
-            errorMessage: 'The managerId field is required'
+            errorMessage: 'The agencyId field is required'
+        }
+    },
+    organisationId: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The organisationId must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The organisationId field is required'
         }
     }
 });
@@ -34,6 +43,15 @@ export const getAgencyByIdValidationRules = checkSchema({
  * Create an Agency
  */
 export const createAgencyValidationRules = checkSchema({
+    organisationId: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The organisationId must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The organisationId field is required'
+        }
+    },
     managerId: {
         in: ['body'],
         isString: {
@@ -41,6 +59,15 @@ export const createAgencyValidationRules = checkSchema({
         },
         notEmpty: {
             errorMessage: 'The managerId field is required'
+        }
+    },
+    name: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The name must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The name field is required'
         }
     },
     sector: {

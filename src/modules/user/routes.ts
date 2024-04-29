@@ -34,7 +34,7 @@ router.get(
 );
 
 /**
- * Get User by Organisation id User
+ * Get Users by Organisation id
  */
 router.get(
     '/organisation/:id',

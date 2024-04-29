@@ -5,10 +5,10 @@ import agencyService from './services';
 /**
  * Get agencies by manager ID
  */
-export const getAgencyByManagerIdController = async (req: Request, res: Response) => {
-    const { managerId } = req.params
+export const getAgenciesOnOrganisationsController = async (req: Request, res: Response) => {
+    const { agencyId, organisationId } = req.body
     try {
-        const data = await agencyService.getAgenciesByManagerId(managerId);
+        const data = await agencyService.getAgenciesOnOrganisations(agencyId, organisationId);
         return res.status(200).json(data);
     } catch (e: any) {
         logger.info(e);
@@ -35,6 +35,7 @@ export const getAgencyByIdController = async (req: Request, res: Response) => {
  */
 export const createAgencyController = async (req: Request, res: Response) => {
     const {
+        organisationId,
         managerId,
         name,
         sector,
@@ -44,6 +45,7 @@ export const createAgencyController = async (req: Request, res: Response) => {
         commissionPercentage } = req.body;
 
     const createAgencyData = {
+        organisationId,
         managerId,
         name,
         sector,
