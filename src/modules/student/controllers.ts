@@ -36,7 +36,7 @@ export const getStudentByIdController = async (req: Request, res: Response) => {
 export const createStudentController = async (req: Request, res: Response) => {
     const {
             agentId,
-        agencyId,
+            agencyId,
             organisationId,
             courseId,
             name,

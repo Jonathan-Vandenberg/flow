@@ -48,7 +48,6 @@ const getStudentById = async (id: string
 };
 
 const createStudent = async (data: any) => {
-    const directoryId = uuidv4();
     let student;
     await prisma.$transaction(async (t) => {
         const organisation = await t.organisation.findUnique({
@@ -105,7 +104,6 @@ const createStudent = async (data: any) => {
                     data: {
                         requirementId: requirement.id,
                         studentId: student.id,
-                        id: directoryId,
                         status: DirectoryStatus.IN_PROGRESS
                     }
                 });
