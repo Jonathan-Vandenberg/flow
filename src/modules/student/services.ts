@@ -29,6 +29,13 @@ const getStudentById = async (id: string
     const student = await prisma.student.findUnique({
         where: {
             id
+        },
+        include: {
+            directories: {
+                include: {
+                    documents: true
+                }
+            }
         }
     })
 
