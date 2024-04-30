@@ -31,9 +31,11 @@ const getStudentById = async (id: string
             id
         },
         include: {
+            course: true,
             directories: {
                 include: {
-                    documents: true
+                    documents: true,
+                    requirement: true
                 }
             }
         }
