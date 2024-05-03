@@ -30,9 +30,12 @@ const getDoc = async (id: string
 
 const createDoc = async (data: any
 ) => {
-    const document = await prisma.document.create({
-        data
-    })
+    let document
+    try {
+        document = await prisma.document.create({
+            data
+        })
+    } catch (e: any) {console.log(e.message)}
 
     return {
         data: document,
