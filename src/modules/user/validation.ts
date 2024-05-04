@@ -16,6 +16,21 @@ export const getUserByIdValidationRules = checkSchema({
 });
 
 /**
+ * Get User by Email rules
+ */
+export const getUserByEmailValidationRules = checkSchema({
+    email: {
+        in: ['params'],
+        isString: {
+            errorMessage: 'The user email must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The user email field is required'
+        }
+    }
+});
+
+/**
  * Get User by Organisation ID rules
  */
 export const getUsersByOrganisationIdValidationRules = checkSchema({

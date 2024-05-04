@@ -4,7 +4,7 @@ import {
     createUserController, getUserByIdController, getUsersByOrganisationIdController,
 } from './controller';
 import {
-    createUserValidationRules,
+    createUserValidationRules, getUserByEmailValidationRules,
     getUserByIdValidationRules,
     getUsersByOrganisationIdValidationRules,
 } from './validation';
@@ -31,6 +31,17 @@ router.get(
     // isAuthenticated,
     // isValidationResult,
     getUserByIdController
+);
+
+/**
+ * Get User by email
+ */
+router.get(
+    '/:email',
+    getUserByEmailValidationRules,
+    // isAuthenticated,
+    // isValidationResult,
+    getUserByEmailController
 );
 
 /**
