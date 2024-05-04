@@ -37,7 +37,7 @@ router.get(
  * Get User by email
  */
 router.get(
-    '/:email',
+    '/email/:email',
     getUserByEmailValidationRules,
     // isAuthenticated,
     // isValidationResult,
