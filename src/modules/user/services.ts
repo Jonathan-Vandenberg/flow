@@ -27,30 +27,30 @@ const getUserById = async (
     };
 };
 
-// const getUserByEmail = async (
-//     email: string
-// ): Promise<{ isValid: boolean; message: string, data: any }> => {
-//     let user
-//     let errorMessage
-//
-//     try {
-//         user = await prisma.user.findUnique({
-//             where: { email },
-//             include: {
-//                 organisation: true
-//             }
-//         })
-//     } catch(e: any){
-//         errorMessage = e.message
-//         logger.error(`ERROR::getUserByEmail::${e.message}`)
-//     }
-//
-//     return {
-//         isValid: !!user,
-//         message: user ? "Fetched User Successfully" : `Failed to fetch User: ${errorMessage}`,
-//         data: user
-//     };
-// };
+const getUserByEmail = async (
+    email: string
+): Promise<{ isValid: boolean; message: string, data: any }> => {
+    let user
+    let errorMessage
+
+    try {
+        user = await prisma.user.findUnique({
+            where: { email },
+            include: {
+                organisation: true
+            }
+        })
+    } catch(e: any){
+        errorMessage = e.message
+        logger.error(`ERROR::getUserByEmail::${e.message}`)
+    }
+
+    return {
+        isValid: !!user,
+        message: user ? "Fetched User Successfully" : `Failed to fetch User: ${errorMessage}`,
+        data: user
+    };
+};
 
 const getUsersByOrganisationId = async (
     id: string
@@ -110,6 +110,6 @@ const createUser = async (
 export default {
     createUser,
     getUserById,
-    // getUserByEmail,
+    getUserByEmail,
     getUsersByOrganisationId
 };
