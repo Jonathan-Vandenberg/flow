@@ -1,7 +1,7 @@
 import express from 'express';
 
 import {
-    createUserController, getUserByIdController, getUsersByOrganisationIdController,
+    createUserController, getUserByEmailController, getUserByIdController, getUsersByOrganisationIdController,
 } from './controller';
 import {
     createUserValidationRules, getUserByEmailValidationRules,
