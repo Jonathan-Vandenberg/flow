@@ -19,16 +19,16 @@ export const getUserByIdController = async (req: Request, res: Response) => {
 /**
  * Get user by ID
  */
-export const getUserByEmailController = async (req: Request, res: Response) => {
-    const { email } = req.params;
-    try {
-        const data = await userService.getUserByEmail(email);
-        return res.status(200).json(data);
-    } catch (e) {
-        logger.info(e);
-        res.status(500).send('Server error, try again or contact support');
-    }
-}
+// export const getUserByEmailController = async (req: Request, res: Response) => {
+//     const { email } = req.params;
+//     try {
+//         const data = await userService.getUserByEmail(email);
+//         return res.status(200).json(data);
+//     } catch (e) {
+//         logger.info(e);
+//         res.status(500).send('Server error, try again or contact support');
+//     }
+// }
 
 /**
  * Get users organisation by ID

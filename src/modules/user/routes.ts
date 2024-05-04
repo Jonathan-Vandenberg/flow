@@ -1,7 +1,7 @@
 import express from 'express';
 
 import {
-    createUserController, getUserByEmailController, getUserByIdController, getUsersByOrganisationIdController,
+    createUserController, getUserByIdController, getUsersByOrganisationIdController,
 } from './controller';
 import {
     createUserValidationRules, getUserByEmailValidationRules,
@@ -36,13 +36,13 @@ router.get(
 /**
  * Get User by email
  */
-router.get(
-    '/:email',
-    getUserByEmailValidationRules,
-    // isAuthenticated,
-    // isValidationResult,
-    getUserByEmailController
-);
+// router.get(
+//     '/:email',
+//     getUserByEmailValidationRules,
+//     // isAuthenticated,
+//     // isValidationResult,
+//     getUserByEmailController
+// );
 
 /**
  * Get Users by Organisation id
