@@ -13,7 +13,11 @@ const getUserById = async (
 
     try {
         user = await prisma.user.findUnique({
-                where: { id }
+                where: { id },
+                include: {
+                    managedStudents: true,
+                    managedAgencies: true
+                }
         })
     } catch(e: any){
         errorMessage = e.message
