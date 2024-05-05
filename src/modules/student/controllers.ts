@@ -48,7 +48,6 @@ export const createStudentController = async (req: Request, res: Response) => {
             gapYear,
             gapYearExplanation,
             previouslyRejected,
-            status
     } = req.body
 
     const createData = {
@@ -65,7 +64,6 @@ export const createStudentController = async (req: Request, res: Response) => {
         gapYear,
         gapYearExplanation,
         previouslyRejected,
-        status
     }
 
     try {
