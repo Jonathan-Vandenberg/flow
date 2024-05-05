@@ -150,3 +150,130 @@ export const createUserValidationRules = checkSchema({
         }
     }
 });
+
+/**
+ * Update User validation rules
+ */
+export const updateUserValidationRules = checkSchema({
+    id: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The agencyId must be a string.'
+        },
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        }
+    },
+    agencyId: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The agencyId must be a string.'
+        },
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        }
+    },
+    managerId: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The manager Id must be a string.'
+        },
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        }
+    },
+    organisationId: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The organisationId must be a string.'
+        },
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        }
+    },
+    firstName: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The firstName must be a string.'
+        },
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        }
+    },
+    lastName: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The lastName must be a string.'
+        },
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        }
+    },
+    email: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The email must be a string.'
+        },
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        }
+    },
+    mobile: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The mobile must be a string.'
+        },
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        }
+    },
+    role: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The role must be a string.'
+        },
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        }
+    },
+    imageUrl: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The imageUrl must be a string.'
+        },
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        }
+    },
+    expertiseArea: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The expertiseArea must be a string.'
+        },
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        }
+    }
+});

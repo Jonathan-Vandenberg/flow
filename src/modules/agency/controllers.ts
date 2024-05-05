@@ -55,7 +55,7 @@ export const createAgencyController = async (req: Request, res: Response) => {
         commissionPercentage,
     }
     try {
-        const data = await agencyService.createAgency(createAgencyData);
+        const data = await agencyService.createAngency(createAgencyData);
         return res.status(200).json(data);
     } catch (e) {
         logger.info(e);

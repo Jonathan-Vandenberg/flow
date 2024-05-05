@@ -81,3 +81,43 @@ export const createUserController = async (req: Request, res: Response) => {
         res.status(500).send('Server error, try again or contact support');
     }
 };
+
+/**
+ * Update user by ID
+ */
+export const updateUserController = async (req: Request, res: Response) => {
+    const {
+        id,
+        agencyId,
+        managerId,
+        organisationId,
+        firstName,
+        lastName,
+        email,
+        mobile,
+        role,
+        imageUrl,
+        expertiseArea,
+    } = req.body;
+
+    const updateUserData = {
+        id,
+        agencyId,
+        managerId,
+        organisationId,
+        firstName,
+        lastName,
+        email,
+        mobile,
+        role,
+        imageUrl,
+        expertiseArea,
+    }
+    try {
+        const data = await userService.updateUser(updateUserData);
+        return res.status(200).json(data);
+    } catch (e) {
+        logger.info(e);
+        res.status(500).send('Server error, try again or contact support');
+    }
+};

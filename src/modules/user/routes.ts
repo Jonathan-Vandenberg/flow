@@ -1,12 +1,16 @@
 import express from 'express';
 
 import {
-    createUserController, getUserByEmailController, getUserByIdController, getUsersByOrganisationIdController,
+    createUserController,
+    getUserByEmailController,
+    getUserByIdController,
+    getUsersByOrganisationIdController,
+    updateUserController,
 } from './controller';
 import {
     createUserValidationRules, getUserByEmailValidationRules,
     getUserByIdValidationRules,
-    getUsersByOrganisationIdValidationRules,
+    getUsersByOrganisationIdValidationRules, updateUserValidationRules,
 } from './validation';
 
 const router = express.Router();
@@ -53,6 +57,17 @@ router.get(
     // isAuthenticated,
     // isValidationResult,
     getUsersByOrganisationIdController
+);
+
+/**
+ * Update User by id
+ */
+router.patch(
+    '/',
+    updateUserValidationRules,
+    // isAuthenticated,
+    // isValidationResult,
+    updateUserController
 );
 
 export default router;

@@ -111,8 +111,43 @@ const createUser = async (
     };
 };
 
+const updateUser = async (
+    updateUserData: any
+): Promise<{ isValid: boolean; message: string, data: any }> => {
+    let user
+    let errorMessage
+
+    try{
+        user = await prisma.user.update({
+            where: {id: updateUserData.id},
+            data: {
+                agencyId: updateUserData.agencyId,
+                managerId: updateUserData.managerId,
+                organisationId: updateUserData.organisationId,
+                firstName: updateUserData.firstName,
+                lastName: updateUserData.lastName,
+                email: updateUserData.email,
+                mobile: updateUserData.mobile,
+                role: updateUserData.role,
+                imageUrl: updateUserData.imageUrl,
+                expertiseArea: updateUserData.expertiseArea
+            }
+        });
+    }catch(e: any){
+        errorMessage = e.message
+        console.log('ERROR::UPDATE_USER:', e.message)
+    }
+
+    return {
+        isValid: !!user,
+        message: user ? "Updated User Successfully" : `Failed to update user: ${errorMessage}`,
+        data: user
+    };
+};
+
 export default {
     createUser,
+    updateUser,
     getUserById,
     getUserByEmail,
     getUsersByOrganisationId
