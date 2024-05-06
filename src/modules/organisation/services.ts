@@ -39,10 +39,7 @@ const getOrganisationById = async (id: string
         console.log(e.message)
     }
 
-    return {
-        isValid: !!organisation,
-        data: organisation
-    };
+    return organisation;
 };
 
 export default {
