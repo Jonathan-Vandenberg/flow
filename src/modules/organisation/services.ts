@@ -28,6 +28,7 @@ const getOrganisationById = async (id: string
             },
             include: {
                 users: true,
+                agencies: true,
                 students: true,
                 courses: true,
                 requirements: true,
