@@ -30,7 +30,17 @@ const getOrganisationById = async (id: string) => {
                 students: true,
                 courses: true,
                 requirements: true,
-                agenciesOnOrganisations: true
+                agenciesOnOrganisations: {
+                    include: {
+                        agency: {
+                            include: {
+                                students: true,
+                                user: true,
+                                contacts: true
+                            }
+                        }
+                    }
+                }
             }
         });
 
