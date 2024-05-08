@@ -58,6 +58,7 @@ enum Sector {
 }
 
 enum Role {
+  NORMAL
   ADMIN
   MANAGER
   AGENT
@@ -73,7 +74,7 @@ model User {
   lastName      String
   email         String           @unique
   mobile        String
-  role          Role
+  role          Role             @default(NORMAL)
   imageUrl      String?
   expertiseArea AreaOfExpertise?
   createdAt     DateTime         @default(now())
