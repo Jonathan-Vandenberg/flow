@@ -1,5 +1,5 @@
 import prisma from '../../../prisma/prisma';
-import {Role, User} from "@prisma/client";
+import {Organisation, Role, User} from "@prisma/client";
 import {logger} from "../../utils/logger";
 import {UserArgs} from "@prisma/client/runtime/library";
 import {createOrganisationController} from "../organisation/controllers";
@@ -113,6 +113,59 @@ const createUser = async (
     };
 };
 
+const createUserOrg = async (
+    createUserOrgData: any
+): Promise<{ isValid: boolean; message: string, data: any }> => {
+    let user
+    let organisation
+    let errorMessage
+
+    try{
+        await prisma.$transaction(async (t) => {
+            user = await t.user.create({
+                data: {
+                    firstName: createUserOrgData.firstName,
+                    lastName: createUserOrgData.lastName,
+                    email: createUserOrgData.email,
+                    mobile: createUserOrgData.mobile,
+                    role: createUserOrgData.role,
+                }
+            });
+
+            organisation = await t.organisation.create({
+                data: {
+                    name: createUserOrgData.name,
+                    country: createUserOrgData.country
+                },
+                include: {
+                    users: true,
+                },
+            })
+
+            if(organisation){
+                user = await t.user.update({
+                    where: {
+                        id: user.id
+                    },
+                    data: {
+                        organisationId: organisation.id
+                    }
+                })
+            }
+        })
+
+    }catch(e: any){
+        errorMessage = e.message
+        console.log('ERROR::ADD_USER_ORG:', e.message)
+    }
+
+    return {
+        isValid: !!user,
+        message: user ? "Created User Successfully" : `Created to fetch User: ${errorMessage}`,
+        data: {user, organisation}
+    };
+};
+
 const updateUser = async (
     updateUserData: any
 ): Promise<{ isValid: boolean; message: string, data: any }> => {
@@ -149,6 +202,7 @@ const updateUser = async (
 
 export default {
     createUser,
+    createUserOrg,
     updateUser,
     getUserById,
     getUserByEmail,

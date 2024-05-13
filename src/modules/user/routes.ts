@@ -1,7 +1,7 @@
 import express from 'express';
 
 import {
-    createUserController,
+    createUserController, createUserOrganisationController,
     getUserByEmailController,
     getUserByIdController,
     getUsersByOrganisationIdController,
@@ -12,6 +12,7 @@ import {
     getUserByIdValidationRules,
     getUsersByOrganisationIdValidationRules, updateUserValidationRules,
 } from './validation';
+import {createUserOrganisationValidationRules} from "../organisation/validation";
 
 const router = express.Router();
 
@@ -24,6 +25,17 @@ router.post(
     // isAuthenticated,
     // isValidationResult,
     createUserController
+);
+
+/**
+ * Create User and Organisation
+ */
+router.post(
+    '/user-org',
+    createUserOrganisationValidationRules,
+    // isAuthenticated,
+    // isValidationResult,
+    createUserOrganisationController
 );
 
 /**

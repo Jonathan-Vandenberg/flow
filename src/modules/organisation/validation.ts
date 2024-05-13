@@ -56,3 +56,54 @@ export const getOrganisationByIdValidationRules = checkSchema({
         }
     }
 });
+
+/**
+ * Create User and Organisation
+ */
+export const createUserOrganisationValidationRules = checkSchema({
+    name: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The name must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The name field is required'
+        }
+    },
+    country: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The country must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The country field is required'
+        }
+    },
+    firstName: {
+        in: ['body'],
+                isString: {
+                errorMessage: 'The firstName must be a string.'
+            },
+            notEmpty: {
+                errorMessage: 'The firstName field is required'
+            }
+    },
+    lastName: {
+        in: ['body'],
+                isString: {
+                errorMessage: 'The lastName must be a string.'
+            },
+            notEmpty: {
+                errorMessage: 'The lastName field is required'
+            }
+    },
+    mobile: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The mobile must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The mobile field is required'
+        }
+    },
+});
