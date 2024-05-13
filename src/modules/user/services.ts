@@ -128,7 +128,7 @@ const createUserOrg = async (
                     lastName: createUserOrgData.lastName,
                     email: createUserOrgData.email,
                     mobile: createUserOrgData.mobile,
-                    role: createUserOrgData.role,
+                    role: Role.ADMIN,
                 }
             });
 

@@ -106,4 +106,13 @@ export const createUserOrganisationValidationRules = checkSchema({
             errorMessage: 'The mobile field is required'
         }
     },
+    email: {
+        in: ['body'],
+            isString: {
+            errorMessage: 'The email must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The email field is required'
+        }
+    },
 });

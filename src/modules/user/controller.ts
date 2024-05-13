@@ -93,7 +93,6 @@ export const createUserOrganisationController = async (req: Request, res: Respon
         lastName,
         email,
         mobile,
-        role,
     } = req.body;
 
     const createUserOrgData = {
@@ -103,7 +102,6 @@ export const createUserOrganisationController = async (req: Request, res: Respon
         lastName,
         email,
         mobile,
-        role
     }
     try {
         const data = await userService.createUserOrg(createUserOrgData);
