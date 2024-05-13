@@ -73,7 +73,7 @@ model User {
   email         String           @unique
   firstName     String
   lastName      String
-  mobile        String
+  mobile        String?
   role          Role             @default(NORMAL)
   imageUrl      String?
   expertiseArea AreaOfExpertise?
