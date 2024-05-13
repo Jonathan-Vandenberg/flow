@@ -9,6 +9,7 @@ const getUserById = async (
     id: string
 ): Promise<{ isValid: boolean; message: string, data: any }> => {
     let user
+    let agencies
     let errorMessage
 
     try {
@@ -16,9 +17,24 @@ const getUserById = async (
                 where: { id },
                 include: {
                     managedStudents: true,
-                    managedAgencies: true
+                    managedAgencies: true,
+                    agenciesOnUsers: true
                 }
         })
+
+        if (user && user.agenciesOnUsers.length) {
+            const agencyIds = user.agenciesOnUsers.map((agency) => agency.agencyId);
+            agencies = await prisma.agency.findMany({
+                where: {
+                    id: { in: agencyIds }
+                },
+                include: {
+                    students: true,
+                    user: true,
+                    contacts: true
+                }
+            });
+        }
     } catch(e: any){
         errorMessage = e.message
         logger.error(`ERROR::getUserById::${e.message}`)
@@ -27,7 +43,7 @@ const getUserById = async (
     return {
         isValid: !!user,
         message: user ? "Fetched User Successfully" : `Failed to fetch User: ${errorMessage}`,
-        data: user
+        data: {...user, agencies}
     };
 };
 
@@ -35,6 +51,7 @@ const getUserByEmail = async (
     email: string
 ): Promise<{ isValid: boolean; message: string, data: any }> => {
     let user
+    let agencies
     let errorMessage
 
     try {
@@ -43,9 +60,24 @@ const getUserByEmail = async (
             include: {
                 organisation: true,
                 managedAgencies: true,
-                managedStudents: true
+                managedStudents: true,
+                agenciesOnUsers: true
             }
         })
+
+        if (user && user.agenciesOnUsers.length) {
+            const agencyIds = user.agenciesOnUsers.map((agency) => agency.agencyId);
+            agencies = await prisma.agency.findMany({
+                where: {
+                    id: { in: agencyIds }
+                },
+                include: {
+                    students: true,
+                    user: true,
+                    contacts: true
+                }
+            });
+        }
     } catch(e: any){
         errorMessage = e.message
         logger.error(`ERROR::getUserByEmail::${e.message}`)
@@ -54,7 +86,7 @@ const getUserByEmail = async (
     return {
         isValid: !!user,
         message: user ? "Fetched User Successfully" : `Failed to fetch User: ${errorMessage}`,
-        data: user
+        data: {...user, agencies}
     };
 };
 

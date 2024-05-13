@@ -16,7 +16,7 @@ import {
 const router = express.Router();
 
 /**
- * Get agencies by manager ID
+ * Get agenciesOnOrganisations
  */
 router.get(
     '/agencies-organisations',

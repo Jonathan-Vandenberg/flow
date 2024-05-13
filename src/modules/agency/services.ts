@@ -47,6 +47,12 @@ const createAgency = async (data: any
                     managerId: data.managerId,
                     organisationId: data.organisationId,
                 }
+            },
+            agenciesOnUsers: {
+                create: {
+                    managerId: data.managerId,
+                    userId: data.managerId,
+                }
             }
         }
     })

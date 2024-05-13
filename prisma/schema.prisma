@@ -82,8 +82,9 @@ model User {
 
   managedStudents Student[]
   managedAgencies Agency[]
-  socialMedia     SocialMedia[] @relation("SocialMediaToAgent")
-  organisation    Organisation? @relation(fields: [organisationId], references: [id])
+  socialMedia     SocialMedia[]     @relation("SocialMediaToAgent")
+  organisation    Organisation?     @relation(fields: [organisationId], references: [id])
+  agenciesOnUsers AgenciesOnUsers[]
 }
 
 model Organisation {
@@ -122,6 +123,7 @@ model Agency {
   user                    User[]
   students                Student[]
   agenciesOnOrganisations AgenciesOnOrganisations[]
+  agenciesOnUsers         AgenciesOnUsers[]
 }
 
 model AgenciesOnOrganisations {
@@ -135,6 +137,19 @@ model AgenciesOnOrganisations {
   agency       Agency       @relation(fields: [agencyId], references: [id])
 
   @@id([agencyId, organisationId])
+}
+
+model AgenciesOnUsers {
+  agencyId  String
+  userId    String
+  managerId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  agency Agency @relation(fields: [agencyId], references: [id])
+
+  @@id([agencyId, userId])
 }
 
 model Requirement {
