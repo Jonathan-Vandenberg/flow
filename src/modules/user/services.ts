@@ -136,7 +136,11 @@ const createUserOrg = async (
                 },
             },
             include: {
-                organisation: true,
+                organisation: {
+                    include: {
+                        users: true
+                    }
+                },
             },
         });
 
