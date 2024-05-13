@@ -143,6 +143,7 @@ model Requirement {
   courseId       String?
   studentId      String?
 
+  country   Country?
   name      String?
   details   String
   status    RequirementStatus @default(REQUIRED)

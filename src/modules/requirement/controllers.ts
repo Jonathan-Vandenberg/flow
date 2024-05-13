@@ -69,6 +69,7 @@ export const createRequirementController = async (req: Request, res: Response) =
         details,
         status,
         type,
+        country
     } = req.body;
 
     const createRequirementData = {
@@ -79,6 +80,7 @@ export const createRequirementController = async (req: Request, res: Response) =
         details,
         status,
         type,
+        country
     }
     try {
         const data = await requirementService.createRequirement(createRequirementData);
@@ -99,7 +101,9 @@ export const updateRequirementController = async (req: Request, res: Response) =
         name,
         details,
         status,
-        type} = req.body;
+        type,
+        country
+    } = req.body;
 
     const updateRequirementData = {
         id,
@@ -109,6 +113,7 @@ export const updateRequirementController = async (req: Request, res: Response) =
         details,
         status,
         type,
+        country
     }
     try {
         const data = await requirementService.updateRequirement(updateRequirementData);

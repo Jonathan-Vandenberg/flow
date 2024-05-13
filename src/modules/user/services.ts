@@ -95,7 +95,6 @@ const createUser = async (
                 firstName: createUserData.firstName,
                 lastName: createUserData.lastName,
                 email: createUserData.email,
-                mobile: createUserData.mobile,
                 role: createUserData.role,
                 imageUrl: createUserData.imageUrl,
                 expertiseArea: createUserData.expertiseArea
@@ -126,7 +125,6 @@ const createUserOrg = async (
                 firstName: createUserOrgData.firstName,
                 lastName: createUserOrgData.lastName,
                 email: createUserOrgData.email,
-                mobile: createUserOrgData.mobile,
                 role: Role.ADMIN,
                 organisation: {
                     create: {

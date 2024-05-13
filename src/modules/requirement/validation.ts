@@ -132,6 +132,17 @@ export const createRequirementRules = checkSchema({
         notEmpty: {
             errorMessage: 'The courseId field is required'
         }
+    },
+    country: {
+        in: ['body'],
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        },
+        isString: {
+            errorMessage: 'The country type must be a string'
+        }
     }
 });
 
@@ -224,6 +235,17 @@ export const updateRequirementRules = checkSchema({
         },
         isString: {
             errorMessage: 'The requirement type must be a string'
+        }
+    },
+    country: {
+        in: ['body'],
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        },
+        isString: {
+            errorMessage: 'The country type must be a string'
         }
     }
 });

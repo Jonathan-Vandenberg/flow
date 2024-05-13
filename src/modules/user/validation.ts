@@ -109,15 +109,6 @@ export const createUserValidationRules = checkSchema({
             errorMessage: 'The email field is required'
         }
     },
-    mobile: {
-        in: ['body'],
-        isString: {
-            errorMessage: 'The mobile must be a string.'
-        },
-        notEmpty: {
-            errorMessage: 'The mobile field is required'
-        }
-    },
     role: {
         in: ['body'],
         isString: {
@@ -225,17 +216,6 @@ export const updateUserValidationRules = checkSchema({
         in: ['body'],
         isString: {
             errorMessage: 'The email must be a string.'
-        },
-        optional: {
-            options: {
-                checkFalsy: true
-            }
-        }
-    },
-    mobile: {
-        in: ['body'],
-        isString: {
-            errorMessage: 'The mobile must be a string.'
         },
         optional: {
             options: {
