@@ -121,38 +121,27 @@ const createUserOrg = async (
     let errorMessage
 
     try{
-        await prisma.$transaction(async (t) => {
-            user = await t.user.create({
-                data: {
-                    firstName: createUserOrgData.firstName,
-                    lastName: createUserOrgData.lastName,
-                    email: createUserOrgData.email,
-                    mobile: createUserOrgData.mobile,
-                    role: Role.ADMIN,
-                }
-            });
-
-            organisation = await t.organisation.create({
-                data: {
-                    name: createUserOrgData.name,
-                    country: createUserOrgData.country
-                },
-                include: {
-                    users: true,
-                },
-            })
-
-            if(organisation){
-                user = await t.user.update({
-                    where: {
-                        id: user.id
+        const result = await prisma.user.create({
+            data: {
+                firstName: createUserOrgData.firstName,
+                lastName: createUserOrgData.lastName,
+                email: createUserOrgData.email,
+                mobile: createUserOrgData.mobile,
+                role: Role.ADMIN,
+                organisation: {
+                    create: {
+                        name: createUserOrgData.name,
+                        country: createUserOrgData.country,
                     },
-                    data: {
-                        organisationId: organisation.id
-                    }
-                })
-            }
-        })
+                },
+            },
+            include: {
+                organisation: true,
+            },
+        });
+
+        user = result;
+        organisation = result.organisation;
 
     }catch(e: any){
         errorMessage = e.message
