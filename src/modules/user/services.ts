@@ -1,9 +1,7 @@
 import prisma from '../../../prisma/prisma';
-import {Agency, Organisation, Role, User} from "@prisma/client";
+import { Role, User} from "@prisma/client";
 import {logger} from "../../utils/logger";
-import {UserArgs} from "@prisma/client/runtime/library";
-import {createOrganisationController} from "../organisation/controllers";
-import {create} from "domain";
+
 
 const getUserById = async (
     id: string
@@ -18,8 +16,6 @@ const getUserById = async (
                 where: { id },
                 include: {
                     managedStudents: true,
-                    managedAgencies: true,
-                    agenciesOnUsers: true
                 }
         })
 
@@ -45,7 +41,7 @@ const getUserById = async (
                 },
                 include: {
                     students: true,
-                    user: true,
+                    users: true,
                     contacts: true
                 }
             });
@@ -75,9 +71,7 @@ const getUserByEmail = async (
             where: { email },
             include: {
                 organisation: true,
-                managedAgencies: true,
                 managedStudents: true,
-                agenciesOnUsers: true
             }
         })
 
@@ -101,7 +95,7 @@ const getUserByEmail = async (
                 },
                 include: {
                     students: true,
-                    user: true,
+                    users: true,
                     contacts: true
                 }
             });
@@ -140,35 +134,50 @@ const getUsersByOrganisationId = async (
     };
 };
 
-const createUser = async (
-   createUserData: any
-): Promise<{ isValid: boolean; message: string, data: any }> => {
-    let user
-    let errorMessage
+const createUser = async (createUserData: any): Promise<{ isValid: boolean; message: string, data: any }> => {
+    let user;
+    let errorMessage;
 
-    try{
-        user = await prisma.user.create({
-            data: {
-                agencyId: createUserData.agencyId,
-                managerId: createUserData.managerId,
-                organisationId: createUserData.organisationId,
-                firstName: createUserData.firstName,
-                lastName: createUserData.lastName,
-                email: createUserData.email,
-                role: createUserData.role,
-                imageUrl: createUserData.imageUrl,
-                expertiseArea: createUserData.expertiseArea
-            }
-        });
-    }catch(e: any){
-        errorMessage = e.message
-        console.log('ERROR::ADD_USER:', e.message)
+    try {
+        const userData = {
+            agencyId: createUserData.agencyId,
+            managerId: createUserData.managerId,
+            organisationId: createUserData.organisationId,
+            firstName: createUserData.firstName,
+            lastName: createUserData.lastName,
+            email: createUserData.email,
+            role: createUserData.role,
+            imageUrl: createUserData.imageUrl,
+            expertiseArea: createUserData.expertiseArea,
+        };
+
+        if (createUserData.role === 'AGENT' && createUserData.agencyId) {
+            // If the user role is AGENT and agencyId is provided, create the user and associate with the agency
+            user = await prisma.user.create({
+                data: {
+                    ...userData,
+                    agency: {
+                        connect: {
+                            id: createUserData.agencyId,
+                        },
+                    },
+                },
+            });
+        } else {
+            // If the user role is not AGENT or agencyId is not provided, create the user without agency association
+            user = await prisma.user.create({
+                data: userData,
+            });
+        }
+    } catch (e: any) {
+        errorMessage = e.message;
+        console.log('ERROR::ADD_USER:', e.message);
     }
 
     return {
         isValid: !!user,
-        message: user ? "Created User Successfully" : `Created to fetch User: ${errorMessage}`,
-        data: user
+        message: user ? "Created User Successfully" : `Failed to create User: ${errorMessage}`,
+        data: user,
     };
 };
 

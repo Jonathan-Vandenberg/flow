@@ -42,7 +42,7 @@ const getOrganisationById = async (id: string) => {
                 },
                 include: {
                     students: true,
-                    user: true,
+                    users: true,
                     contacts: true
                 }
             });
