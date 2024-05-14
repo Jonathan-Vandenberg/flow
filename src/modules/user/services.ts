@@ -8,8 +8,9 @@ import {create} from "domain";
 const getUserById = async (
     id: string
 ): Promise<{ isValid: boolean; message: string, data: any }> => {
-    let user
+    let user: User | null = null;
     let agencies
+    let organisation
     let errorMessage
 
     try {
@@ -22,14 +23,18 @@ const getUserById = async (
                 }
         })
 
-        const organisation = await prisma.organisation.findUnique({
-            where: {
-                id: user?.id
-            },
-            select: {
-                agenciesOnOrganisations: true
-            }
-        })
+        console.log(1, "User", user)
+        if(user && user.organisationId){
+             organisation = await prisma.organisation.findUnique({
+                where: {
+                    id: user?.organisationId
+                },
+                select: {
+                    agenciesOnOrganisations: true
+                }
+            })
+        }
+
 
         if (user && organisation?.agenciesOnOrganisations.length) {
             const managedAgencies = organisation?.agenciesOnOrganisations.filter((agency) => agency.managerId === id);
@@ -62,6 +67,7 @@ const getUserByEmail = async (
 ): Promise<{ isValid: boolean; message: string, data: any }> => {
     let user: User | null = null;
     let agencies
+    let organisation
     let errorMessage
 
     try {
@@ -75,14 +81,16 @@ const getUserByEmail = async (
             }
         })
 
-        const organisation = await prisma.organisation.findUnique({
-            where: {
-                id: user?.id
-            },
-            select: {
-                agenciesOnOrganisations: true
-            }
-        })
+        if(user && user.organisationId){
+            organisation = await prisma.organisation.findUnique({
+                where: {
+                    id: user?.organisationId
+                },
+                select: {
+                    agenciesOnOrganisations: true
+                }
+            })
+        }
 
         if (user && organisation?.agenciesOnOrganisations.length) {
             const managedAgencies = organisation?.agenciesOnOrganisations.filter((agency) => agency.managerId === user?.id);
