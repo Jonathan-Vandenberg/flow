@@ -1,5 +1,5 @@
 import prisma from '../../../prisma/prisma';
-import {Organisation, Role, User} from "@prisma/client";
+import {Agency, Organisation, Role, User} from "@prisma/client";
 import {logger} from "../../utils/logger";
 import {UserArgs} from "@prisma/client/runtime/library";
 import {createOrganisationController} from "../organisation/controllers";
@@ -22,8 +22,18 @@ const getUserById = async (
                 }
         })
 
-        if (user && user.agenciesOnUsers.length) {
-            const agencyIds = user.agenciesOnUsers.map((agency) => agency.agencyId);
+        const organisation = await prisma.organisation.findUnique({
+            where: {
+                id: user?.id
+            },
+            select: {
+                agenciesOnOrganisations: true
+            }
+        })
+
+        if (user && organisation?.agenciesOnOrganisations.length) {
+            const managedAgencies = organisation?.agenciesOnOrganisations.filter((agency) => agency.managerId === id);
+            const agencyIds = managedAgencies.map((agency) => agency.agencyId);
             agencies = await prisma.agency.findMany({
                 where: {
                     id: { in: agencyIds }
@@ -50,7 +60,7 @@ const getUserById = async (
 const getUserByEmail = async (
     email: string
 ): Promise<{ isValid: boolean; message: string, data: any }> => {
-    let user
+    let user: User | null = null;
     let agencies
     let errorMessage
 
@@ -65,8 +75,18 @@ const getUserByEmail = async (
             }
         })
 
-        if (user && user.agenciesOnUsers.length) {
-            const agencyIds = user.agenciesOnUsers.map((agency) => agency.agencyId);
+        const organisation = await prisma.organisation.findUnique({
+            where: {
+                id: user?.id
+            },
+            select: {
+                agenciesOnOrganisations: true
+            }
+        })
+
+        if (user && organisation?.agenciesOnOrganisations.length) {
+            const managedAgencies = organisation?.agenciesOnOrganisations.filter((agency) => agency.managerId === user?.id);
+            const agencyIds = managedAgencies.map((agency) => agency.agencyId);
             agencies = await prisma.agency.findMany({
                 where: {
                     id: { in: agencyIds }
