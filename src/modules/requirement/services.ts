@@ -85,6 +85,15 @@ const createRequirement = async (data: any
             return;
         }
 
+        for (const image of data.exampleImages) {
+            await t.exampleImage.create({
+                data: {
+                    requirementId: requirement.id,
+                    url: image.url
+                }
+            });
+        }
+
         for (const student of organisation.students) {
             await t.directory.create({
                 data: {

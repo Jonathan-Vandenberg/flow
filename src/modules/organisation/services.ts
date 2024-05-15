@@ -33,7 +33,11 @@ const getOrganisationById = async (id: string) => {
                     }
                 },
                 courses: true,
-                requirements: true,
+                requirements: {
+                    include: {
+                        exampleImages: true
+                    }
+                },
                 agenciesOnOrganisations: true
             }
         });

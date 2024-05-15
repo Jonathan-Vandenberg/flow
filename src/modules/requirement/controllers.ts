@@ -69,7 +69,8 @@ export const createRequirementController = async (req: Request, res: Response) =
         details,
         status,
         type,
-        country
+        country,
+        exampleImages
     } = req.body;
 
     const createRequirementData = {
@@ -80,7 +81,8 @@ export const createRequirementController = async (req: Request, res: Response) =
         details,
         status,
         type,
-        country
+        country,
+        exampleImages
     }
     try {
         const data = await requirementService.createRequirement(createRequirementData);

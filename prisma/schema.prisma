@@ -151,10 +151,21 @@ model Requirement {
   createdAt DateTime          @default(now())
   updatedAt DateTime          @default(now())
 
-  student      Student?     @relation(fields: [studentId], references: [id])
-  organisation Organisation @relation(fields: [organisationId], references: [id])
-  directory    Directory[]
-  course       Course?      @relation(fields: [courseId], references: [id])
+  student       Student?       @relation(fields: [studentId], references: [id])
+  organisation  Organisation   @relation(fields: [organisationId], references: [id])
+  directory     Directory[]
+  exampleImages ExampleImage[]
+  course        Course?        @relation(fields: [courseId], references: [id])
+}
+
+model ExampleImage {
+  id            String @id @default(uuid())
+  requirementId String
+
+  url         String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now())
+  requirement Requirement @relation(fields: [requirementId], references: [id])
 }
 
 model CourseLocation {

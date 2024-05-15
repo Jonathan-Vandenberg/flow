@@ -143,6 +143,17 @@ export const createRequirementRules = checkSchema({
         isString: {
             errorMessage: 'The country type must be a string'
         }
+    },
+    exampleImages: {
+        in: ['body'],
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        },
+        isArray: {
+            errorMessage: 'The exampleImages must be in an array!'
+        }
     }
 });
 
