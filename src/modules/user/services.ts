@@ -20,7 +20,6 @@ const getUserById = async (
                 }
         })
 
-        console.log(1, "User", user)
         if(user && user.organisationId){
              organisation = await prisma.organisation.findUnique({
                 where: {
