@@ -85,7 +85,7 @@ const createStudent = async (data: any) => {
                     guardianMobile: data.guardianMobile,
                     guardianEmail: data.guardianEmail,
                     gapYearExplanation: data.gapYearExplanation,
-                    previouslyRejected: data.previouslyRejected
+                    previouslyRejected: data.previouslyRejected,
                 }
             });
 

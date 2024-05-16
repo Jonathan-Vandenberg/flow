@@ -49,7 +49,11 @@ const getOrganisationById = async (id: string) => {
                     id: { in: agencyIds }
                 },
                 include: {
-                    students: true,
+                    students: {
+                        include: {
+                            course: true
+                        }
+                    },
                     users: true,
                     contacts: true
                 }
