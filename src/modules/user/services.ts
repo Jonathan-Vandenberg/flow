@@ -1,6 +1,7 @@
 import prisma from '../../../prisma/prisma';
 import { Role, User} from "@prisma/client";
 import {logger} from "../../utils/logger";
+import {create} from "domain";
 
 
 const getUserById = async (
@@ -141,13 +142,17 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
     try {
         const userData = {
             managerId: createUserData.managerId,
-            organisationId: createUserData.organisationId,
             firstName: createUserData.firstName,
             lastName: createUserData.lastName,
             email: createUserData.email,
             role: createUserData.role,
             imageUrl: createUserData.imageUrl,
             expertiseArea: createUserData.expertiseArea,
+            organisation: {
+                connect: {
+                    id: createUserData.organisationId
+                }
+            }
         };
 
         if (createUserData.role === Role.AGENT && createUserData.agencyId) {
