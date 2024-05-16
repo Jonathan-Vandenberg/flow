@@ -113,11 +113,27 @@ const createRequirement = async (data: any
 
 const updateRequirement = async (data: any
 ) => {
-    const requirement = await prisma.requirement.update({
-        where: {
-            id: data.id,
-        },
-        data
+    let requirement;
+
+    await prisma.$transaction(async (t) => {
+         requirement = await t.requirement.update({
+            where: {
+                id: data.id,
+            },
+            data
+        })
+
+        for (const image of data.exampleImages) {
+            await t.exampleImage.update({
+                where:{
+                    id: image.requirementId
+                },
+                data: {
+                    requirementId: requirement.id,
+                    url: image.url
+                }
+            });
+        }
     })
 
     return {

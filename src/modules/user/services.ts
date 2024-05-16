@@ -140,7 +140,6 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
 
     try {
         const userData = {
-            agencyId: createUserData.agencyId,
             managerId: createUserData.managerId,
             organisationId: createUserData.organisationId,
             firstName: createUserData.firstName,
@@ -151,7 +150,7 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
             expertiseArea: createUserData.expertiseArea,
         };
 
-        if (createUserData.role === 'AGENT' && createUserData.agencyId) {
+        if (createUserData.role === Role.AGENT && createUserData.agencyId) {
             // If the user role is AGENT and agencyId is provided, create the user and associate with the agency
             user = await prisma.user.create({
                 data: {
