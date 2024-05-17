@@ -123,17 +123,17 @@ const updateRequirement = async (data: any
             data
         })
 
-        for (const image of data.exampleImages) {
-            await t.exampleImage.update({
-                where:{
-                    id: image.requirementId
-                },
-                data: {
-                    requirementId: requirement.id,
-                    url: image.url
-                }
-            });
-        }
+        // for (const image of data.exampleImages) {
+        //     await t.exampleImage.update({
+        //         where:{
+        //             id: image.requirementId
+        //         },
+        //         data: {
+        //             requirementId: requirement.id,
+        //             url: image.url
+        //         }
+        //     });
+        // }
     })
 
     return {
