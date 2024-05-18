@@ -67,7 +67,6 @@ export const createRequirementController = async (req: Request, res: Response) =
         courseId,
         name,
         details,
-        status,
         type,
         country,
         exampleImages
@@ -79,7 +78,6 @@ export const createRequirementController = async (req: Request, res: Response) =
         studentId,
         name,
         details,
-        status,
         type,
         country,
         exampleImages

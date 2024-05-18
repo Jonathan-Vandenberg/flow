@@ -115,15 +115,6 @@ export const createRequirementRules = checkSchema({
             errorMessage: 'The courseId field is required'
         }
     },
-    status: {
-        in: ['body'],
-        isString: {
-            errorMessage: 'The requirement status must be a string'
-        },
-        notEmpty: {
-            errorMessage: 'The courseId field is required'
-        }
-    },
     type: {
         in: ['body'],
         isString: {
