@@ -90,7 +90,7 @@ model Organisation {
   id String @id @default(uuid())
 
   name      String     @unique
-  country   String
+  country   String?
   subStatus SubStatus? @default(PENDING)
   imageUrl  String?
   createdAt DateTime   @default(now())
