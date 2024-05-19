@@ -36,13 +36,11 @@ export const getCourseByIdController = async (req: Request, res: Response) => {
 export const createCourseController = async (req: Request, res: Response) => {
     const { organisationId,
         name,
-        description
     } = req.body;
 
     const createCourseData = {
         organisationId,
         name,
-        description
     }
     try {
         const data = await courseService.createCourse(createCourseData);
@@ -59,13 +57,11 @@ export const createCourseController = async (req: Request, res: Response) => {
 export const updateCourseController = async (req: Request, res: Response) => {
     const { id,
         name,
-        description
     } = req.body;
 
     const updateCourseData = {
         id,
         name,
-        description
     }
     try {
         const data = await courseService.updateCourse(updateCourseData);

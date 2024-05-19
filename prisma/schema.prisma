@@ -212,10 +212,9 @@ model Course {
   id             String @id @default(uuid())
   organisationId String
 
-  name        String
-  description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 
   organisation Organisation     @relation(fields: [organisationId], references: [id])
   locations    CourseLocation[]

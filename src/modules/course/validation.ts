@@ -48,12 +48,6 @@ export const createCourseValidationRules = checkSchema({
         isString: {
             errorMessage: 'The course name must be a string'
         }
-    },
-    description: {
-        in: ['body'],
-        isString: {
-            errorMessage: 'The course description must be a string'
-        }
     }
 });
 
@@ -79,17 +73,6 @@ export const updateCourseValidationRules = checkSchema({
         },
         isString: {
             errorMessage: 'The name must be a string.'
-        }
-    },
-    description: {
-        in: ['body'],
-        optional: {
-            options: {
-                checkFalsy: true
-            }
-        },
-        isString: {
-            errorMessage: 'The description must be a string.'
         }
     }
 });
