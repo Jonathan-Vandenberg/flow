@@ -2,6 +2,7 @@ import prisma from '../../../prisma/prisma';
 import { Role, User} from "@prisma/client";
 import {logger} from "../../utils/logger";
 import {create} from "domain";
+import {createUserController} from "./controller";
 
 
 const getUserById = async (
@@ -147,6 +148,7 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
             role: createUserData.role,
             imageUrl: createUserData.imageUrl,
             expertiseArea: createUserData.expertiseArea,
+            country: createUserData.country,
             organisation: {
                 connect: {
                     id: createUserData.organisationId
@@ -248,7 +250,8 @@ const updateUser = async (
                 mobile: updateUserData.mobile,
                 role: updateUserData.role,
                 imageUrl: updateUserData.imageUrl,
-                expertiseArea: updateUserData.expertiseArea
+                expertiseArea: updateUserData.expertiseArea,
+                country: updateUserData.country
             }
         });
     }catch(e: any){

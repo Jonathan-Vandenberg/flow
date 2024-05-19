@@ -74,6 +74,7 @@ model User {
   firstName     String
   lastName      String
   mobile        String?
+  country       String?
   role          Role             @default(NORMAL)
   imageUrl      String?
   expertiseArea AreaOfExpertise?

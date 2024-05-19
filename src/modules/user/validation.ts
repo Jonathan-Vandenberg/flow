@@ -139,6 +139,17 @@ export const createUserValidationRules = checkSchema({
                 checkFalsy: true
             }
         }
+    },
+    country: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The country must be a string.'
+        },
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        }
     }
 });
 

@@ -58,6 +58,7 @@ export const createUserController = async (req: Request, res: Response) => {
         role,
         imageUrl,
         expertiseArea,
+        country
     } = req.body;
 
     const createUserData = {
@@ -70,6 +71,7 @@ export const createUserController = async (req: Request, res: Response) => {
         role,
         imageUrl,
         expertiseArea,
+        country
     }
     try {
         const data = await userService.createUser(createUserData);
@@ -126,6 +128,7 @@ export const updateUserController = async (req: Request, res: Response) => {
         role,
         imageUrl,
         expertiseArea,
+        country
     } = req.body;
 
     const updateUserData = {
@@ -140,6 +143,7 @@ export const updateUserController = async (req: Request, res: Response) => {
         role,
         imageUrl,
         expertiseArea,
+        country
     }
     try {
         const data = await userService.updateUser(updateUserData);
