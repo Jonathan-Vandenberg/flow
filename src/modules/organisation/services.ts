@@ -57,22 +57,10 @@ const getOrganisationById = async (id: string) => {
             },
         });
 
-        if (organisation) {
-            const agencies = organisation.agenciesOnOrganisations.map((aoo) => ({
-                ...aoo.agency,
-                manager: aoo.user,
-            }));
-
-            return {
-                isValid: true,
-                data: {
-                    ...organisation,
-                    agencies,
-                },
-            };
-        }
-
-        return { isValid: false, data: null };
+        return {
+            isValid: !!organisation?.id,
+            data: organisation
+        };
     } catch (e: any) {
         console.error(e.message);
         return null;
