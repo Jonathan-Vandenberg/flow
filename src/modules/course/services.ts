@@ -23,7 +23,7 @@ const getCourseById = async (id: string
     })
 
     return {
-        isValid: !!course,
+        isValid: !!course?.id,
         data: course
     };
 };
@@ -35,7 +35,7 @@ const createCourse = async (data: any
     })
 
     return {
-        isValid: !!course,
+        isValid: !!course?.id,
         data: course
     };
 };
@@ -50,7 +50,7 @@ const updateCourse = async (data: any
     })
 
     return {
-        isValid: !!course,
+        isValid: !!course?.id,
         data: course
     };
 };

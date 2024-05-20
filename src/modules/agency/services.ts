@@ -27,7 +27,7 @@ const getAgencyById = async (id: string
     })
 
     return {
-        isValid: !!agency,
+        isValid: !!agency?.id,
         data: agency
     };
 };
@@ -42,6 +42,11 @@ const createAgency = async (data: any
             district: data.district,
             market: data.market,
             commissionPercentage: data.commissionPercentage,
+            users: {
+                connect: {
+                    id: data.managerId
+                }
+            },
             agenciesOnOrganisations: {
                 create: {
                     managerId: data.managerId,
@@ -52,7 +57,7 @@ const createAgency = async (data: any
     })
 
     return {
-        isValid: !!agency,
+        isValid: !!agency?.id,
         data: agency
     };
 };
@@ -67,7 +72,7 @@ const updateAgency = async (data: any
     })
 
     return {
-        isValid: !!agency,
+        isValid: !!agency?.id,
         data: agency
     };
 };

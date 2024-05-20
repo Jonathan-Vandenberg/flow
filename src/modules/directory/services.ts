@@ -30,7 +30,7 @@ const getDir = async (id: string
 
 
     return {
-        isValid: !!directory,
+        isValid: !!directory?.id,
         data: directory
     };
 };
@@ -48,7 +48,7 @@ const createDir = async (studentId: string, requirementId: string
 
     return {
         data: directory,
-        isValid: !!directory
+        isValid: !!directory?.id
     }
 };
 
@@ -68,7 +68,7 @@ const updateDir = async (data: any
 
     return {
         data: directory,
-        isValid: !!directory
+        isValid: !!directory?.id
     }
 };
 export default {

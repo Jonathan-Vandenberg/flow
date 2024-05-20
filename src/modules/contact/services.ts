@@ -25,7 +25,7 @@ const getContactById = async (id: string
     })
 
     return {
-        isValid: !!contact,
+        isValid: !!contact?.id,
         data: contact
     };
 };
@@ -37,7 +37,7 @@ const createContact = async (data: any
     })
 
     return {
-        isValid: !!contact,
+        isValid: !!contact?.id,
         data: contact
     };
 };
@@ -52,7 +52,7 @@ const updateContact = async (data: any
     })
 
     return {
-        isValid: !!contact,
+        isValid: !!contact?.id,
         data: contact
     };
 };
