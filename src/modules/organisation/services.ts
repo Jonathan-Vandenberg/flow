@@ -19,51 +19,72 @@ const createOrganisation = async (data: any
 };
 
 const getOrganisationById = async (id: string) => {
-    let agencies
+    let agencies;
     try {
         const organisation = await prisma.organisation.findUnique({
-            where: {
-                id
-            },
+            where: { id },
             include: {
-                users: true,
+                users: {
+                    orderBy: {
+                        createdAt: 'desc',
+                    },
+                },
                 students: {
-                    include: {
-                        course: true
-                    }
+                    include: { course: true },
+                    orderBy: {
+                        createdAt: 'desc',
+                    },
                 },
-                courses: true,
+                courses: {
+                    orderBy: {
+                        createdAt: 'desc',
+                    },
+                },
                 requirements: {
-                    include: {
-                        exampleImages: true
-                    }
+                    include: { exampleImages: true },
+                    orderBy: {
+                        createdAt: 'desc',
+                    },
                 },
-                agenciesOnOrganisations: true
-            }
+                agenciesOnOrganisations: {
+                    orderBy: {
+                        createdAt: 'desc',
+                    },
+                },
+            },
         });
 
         if (organisation && organisation.agenciesOnOrganisations.length) {
-            const agencyIds = organisation.agenciesOnOrganisations.map((agency) => agency.agencyId);
+            const agencyIds = organisation.agenciesOnOrganisations.map(
+                (agency) => agency.agencyId
+            );
             agencies = await prisma.agency.findMany({
-                where: {
-                    id: { in: agencyIds }
-                },
+                where: { id: { in: agencyIds } },
                 include: {
                     students: {
-                        include: {
-                            course: true
-                        }
+                        include: { course: true },
+                        orderBy: {
+                            createdAt: 'desc',
+                        },
                     },
-                    users: true,
-                    contacts: true
-                }
+                    users: {
+                        orderBy: {
+                            createdAt: 'desc',
+                        },
+                    },
+                    contacts: {
+                        orderBy: {
+                            createdAt: 'desc',
+                        },
+                    },
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                },
             });
         }
 
-        return {
-            isValid: !!organisation,
-            data: {...organisation, agencies}
-        };
+        return { isValid: !!organisation, data: { ...organisation, agencies } };
     } catch (e: any) {
         console.error(e.message);
         return null;
