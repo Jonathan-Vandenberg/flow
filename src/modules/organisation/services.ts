@@ -26,29 +26,29 @@ const getOrganisationById = async (id: string) => {
             include: {
                 users: {
                     orderBy: {
-                        createdAt: 'desc',
+                        createdAt: 'asc',
                     },
                 },
                 students: {
                     include: { course: true },
                     orderBy: {
-                        createdAt: 'desc',
+                        createdAt: 'asc',
                     },
                 },
                 courses: {
                     orderBy: {
-                        createdAt: 'desc',
+                        createdAt: 'asc',
                     },
                 },
                 requirements: {
                     include: { exampleImages: true },
                     orderBy: {
-                        createdAt: 'desc',
+                        createdAt: 'asc',
                     },
                 },
                 agenciesOnOrganisations: {
                     orderBy: {
-                        createdAt: 'desc',
+                        createdAt: 'asc',
                     },
                 },
             },
@@ -64,22 +64,22 @@ const getOrganisationById = async (id: string) => {
                     students: {
                         include: { course: true },
                         orderBy: {
-                            createdAt: 'desc',
+                            createdAt: 'asc',
                         },
                     },
                     users: {
                         orderBy: {
-                            createdAt: 'desc',
+                            createdAt: 'asc',
                         },
                     },
                     contacts: {
                         orderBy: {
-                            createdAt: 'desc',
+                            createdAt: 'asc',
                         },
                     },
                 },
                 orderBy: {
-                    createdAt: 'desc',
+                    createdAt: 'asc',
                 },
             });
         }
