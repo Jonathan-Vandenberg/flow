@@ -19,68 +19,60 @@ const createOrganisation = async (data: any
 };
 
 const getOrganisationById = async (id: string) => {
-    let agencies;
     try {
         const organisation = await prisma.organisation.findUnique({
             where: { id },
             include: {
                 users: {
-                    orderBy: {
-                        createdAt: 'desc',
-                    },
+                    orderBy: { createdAt: 'desc' },
                 },
                 students: {
                     include: { course: true },
-                    orderBy: {
-                        createdAt: 'desc',
-                    },
+                    orderBy: { createdAt: 'desc' },
                 },
                 courses: {
-                    orderBy: {
-                        createdAt: 'desc',
-                    },
+                    orderBy: { createdAt: 'desc' },
                 },
                 requirements: {
                     include: { exampleImages: true },
-                    orderBy: {
-                        createdAt: 'desc',
-                    },
+                    orderBy: { createdAt: 'desc' },
                 },
                 agenciesOnOrganisations: {
-                    orderBy: {
-                        createdAt: 'desc',
+                    orderBy: { createdAt: 'desc' },
+                    include: {
+                        agency: {
+                            include: {
+                                students: {
+                                    include: { course: true },
+                                    orderBy: { createdAt: 'desc' },
+                                },
+                                contacts: {
+                                    orderBy: { createdAt: 'desc' },
+                                },
+                            },
+                        },
+                        user: true,
                     },
                 },
             },
         });
 
-        if (organisation && organisation.agenciesOnOrganisations.length) {
-            const agencyIds = organisation.agenciesOnOrganisations.map(
-                (agency) => agency.agencyId
-            );
-            agencies = await prisma.agency.findMany({
-                where: { id: { in: agencyIds } },
-                include: {
-                    students: {
-                        include: { course: true },
-                        orderBy: {
-                            createdAt: 'desc',
-                        },
-                    },
-                    users: true,
-                    contacts: {
-                        orderBy: {
-                            createdAt: 'desc',
-                        },
-                    },
+        if (organisation) {
+            const agencies = organisation.agenciesOnOrganisations.map((aoo) => ({
+                ...aoo.agency,
+                manager: aoo.user,
+            }));
+
+            return {
+                isValid: true,
+                data: {
+                    ...organisation,
+                    agencies,
                 },
-                orderBy: {
-                    createdAt: 'desc',
-                },
-            });
+            };
         }
 
-        return { isValid: !!organisation, data: { ...organisation, agencies } };
+        return { isValid: false, data: null };
     } catch (e: any) {
         console.error(e.message);
         return null;

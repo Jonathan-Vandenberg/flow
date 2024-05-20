@@ -81,10 +81,11 @@ model User {
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @default(now())
 
-  managedStudents Student[]
-  agency          Agency?       @relation("UserToAgency", fields: [agencyId], references: [id])
-  socialMedia     SocialMedia[] @relation("SocialMediaToAgent")
-  organisation    Organisation? @relation(fields: [organisationId], references: [id])
+  managedStudents         Student[]
+  agency                  Agency?                   @relation("UserToAgency", fields: [agencyId], references: [id])
+  socialMedia             SocialMedia[]             @relation("SocialMediaToAgent")
+  organisation            Organisation?             @relation(fields: [organisationId], references: [id])
+  agenciesOnOrganisations AgenciesOnOrganisations[]
 }
 
 model Organisation {
@@ -134,6 +135,7 @@ model AgenciesOnOrganisations {
 
   organisation Organisation @relation(fields: [organisationId], references: [id])
   agency       Agency       @relation(fields: [agencyId], references: [id])
+  user         User         @relation(fields: [managerId], references: [id])
 
   @@id([agencyId, organisationId])
 }
