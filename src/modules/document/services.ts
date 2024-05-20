@@ -57,6 +57,7 @@ const updateDoc = async (data: any
         isValid: !!document
     }
 };
+
 export default {
     getDocsByDirectoryId,
     getDoc,

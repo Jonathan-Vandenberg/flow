@@ -1,5 +1,6 @@
 import prisma from "../../../prisma/prisma";
 import {logger} from "../../utils/logger";
+import {sendTransactionalEmail} from "../../email";
 
 const getAgenciesOnOrganisations = async (agencyId: string, organisationId: string
 ) => {
@@ -55,6 +56,10 @@ const createAgency = async (data: any
             }
         }
     })
+
+    if(!!agency?.id){
+        await sendTransactionalEmail()
+    }
 
     return {
         isValid: !!agency?.id,
