@@ -1,6 +1,6 @@
 import prisma from "../../../prisma/prisma";
 import {logger} from "../../utils/logger";
-import {sendTransactionalEmail} from "../../email";
+import {sendTransactionalEmail} from "../../email/utils/email-utils";
 
 const getAgenciesOnOrganisations = async (agencyId: string, organisationId: string
 ) => {
@@ -58,7 +58,7 @@ const createAgency = async (data: any
     })
 
     if(!!agency?.id){
-        await sendTransactionalEmail()
+        await sendTransactionalEmail('agencyCreated', "admin@hotclick.pro", {agencyName: data.name, managerName: 'Alan Manguyen'});
     }
 
     return {
