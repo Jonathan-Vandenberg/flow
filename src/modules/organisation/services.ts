@@ -26,29 +26,29 @@ const getOrganisationById = async (id: string) => {
             include: {
                 users: {
                     orderBy: {
-                        createdAt: 'asc',
+                        createdAt: 'desc',
                     },
                 },
                 students: {
                     include: { course: true },
                     orderBy: {
-                        createdAt: 'asc',
+                        createdAt: 'desc',
                     },
                 },
                 courses: {
                     orderBy: {
-                        createdAt: 'asc',
+                        createdAt: 'desc',
                     },
                 },
                 requirements: {
                     include: { exampleImages: true },
                     orderBy: {
-                        createdAt: 'asc',
+                        createdAt: 'desc',
                     },
                 },
                 agenciesOnOrganisations: {
                     orderBy: {
-                        createdAt: 'asc',
+                        createdAt: 'desc',
                     },
                 },
             },
@@ -64,22 +64,22 @@ const getOrganisationById = async (id: string) => {
                     students: {
                         include: { course: true },
                         orderBy: {
-                            createdAt: 'asc',
+                            createdAt: 'desc',
                         },
                     },
                     users: {
                         orderBy: {
-                            createdAt: 'asc',
+                            createdAt: 'desc',
                         },
                     },
                     contacts: {
                         orderBy: {
-                            createdAt: 'asc',
+                            createdAt: 'desc',
                         },
                     },
                 },
                 orderBy: {
-                    createdAt: 'asc',
+                    createdAt: 'desc',
                 },
             });
         }
