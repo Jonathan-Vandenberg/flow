@@ -7,7 +7,13 @@ interface DynamicData {
     [key: string]: string;
 }
 
-async function sendTransactionalEmail(action: string, recipientEmail: string, dynamicData: DynamicData): Promise<void> {
+interface SendTransactionalEmail {
+    action: string,
+    recipientEmail: string,
+    dynamicData: DynamicData
+}
+
+async function sendTransactionalEmail({action, recipientEmail, dynamicData}: SendTransactionalEmail): Promise<void> {
     const { subject, fromEmail, template } = emailConfig[action];
 
     const templateContent = fs.readFileSync(template, "utf8");

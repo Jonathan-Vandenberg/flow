@@ -10,11 +10,16 @@ interface EmailConfig {
     [key: string]: EmailTemplate;
 }
 
+export enum EmailAction {
+    AGENCY_CREATED = 'agencyCreated',
+    MANAGER_ADDED = 'managerAdded'
+}
+
 const emailConfig: EmailConfig = {
     agencyCreated: {
         subject: "New Agency Created",
         fromEmail: "info@hotclick.pro",
-        template: path.join(__dirname, "../templates/agencyCreatedTemplate.html"),
+        template: path.join(__dirname, "../email/templates/agency-created.html"),
     },
     managerAdded: {
         subject: "New Manager Added",

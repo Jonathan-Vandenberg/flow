@@ -1,3 +1,12 @@
+<!--DYNAMIC DATA-->
+<!--agencyName-->
+<!--organisationName-->
+<!--managerFirstName-->
+<!--managerLastName-->
+<!--commissionPercentage-->
+<!--country-->
+<!--sector-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,12 +14,118 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FLOW Company Email</title>
+    <style>
+        body {
+            background-color: #f9f9f9;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .image{
+            padding: 30px;
+        }
+        .container {
+            width: 100%;
+            min-height: 100vh;
+            background-color: #ffffff;
+            overflow: hidden;
+            position: relative;
+        }
+        .header {
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            color: black
+        }
+        .content {
+            padding: 20px 20px 100px 20px;
+            text-align: center;
+        }
+        .agency-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .info-item {
+            background-color: #f5f5f5;
+            padding: 30px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+            align-content: center;
+            white-space: nowrap;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #333333;
+            font-size: 20px;
+        }
+        .info-value {
+            color: #666666;
+            font-size: 18px;
+        }
+        .nowrap {
+            white-space: nowrap;
+        }
+        .footer {
+            background-color: #F7B93C;
+            color: #ffffff;
+            padding: 60px;
+            text-align: center;
+            position: relative;
+        }
+        .footer::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background-color: #F7B93C;
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            transform: scaleX(1.5);
+        }
+        .footer p {
+            margin: 0;
+            font-size: 20px;
+        }
+    </style>
 </head>
 <body>
-<div style="background-color: #f9f9f9; padding: 20px;">
-    <h1 style="color: #333333; text-align: center;">New Agency Added!</h1>
-    <img src="https://example.com/flow-logo.png" alt="FLOW Company Logo" style="display: block; margin: 0 auto; max-width: 200px;">
-    <p style="color: #666666; text-align: center;">The agency, {{agencyName}}, has been added by {{managerName}}.</p>
+<div class="container">
+    <div class="image">
+    <img src="https://picsum.photos/200/200?grayscale" alt="FLOW Company Logo" style="display: block; margin: 0 auto; max-width: 200px;">
+    </div>
+        <div class="header">
+        <h1>New Agency Added</h1>
+    </div>
+    <div class="content">
+        <p>Congratulations! <strong>{{agencyName}}</strong> has been added to <strong>{{organisationName}}</strong> by <strong><span class="nowrap">{{managerFirstName}} {{managerLastName}}</span></strong>.</p>
+        <div class="agency-info">
+            <div class="info-item">
+                <span class="info-label">Country</span>
+                <span class="info-value">{{country}}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Sector</span>
+                <span class="info-value">{{sector}}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Commission</span>
+                <span class="info-value">{{commissionPercentage}}%</span>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <p>Thank you for using <strong>Flow</strong>!</p>
+    </div>
 </div>
 </body>
 </html>
