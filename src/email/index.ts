@@ -8,7 +8,7 @@ export async function sendTransactionalEmail() {
             text: "Plain text content of the email",
             to: [
                 {
-                    email: "urbangentryjon@gmail.com",
+                    email: "admin@hotclick.pro",
                     type: "to",
                 },
             ],
