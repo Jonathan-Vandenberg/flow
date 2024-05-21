@@ -60,6 +60,10 @@ const getRequirementById = async (id: string
 
 const createRequirement = async (data: any
 ) => {
+    // courseId  TODO Individual Requirements
+    // studentId
+    // country
+
     let requirement
     await prisma.$transaction(async (t) => {
         const organisation = await t.organisation.findUnique({

@@ -49,6 +49,7 @@ const getOrganisationById = async (id: string) => {
                                 contacts: {
                                     orderBy: { createdAt: 'desc' },
                                 },
+                                users: true
                             },
                         },
                         user: true,
