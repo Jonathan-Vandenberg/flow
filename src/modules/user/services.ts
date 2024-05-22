@@ -18,6 +18,7 @@ const getUserById = async (
                 where: { id },
                 include: {
                     managedStudents: true,
+                    agency: true
                 }
         })
 
@@ -73,6 +74,7 @@ const getUserByEmail = async (
             include: {
                 organisation: true,
                 managedStudents: true,
+                agency: true
             }
         })
 
