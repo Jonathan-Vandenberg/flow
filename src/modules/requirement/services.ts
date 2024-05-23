@@ -77,6 +77,7 @@ const createRequirement = async (data: any) => {
                     details: data.details,
                     type: data.type,
                     status: RequirementStatus.REQUIRED,
+                    name: data.name,
                     organisation: {
                         connect: {
                             id: data.organisationId,
