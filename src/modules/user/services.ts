@@ -151,7 +151,11 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
             email: createUserData.email,
             imageUrl: createUserData.imageUrl,
             expertiseArea: createUserData.expertiseArea,
-            country: createUserData.country,
+            country: {
+                create: {
+                    name: createUserData.countryName,
+                },
+            },
         };
 
         if (createUserData.role === Role.ADMIN || createUserData.role === Role.MANAGER) {
