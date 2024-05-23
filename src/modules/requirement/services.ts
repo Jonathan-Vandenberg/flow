@@ -77,6 +77,11 @@ const createRequirement = async (data: any) => {
                     details: data.details,
                     type: data.type,
                     status: RequirementStatus.REQUIRED,
+                    organisation: {
+                        connect: {
+                            id: data.organisationId,
+                        },
+                    },
                     requirementsOnCountries: {
                         create: data.countries.map((country: string) => ({
                             country: {
@@ -87,11 +92,15 @@ const createRequirement = async (data: any) => {
                             },
                         })),
                     },
-                    requirementsOnCourses: {
-                        create: data.courseIds.map((courseId: string) => ({
-                            course: { connect: { id: courseId } },
-                        })),
-                    },
+                    ...(data.courseIds && {
+                        requirementsOnCourses: {
+                            create: data.courseIds.map((courseId: string) => ({
+                                course: {
+                                    connect: { id: courseId },
+                                },
+                            })),
+                        },
+                    }),
                     exampleImages: {
                         create: data.exampleImages?.map((image: any) => ({
                             url: image.url,
