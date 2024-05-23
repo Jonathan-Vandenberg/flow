@@ -200,6 +200,7 @@ model AgenciesOnOrganisations {
 
 model Requirement {
   id        String            @id @default(uuid())
+  name      String?
   details   String
   status    RequirementStatus
   type      RequirementType
