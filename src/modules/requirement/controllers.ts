@@ -64,23 +64,23 @@ export const getRequirementByIdController = async (req: Request, res: Response) 
 export const createRequirementController = async (req: Request, res: Response) => {
     const { organisationId,
         studentId,
-        courseId,
+        courseIds,
         name,
         details,
         type,
-        country,
-        exampleImages
+        countries,
+        exampleImages,
     } = req.body;
 
     const createRequirementData = {
         organisationId,
-        courseId,
+        courseIds,
         studentId,
         name,
         details,
         type,
-        country,
-        exampleImages
+        countries,
+        exampleImages,
     }
     try {
         const data = await requirementService.createRequirement(createRequirementData);

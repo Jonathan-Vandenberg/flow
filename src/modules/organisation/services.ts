@@ -68,6 +68,15 @@ const getOrganisationById = async (id: string) => {
                     include: { exampleImages: true },
                     orderBy: { createdAt: 'desc' },
                 },
+                usersOnOrganisations: {
+                  include: {
+                      user: {
+                          include: {
+                              country: true
+                          }
+                      }
+                  }
+                },
                 agenciesOnOrganisations: {
                     orderBy: { createdAt: 'desc' },
                     include: {

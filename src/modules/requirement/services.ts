@@ -1,6 +1,6 @@
 import prisma from "../../../prisma/prisma";
 import {logger} from "../../utils/logger";
-import {DirectoryStatus} from "@prisma/client";
+import {DirectoryStatus, RequirementStatus} from "@prisma/client";
 
 const getRequirementsByOrgId = async (organisationId: string
 ) => {
@@ -60,87 +60,66 @@ const getRequirementById = async (id: string
 
 const createRequirement = async (data: any) => {
     let requirement;
+    try {
+        await prisma.$transaction(async (t) => {
+            const organisation = await t.organisation.findUnique({
+                where: { id: data.organisationId },
+                include: { students: true },
+            });
 
-    await prisma.$transaction(async (t) => {
-        const existingCountries = await t.country.findMany({
-            where: {
-                name: {
-                    in: data.country,
-                },
-            },
-        });
-
-        const existingCountryNames = existingCountries.map((country) => country.name);
-        const newCountryNames = data.countries.filter(
-            (country: string) => !existingCountryNames.includes(country)
-        );
-
-        const newCountries = await Promise.all(
-            newCountryNames.map((country: string) =>
-                t.country.create({
-                    data: {
-                        name: country,
-                    },
-                })
-            )
-        );
-
-        const organisation = await t.organisation.findUnique({
-            where: { id: data.organisationId },
-            include: { students: true },
-        });
-
-        if (!organisation) {
-            logger.error(`No organisation found with id ${data.organisationId}`);
-            return;
-        }
-
-        requirement = await t.requirement.create({
-            data: {
-                status: data.status,
-                details: data.details,
-                type: data.type,
-                requirementsOnCountries: {
-                    create: [
-                        ...existingCountries.map((country) => ({
-                            country: { connect: { id: country.id } },
-                        })),
-                        ...newCountries.map((country) => ({
-                            country: { create: { id: country.id, name: country.name } },
-                        })),
-                    ],
-                },
-                requirementsOnCourses: {
-                    create: data.courseIds.map((courseId: string) => ({
-                        course: { connect: { id: courseId } },
-                    })),
-                },
-                exampleImages: {
-                    create: data.exampleImages?.map((image: any) => ({
-                        url: image.url,
-                    })),
-                },
-            },
-        });
-
-        if (!requirement) {
-            logger.error(`Could not create requirement`);
-            return;
-        }
-
-        if (organisation.students.length > 0) {
-            for (const student of organisation.students) {
-                await t.directory.create({
-                    data: {
-                        requirementId: requirement.id,
-                        studentId: student.id,
-                        status: DirectoryStatus.IN_PROGRESS,
-                    },
-                });
+            if (!organisation) {
+                logger.error(`No organisation found with id ${data.organisationId}`);
+                return;
             }
-        }
-    });
 
+            requirement = await t.requirement.create({
+                data: {
+                    details: data.details,
+                    type: data.type,
+                    status: RequirementStatus.REQUIRED,
+                    requirementsOnCountries: {
+                        create: data.countries.map((country: string) => ({
+                            country: {
+                                connectOrCreate: {
+                                    where: { name: country },
+                                    create: { name: country },
+                                },
+                            },
+                        })),
+                    },
+                    requirementsOnCourses: {
+                        create: data.courseIds.map((courseId: string) => ({
+                            course: { connect: { id: courseId } },
+                        })),
+                    },
+                    exampleImages: {
+                        create: data.exampleImages?.map((image: any) => ({
+                            url: image.url,
+                        })),
+                    },
+                },
+            });
+
+            if (!requirement) {
+                logger.error(`Could not create requirement`);
+                return;
+            }
+
+            if (organisation.students.length > 0) {
+                for (const student of organisation.students) {
+                    await t.directory.create({
+                        data: {
+                            requirementId: requirement.id,
+                            studentId: student.id,
+                            status: DirectoryStatus.IN_PROGRESS,
+                        },
+                    });
+                }
+            }
+        });
+    } catch (e: any) {
+        console.log(e.message);
+    }
     return { isValid: !!requirement, data: requirement };
 };
 

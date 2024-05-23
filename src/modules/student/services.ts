@@ -71,12 +71,6 @@ const createStudent = async (data: any) => {
             return;
         }
 
-        const existingCountry = await prisma.country.findUnique({
-            where: {
-                name: data.country,
-            },
-        });
-
         try {
             student = await t.student.create({
                 data: {
@@ -107,17 +101,12 @@ const createStudent = async (data: any) => {
                     guardianEmail: data.guardianEmail,
                     gapYearExplanation: data.gapYearExplanation,
                     previouslyRejected: data.previouslyRejected,
-                    country: existingCountry
-                        ? {
-                            connect: {
-                                id: existingCountry.id,
-                            },
-                        }
-                        : {
-                            create: {
-                                name: data.country,
-                            },
+                    country: {
+                        connectOrCreate: {
+                            where: { name: data.country },
+                            create: { name: data.country },
                         },
+                    },
                     ...(organisation.requirements.length > 0 && {
                         directories: {
                             create: organisation.requirements.map((requirement) => ({
@@ -132,11 +121,6 @@ const createStudent = async (data: any) => {
                     })
                 }
             });
-
-            if (!student) {
-                logger.error('ERROR::createStudent: Student unable to be created');
-                return;
-            }
         } catch (error: any) {
             logger.error(`Error creating student: ${error.message}`);
             console.log(error.message)
