@@ -1,4 +1,5 @@
 import prisma from "../../../prisma/prisma";
+import {logger} from "../../utils/logger";
 
 const getCoursesByOrgId = async (organisationId: string
 ) => {
@@ -28,16 +29,28 @@ const getCourseById = async (id: string
     };
 };
 
-const createCourse = async (data: any
-) => {
-    const course = await prisma.course.create({
-        data
-    })
+const createCourse = async (data: any) => {
+    let createdCourse
+    try{
+        createdCourse = await prisma.course.create({
+            data: {
+                name: data.name,
+                organisation: {
+                    connect: {
+                        id: data.organisationId,
+                    },
+                },
+                coursesOnLocations: {
+                    connect: {
+                        id: data.locationId,
+                    },
+                },
+            }})
+    } catch(e: any){
+        logger.error('CREATE_COURSE::', + e.message)
+    }
 
-    return {
-        isValid: !!course?.id,
-        data: course
-    };
+    return { isValid: !!createdCourse?.id, data: createdCourse };
 };
 
 const updateCourse = async (data: any

@@ -81,15 +81,13 @@ export const createAgencyValidationRules = checkSchema({
             errorMessage: 'The sector must be a string'
         }
     },
-    country: {
+    countries: {
         in: ['body'],
-        optional: {
-            options: {
-                checkFalsy: true
-            }
+        notEmpty: {
+            errorMessage: 'The name field is required'
         },
-        isString: {
-            errorMessage: 'The country must be a stirng.'
+        isArray: {
+            errorMessage: 'The countries must be in an Array'
         }
     },
     district: {

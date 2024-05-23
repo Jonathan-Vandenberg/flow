@@ -65,15 +65,17 @@ enum Role {
 }
 
 model Country {
-  id            String         @id @default(uuid())
-  name          String         @unique
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @default(now())
-  users         User[]
-  organisations Organisation[]
-  agencies      Agency[]
-  students      Student[]
-  Requirement   Requirement[]
+  id String @id @default(uuid())
+
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  users               User[]
+  organisations       Organisation[]
+  students            Student[]
+  Requirement         Requirement[]
+  AgenciesOnCountries AgenciesOnCountries[]
 }
 
 model User {
@@ -90,20 +92,22 @@ model User {
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @default(now())
 
-  managedStudents         Student[]
-  socialMedia             SocialMedia[]             @relation("SocialMediaToAgent")
+  country         Country?      @relation(fields: [countryId], references: [id])
+  managedStudents Student[]
+  socialMedia     SocialMedia[] @relation("SocialMediaToAgent")
+
   agenciesOnOrganisations AgenciesOnOrganisations[]
-  organisations           UsersOnOrganisations[]
-  agencies                UsersOnAgencies[]
-  country                 Country?                  @relation(fields: [countryId], references: [id])
+  usersOnOrganisations    UsersOnOrganisations[]
+  usersOnAgencies         UsersOnAgencies[]
 }
 
 model UsersOnOrganisations {
   userId         String
   organisationId String
-  role           Role
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @default(now())
+
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 
   user         User         @relation(fields: [userId], references: [id])
   organisation Organisation @relation(fields: [organisationId], references: [id])
@@ -111,48 +115,10 @@ model UsersOnOrganisations {
   @@id([userId, organisationId])
 }
 
-model Organisation {
-  id        String    @id @default(uuid())
-  name      String    @unique
-  countryId String?
-  subStatus SubStatus @default(PENDING)
-  imageUrl  String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
-
-  agencies                Agency[]
-  students                Student[]
-  courses                 Course[]
-  requirements            Requirement[]
-  agenciesOnOrganisations AgenciesOnOrganisations[]
-  usersOnOrganisations    UsersOnOrganisations[]
-  locations               OrganisationLocation[]
-  country                 Country?                  @relation(fields: [countryId], references: [id])
-}
-
-model Agency {
-  id                   String  @id @default(uuid())
-  name                 String
-  sector               Sector?
-  countryId            String?
-  district             String?
-  market               String?
-  commissionPercentage Int     @default(0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-
-  organisations           Organisation[]
-  contacts                Contact[]
-  students                Student[]
-  agenciesOnOrganisations AgenciesOnOrganisations[]
-  users                   UsersOnAgencies[]
-  country                 Country?                  @relation(fields: [countryId], references: [id])
-}
-
 model UsersOnAgencies {
-  userId    String
-  agencyId  String
+  userId   String
+  agencyId String
+
   role      Role
   email     String
   createdAt DateTime @default(now())
@@ -162,6 +128,59 @@ model UsersOnAgencies {
   agency Agency @relation(fields: [agencyId], references: [id])
 
   @@id([userId, agencyId])
+}
+
+model Organisation {
+  id        String @id @default(uuid())
+  countryId String
+
+  name      String    @unique
+  subStatus SubStatus @default(PENDING)
+  imageUrl  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+
+  agencies     Agency[]
+  students     Student[]
+  courses      Course[]
+  requirements Requirement[]
+  country      Country       @relation(fields: [countryId], references: [id])
+
+  organisationsOnLocations OrganisationsOnLocations[]
+  agenciesOnOrganisations  AgenciesOnOrganisations[]
+  usersOnOrganisations     UsersOnOrganisations[]
+}
+
+model Agency {
+  id String @id @default(uuid())
+
+  name                 String
+  sector               Sector?
+  district             String?
+  market               String?
+  commissionPercentage Int      @default(0)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @default(now())
+
+  organisations           Organisation[]
+  contacts                Contact[]
+  students                Student[]
+  agenciesOnCountries     AgenciesOnCountries[]
+  agenciesOnOrganisations AgenciesOnOrganisations[]
+  usersOnAgencies         UsersOnAgencies[]
+}
+
+model AgenciesOnCountries {
+  agencyId  String
+  countryId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  country Country @relation(fields: [countryId], references: [id])
+  agency  Agency  @relation(fields: [agencyId], references: [id])
+
+  @@id([agencyId, countryId])
 }
 
 model AgenciesOnOrganisations {
@@ -208,15 +227,40 @@ model ExampleImage {
   requirement Requirement @relation(fields: [requirementId], references: [id])
 }
 
-model OrganisationLocation {
+model OrganisationsOnLocations {
   id             String   @id @default(uuid())
   organisationId String
   location       String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @default(now())
 
-  organisation Organisation @relation(fields: [organisationId], references: [id])
-  courses      Course[]
+  organisation       Organisation       @relation(fields: [organisationId], references: [id])
+  coursesOnLocations CourseOnLocation[]
+}
+
+model Course {
+  id             String @id @default(uuid())
+  organisationId String
+
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  organisation       Organisation       @relation(fields: [organisationId], references: [id])
+  requirements       Requirement[]
+  students           Student[]
+  coursesOnLocations CourseOnLocation[]
+}
+
+model CourseOnLocation {
+  id         String @id @default(uuid())
+  courseId   String
+  locationId String
+
+  course   Course                   @relation(fields: [courseId], references: [id])
+  location OrganisationsOnLocations @relation(fields: [locationId], references: [id])
+
+  @@unique([courseId, locationId])
 }
 
 model Task {
@@ -245,21 +289,6 @@ model Contact {
   updatedAt DateTime @default(now())
 
   agency Agency @relation(fields: [agencyId], references: [id])
-}
-
-model Course {
-  id             String @id @default(uuid())
-  organisationId String
-  locationId     String
-
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-
-  organisation Organisation         @relation(fields: [organisationId], references: [id])
-  location     OrganisationLocation @relation(fields: [locationId], references: [id])
-  requirements Requirement[]
-  students     Student[]
 }
 
 model Student {

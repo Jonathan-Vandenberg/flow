@@ -3,16 +3,29 @@ import {Role} from "@prisma/client";
 
 const createOrganisation = async (data: any) => {
     let organisation;
+
+    const existingCountry = await prisma.country.findUnique({
+        where: {
+            name: data.country,
+        },
+    });
+
     try {
         organisation = await prisma.$transaction(async (tx) => {
             return tx.organisation.create({
                 data: {
                     name: data.name,
-                    country: {
-                        create: {
-                            name: data.country,
+                    country: existingCountry
+                        ? {
+                            connect: {
+                                id: existingCountry.id,
+                            },
+                        }
+                        : {
+                            create: {
+                                name: data.country,
+                            },
                         },
-                    },
                     usersOnOrganisations: {
                         create: {
                             user: {
@@ -23,7 +36,7 @@ const createOrganisation = async (data: any) => {
                             role: Role.ADMIN,
                         },
                     },
-                    locations: {
+                    organisationsOnLocations: {
                         createMany: {
                             data: data.locations.map((location: string) => ({
                                 location,

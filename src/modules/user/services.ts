@@ -15,17 +15,22 @@ const getUserById = async (id: string): Promise<{ isValid: boolean; message: str
             include: {
                 managedStudents: true,
                 socialMedia: true,
-                organisations: {
+                usersOnOrganisations: {
                     include: {
                         organisation: true,
                     },
                 },
-                agencies: {
+                usersOnAgencies: {
                     include: {
                         agency: {
                             include: {
                                 students: true,
-                                users: true,
+                                usersOnAgencies: {
+                                    include: {
+                                        user: true,
+                                        agency: true
+                                    }
+                                },
                                 contacts: true,
                             },
                         },
@@ -60,8 +65,8 @@ const getUserByEmail = async (
             include: {
                 managedStudents: true,
                 socialMedia: true,
-                organisations: true,
-                agencies: {
+                usersOnOrganisations: true,
+                agenciesOnOrganisations: {
                     include: {
                         agency: true,
                     },
@@ -98,7 +103,7 @@ const getUserByEmail = async (
                 },
                 include: {
                     students: true,
-                    users: true,
+                    usersOnAgencies: true,
                     contacts: true,
                 },
             });
@@ -175,7 +180,7 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
             user = await prisma.user.create({
                 data: {
                     ...userData,
-                    organisations: {
+                    usersOnOrganisations: {
                         create: {
                             role: createUserData.role,
                             organisation: {
@@ -192,7 +197,7 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
             user = await prisma.user.create({
                 data: {
                     ...userData,
-                    agencies: {
+                    usersOnAgencies: {
                         create: {
                             role: createUserData.role,
                             email: createUserData.email,
@@ -253,7 +258,7 @@ const updateUser = async (
                     })),
                     delete: updateUserData.deleteSocialMediaIds.map((id: string) => ({ id })),
                 },
-                organisations: {
+                usersOnOrganisations: {
                     create: updateUserData.newOrganisations,
                     update: updateUserData.existingOrganisations.map((org: any) => ({
                         where: { id: org.id },
@@ -261,7 +266,7 @@ const updateUser = async (
                     })),
                     delete: updateUserData.deleteOrganisationIds.map((id: string) => ({ id })),
                 },
-                agencies: {
+                agenciesOnOrganisations: {
                     create: updateUserData.newAgencies,
                     update: updateUserData.existingAgencies.map((agency: any) => ({
                         where: { id: agency.id },

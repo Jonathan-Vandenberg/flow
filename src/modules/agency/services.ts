@@ -54,7 +54,7 @@ const createAgency = async (data: any) => {
                     firstName: true,
                     lastName: true,
                     email: true,
-                    organisations: {
+                    agenciesOnOrganisations: {
                         where: { organisationId: data.organisationId },
                         select: { organisation: { select: { name: true } } },
                     },
@@ -72,18 +72,22 @@ const createAgency = async (data: any) => {
                     district: data.district,
                     market: data.market,
                     commissionPercentage: data.commissionPercentage,
-                    country: existingCountry
-                        ? {
-                            connect: {
-                                id: existingCountry.id,
-                            },
-                        }
-                        : {
-                            create: {
-                                name: data.country,
-                            },
-                        },
-                    users: {
+                    agenciesOnCountries: {
+                        create: data.countries.map((country: string) => (
+                            existingCountry
+                            ? {
+                                connect: {
+                                    id: existingCountry.id,
+                                },
+                            }
+                            : {
+                                create: {
+                                    name: country,
+                                },
+                            }
+                        ))
+                    },
+                    usersOnAgencies: {
                         create: {
                             userId: data.managerId,
                             role: Role.MANAGER,
@@ -107,14 +111,14 @@ const createAgency = async (data: any) => {
                 },
             });
 
-            if (agency?.id && manager && manager.organisations.length) {
+            if (agency?.id && manager && manager.agenciesOnOrganisations.length) {
                 isValid = true;
                 await sendTransactionalEmail({
                     action: EmailAction.AGENCY_CREATED,
                     recipientEmail: "admin@hotclick.pro",
                     dynamicData: {
                         agencyName: data.name,
-                        organisationName: manager.organisations[0].organisation?.name || '',
+                        organisationName: manager.agenciesOnOrganisations[0].organisation?.name || '',
                         managerFirstName: manager.firstName,
                         managerLastName: manager.lastName,
                         commissionPercentage: data.commissionPercentage,
