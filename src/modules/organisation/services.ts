@@ -1,11 +1,29 @@
 import prisma from "../../../prisma/prisma";
+import {Role} from "@prisma/client";
 
 const createOrganisation = async (data: any
 ) => {
     let organisation
     try{
         organisation = await prisma.organisation.create({
-            data
+            data: {
+                name: data.name,
+                country: {
+                    create: {
+                        name: data.country
+                    }
+                },
+                usersOnOrganisations: {
+                    create: {
+                        user: {
+                            connect: {
+                                id: data.userId,
+                            },
+                        },
+                        role: Role.ADMIN,
+                    },
+                },
+            },
         })
 
     } catch(e: any) {

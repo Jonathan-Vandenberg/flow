@@ -145,17 +145,29 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
     let errorMessage;
 
     try {
+        const existingCountry = await prisma.country.findUnique({
+            where: {
+                name: createUserData.country,
+            },
+        });
+
         const userData = {
             firstName: createUserData.firstName,
             lastName: createUserData.lastName,
             email: createUserData.email,
             imageUrl: createUserData.imageUrl,
             expertiseArea: createUserData.expertiseArea,
-            country: {
-                create: {
-                    name: createUserData.country,
+            country: existingCountry
+                ? {
+                    connect: {
+                        id: existingCountry.id,
+                    },
+                }
+                : {
+                    create: {
+                        name: createUserData.country,
+                    },
                 },
-            },
         };
 
         if (createUserData.role === Role.ADMIN || createUserData.role === Role.MANAGER) {
@@ -167,10 +179,12 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
                         create: {
                             role: createUserData.role,
                             organisation: {
-                                connect: { id: createUserData.organisationId },
+                                connect: {
+                                    id: createUserData.organisationId,
+                                },
                             },
                         },
-                    }
+                    },
                 },
             });
         } else if (createUserData.role === Role.AGENT && createUserData.agencyId) {

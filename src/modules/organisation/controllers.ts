@@ -6,12 +6,13 @@ import organisationService from './services'
  * Create an Organisation
  */
 export const createOrganisationController = async (req: Request, res: Response) => {
-    const { name, country, ceo, imageUrl } = req.body;
+    const { name, country, ceo, imageUrl, userId } = req.body;
     const organisationData = {
         name,
         country,
         ceo,
         imageUrl,
+        userId
     }
     try {
         const data = await organisationService.createOrganisation(organisationData);

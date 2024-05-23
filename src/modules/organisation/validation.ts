@@ -4,6 +4,15 @@ import { checkSchema } from 'express-validator';
  * Get agents by manager ID
  */
 export const createOrganisationValidationRules = checkSchema({
+    userId: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The userId must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The userId field is required'
+        }
+    },
     name: {
         in: ['body'],
         isString: {
@@ -20,15 +29,6 @@ export const createOrganisationValidationRules = checkSchema({
         },
         notEmpty: {
             errorMessage: 'The country field is required'
-        }
-    },
-    ceo: {
-        in: ['body'],
-        isString: {
-            errorMessage: 'The ceo must be a string.'
-        },
-        notEmpty: {
-            errorMessage: 'The ceo field is required'
         }
     },
     imageUrl: {

@@ -42,7 +42,8 @@ export const createAgencyController = async (req: Request, res: Response) => {
         country,
         district,
         market,
-        commissionPercentage } = req.body;
+        commissionPercentage,
+    contacts} = req.body;
 
     const createAgencyData = {
         organisationId,
@@ -53,6 +54,7 @@ export const createAgencyController = async (req: Request, res: Response) => {
         district,
         market,
         commissionPercentage,
+        contacts
     }
     try {
         const data = await agencyService.createAgency(createAgencyData);

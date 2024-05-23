@@ -40,68 +40,93 @@ const createAgency = async (data: any) => {
     let agency;
     let isValid = false;
 
-    await prisma.$transaction(async (t) => {
-        const manager = await t.user.findUnique({
-            where: { id: data.managerId },
-            select: {
-                firstName: true,
-                lastName: true,
-                organisations: {
-                    where: { organisationId: data.organisationId },
-                    select: { organisation: { select: { name: true } } },
-                },
-            },
-        });
-
-        agency = await t.agency.create({
-            data: {
-                name: data.name,
-                sector: data.sector,
-                countryId: data.countryId,
-                district: data.district,
-                market: data.market,
-                commissionPercentage: data.commissionPercentage,
-                users: {
-                    create: {
-                        userId: data.managerId,
-                        role: Role.MANAGER,
-                        email: data.managerEmail,
-                    },
-                },
-                agenciesOnOrganisations: {
-                    create: {
-                        managerId: data.managerId,
-                        organisationId: data.organisationId,
-                    },
-                },
-                contacts: {
-                    create: data.contacts.map((contact: any) => ({
-                        name: contact.name,
-                        email: contact.email,
-                        mobile: contact.mobile,
-                        position: contact.position,
-                    })),
-                },
-            },
-        });
-
-        if (agency?.id && manager) {
-            isValid = true;
-            await sendTransactionalEmail({
-                action: EmailAction.AGENCY_CREATED,
-                recipientEmail: "admin@hotclick.pro",
-                dynamicData: {
-                    agencyName: data.name,
-                    organisationName: manager.organisations[0]?.organisation?.name || '',
-                    managerFirstName: manager.firstName,
-                    managerLastName: manager.lastName,
-                    commissionPercentage: data.commissionPercentage,
-                    country: countries.getName(data.countryId, 'en') ?? '',
-                    sector: data.sector,
+    try{
+        await prisma.$transaction(async (t) => {
+            const existingCountry = await prisma.country.findUnique({
+                where: {
+                    name: data.country,
                 },
             });
-        }
-    });
+
+            const manager = await t.user.findUnique({
+                where: { id: data.managerId },
+                select: {
+                    firstName: true,
+                    lastName: true,
+                    email: true,
+                    organisations: {
+                        where: { organisationId: data.organisationId },
+                        select: { organisation: { select: { name: true } } },
+                    },
+                },
+            });
+
+            if(!manager){
+                return Error('No manager found!')
+            }
+
+            agency = await t.agency.create({
+                data: {
+                    name: data.name,
+                    sector: data.sector,
+                    district: data.district,
+                    market: data.market,
+                    commissionPercentage: data.commissionPercentage,
+                    country: existingCountry
+                        ? {
+                            connect: {
+                                id: existingCountry.id,
+                            },
+                        }
+                        : {
+                            create: {
+                                name: data.country,
+                            },
+                        },
+                    users: {
+                        create: {
+                            userId: data.managerId,
+                            role: Role.MANAGER,
+                            email: manager?.email,
+                        },
+                    },
+                    agenciesOnOrganisations: {
+                        create: {
+                            managerId: data.managerId,
+                            organisationId: data.organisationId,
+                        },
+                    },
+                    contacts: {
+                        create: data.contacts.map((contact: any) => ({
+                            name: contact.name,
+                            email: contact.email,
+                            mobile: contact.mobile,
+                            title: contact.title,
+                        })),
+                    },
+                },
+            });
+
+            if (agency?.id && manager && manager.organisations.length) {
+                isValid = true;
+                await sendTransactionalEmail({
+                    action: EmailAction.AGENCY_CREATED,
+                    recipientEmail: "admin@hotclick.pro",
+                    dynamicData: {
+                        agencyName: data.name,
+                        organisationName: manager.organisations[0].organisation?.name || '',
+                        managerFirstName: manager.firstName,
+                        managerLastName: manager.lastName,
+                        commissionPercentage: data.commissionPercentage,
+                        country: countries.getName(data.countryId, 'en') ?? '',
+                        sector: data.sector,
+                    },
+                });
+            }
+        });
+    } catch(e: any) {
+        console.log(e.message)
+    }
 
     return { isValid: isValid, data: agency };
 };

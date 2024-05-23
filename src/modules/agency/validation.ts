@@ -124,6 +124,17 @@ export const createAgencyValidationRules = checkSchema({
         isNumeric: {
             errorMessage: 'The commissionPercentage must be a number.'
         }
+    },
+    contacts: {
+        in : ['body'],
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        },
+        isArray: {
+            errorMessage: 'The contacts must be in an array'
+        }
     }
 });
 
