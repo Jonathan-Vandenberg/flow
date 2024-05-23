@@ -41,11 +41,16 @@ const createCourse = async (data: any) => {
                     },
                 },
                 coursesOnLocations: {
-                    connect: {
-                        id: data.locationId,
-                    },
+                    create: data.locationIds.map((locationId: string) => ({
+                        location: {
+                            connect: {
+                                id: locationId,
+                            },
+                        },
+                    })),
                 },
-            }})
+            },
+        });
     } catch(e: any){
         logger.error('CREATE_COURSE::', + e.message)
     }

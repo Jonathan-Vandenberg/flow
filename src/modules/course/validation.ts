@@ -48,6 +48,12 @@ export const createCourseValidationRules = checkSchema({
         isString: {
             errorMessage: 'The course name must be a string'
         }
+    },
+    locationIds: {
+        in: ['body'],
+        isArray: {
+            errorMessage: 'The location IDs must be in an Array!'
+        }
     }
 });
 

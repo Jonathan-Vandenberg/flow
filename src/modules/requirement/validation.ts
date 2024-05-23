@@ -1,4 +1,5 @@
 import { checkSchema } from 'express-validator';
+import {RequirementType} from "@prisma/client";
 
 /**
  * Get requirements by organisation ID
@@ -84,15 +85,15 @@ export const createRequirementRules = checkSchema({
             errorMessage: 'The studentId must be a string.'
         },
     },
-    courseId: {
+    courseIds: {
         in: ['body'],
         optional: {
             options: {
                 checkFalsy: true
             }
         },
-        isString: {
-            errorMessage: 'The courseId must be a string.'
+        isArray: {
+            errorMessage: 'The courseIds must be in an Array.'
         }
     },
     name:{
@@ -117,22 +118,21 @@ export const createRequirementRules = checkSchema({
     },
     type: {
         in: ['body'],
-        isString: {
-            errorMessage: 'The requirement type must be a string'
+        isIn: {
+            options: [Object.values(RequirementType)],
+            errorMessage: 'Invalid requirement type'
         },
-        notEmpty: {
-            errorMessage: 'The courseId field is required'
-        }
+        notEmpty: { errorMessage: 'The type field is required' }
     },
-    country: {
+    countries: {
         in: ['body'],
         optional: {
             options: {
                 checkFalsy: true
             }
         },
-        isString: {
-            errorMessage: 'The country type must be a string'
+        isArray: {
+            errorMessage: 'The countries must in an Array!'
         }
     },
     exampleImages: {

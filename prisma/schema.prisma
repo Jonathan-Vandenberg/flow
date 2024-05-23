@@ -71,11 +71,12 @@ model Country {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  users               User[]
-  organisations       Organisation[]
-  students            Student[]
-  Requirement         Requirement[]
-  AgenciesOnCountries AgenciesOnCountries[]
+  users                  User[]
+  organisations          Organisation[]
+  students               Student[]
+  requirements           Requirement[]
+  agenciesOnCountries    AgenciesOnCountries[]
+  requirementOnCountries RequirementsOnCountries[]
 }
 
 model User {
@@ -198,23 +199,51 @@ model AgenciesOnOrganisations {
 }
 
 model Requirement {
-  id             String            @id @default(uuid())
-  organisationId String
-  courseId       String?
-  studentId      String?
-  details        String
-  countryId      String?
-  status         RequirementStatus
-  type           RequirementType
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @default(now())
+  id        String            @id @default(uuid())
+  details   String
+  status    RequirementStatus
+  type      RequirementType
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @default(now())
 
-  student       Student?       @relation(fields: [studentId], references: [id])
-  organisation  Organisation   @relation(fields: [organisationId], references: [id])
-  directory     Directory[]
-  exampleImages ExampleImage[]
-  course        Course?        @relation(fields: [courseId], references: [id])
-  country       Country?       @relation(fields: [countryId], references: [id])
+  directory               Directory[]
+  exampleImages           ExampleImage[]
+  requirementsOnCourses   RequirementsOnCourses[]
+  requirementsOnCountries RequirementsOnCountries[]
+  country                 Country?                  @relation(fields: [countryId], references: [id])
+  countryId               String?
+  organisation            Organisation?             @relation(fields: [organisationId], references: [id])
+  organisationId          String?
+  course                  Course?                   @relation(fields: [courseId], references: [id])
+  courseId                String?
+  student                 Student?                  @relation(fields: [studentId], references: [id])
+  studentId               String?
+}
+
+model RequirementsOnCountries {
+  id            String   @id @default(uuid())
+  requirementId String
+  countryId     String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+
+  requirement Requirement @relation(fields: [requirementId], references: [id])
+  country     Country     @relation(fields: [countryId], references: [id])
+
+  @@unique([requirementId, countryId])
+}
+
+model RequirementsOnCourses {
+  id            String   @id @default(uuid())
+  requirementId String
+  courseId      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+
+  requirement Requirement @relation(fields: [requirementId], references: [id])
+  course      Course      @relation(fields: [courseId], references: [id])
+
+  @@unique([requirementId, courseId])
 }
 
 model ExampleImage {
@@ -246,10 +275,11 @@ model Course {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  organisation       Organisation       @relation(fields: [organisationId], references: [id])
-  requirements       Requirement[]
-  students           Student[]
-  coursesOnLocations CourseOnLocation[]
+  organisation          Organisation            @relation(fields: [organisationId], references: [id])
+  requirements          Requirement[]
+  students              Student[]
+  coursesOnLocations    CourseOnLocation[]
+  RequirementsOnCourses RequirementsOnCourses[]
 }
 
 model CourseOnLocation {

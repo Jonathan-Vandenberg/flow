@@ -42,11 +42,25 @@ const createAgency = async (data: any) => {
 
     try{
         await prisma.$transaction(async (t) => {
-            const existingCountry = await prisma.country.findUnique({
-                where: {
-                    name: data.country,
-                },
-            });
+            let existingCountries = []
+            let newCountries = []
+
+            for (const countryName of data.countries) {
+                const country = await prisma.country.findUnique({
+                    where: { name: countryName },
+                });
+
+                if (country) {
+                    existingCountries.push(country);
+                } else {
+                    const newCountry = await t.country.create({
+                        data: {
+                            name: countryName,
+                        },
+                    });
+                    newCountries.push(newCountry);
+                }
+            }
 
             const manager = await t.user.findUnique({
                 where: { id: data.managerId },
@@ -73,19 +87,14 @@ const createAgency = async (data: any) => {
                     market: data.market,
                     commissionPercentage: data.commissionPercentage,
                     agenciesOnCountries: {
-                        create: data.countries.map((country: string) => (
-                            existingCountry
-                            ? {
-                                connect: {
-                                    id: existingCountry.id,
-                                },
-                            }
-                            : {
-                                create: {
-                                    name: country,
-                                },
-                            }
-                        ))
+                        create: [
+                            ...existingCountries.map((country) => ({
+                                country: { connect: { id: country.id } },
+                            })),
+                            ...newCountries.map((country) => ({
+                                country: { connect: { id: country.id } },
+                            })),
+                        ],
                     },
                     usersOnAgencies: {
                         create: {
@@ -122,7 +131,7 @@ const createAgency = async (data: any) => {
                         managerFirstName: manager.firstName,
                         managerLastName: manager.lastName,
                         commissionPercentage: data.commissionPercentage,
-                        country: countries.getName(data.countryId, 'en') ?? '',
+                        country: data.countries.map((c: string) => countries.getName(c, 'en') ?? ''),
                         sector: data.sector,
                     },
                 });

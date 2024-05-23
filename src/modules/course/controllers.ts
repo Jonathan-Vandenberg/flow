@@ -36,11 +36,13 @@ export const getCourseByIdController = async (req: Request, res: Response) => {
 export const createCourseController = async (req: Request, res: Response) => {
     const { organisationId,
         name,
+        locationIds
     } = req.body;
 
     const createCourseData = {
         organisationId,
         name,
+        locationIds
     }
     try {
         const data = await courseService.createCourse(createCourseData);

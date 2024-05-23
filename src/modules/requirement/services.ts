@@ -58,21 +58,36 @@ const getRequirementById = async (id: string
     };
 };
 
-const createRequirement = async (data: any
-) => {
-    // courseId  TODO Individual Requirements
-    // studentId
-    // country
+const createRequirement = async (data: any) => {
+    let requirement;
 
-    let requirement
     await prisma.$transaction(async (t) => {
-        const organisation = await t.organisation.findUnique({
+        const existingCountries = await t.country.findMany({
             where: {
-                id: data.organisationId
+                name: {
+                    in: data.country,
+                },
             },
-            include:{
-                students: true
-            }
+        });
+
+        const existingCountryNames = existingCountries.map((country) => country.name);
+        const newCountryNames = data.countries.filter(
+            (country: string) => !existingCountryNames.includes(country)
+        );
+
+        const newCountries = await Promise.all(
+            newCountryNames.map((country: string) =>
+                t.country.create({
+                    data: {
+                        name: country,
+                    },
+                })
+            )
+        );
+
+        const organisation = await t.organisation.findUnique({
+            where: { id: data.organisationId },
+            include: { students: true },
         });
 
         if (!organisation) {
@@ -81,38 +96,52 @@ const createRequirement = async (data: any
         }
 
         requirement = await t.requirement.create({
-            data
-        })
+            data: {
+                status: data.status,
+                details: data.details,
+                type: data.type,
+                requirementsOnCountries: {
+                    create: [
+                        ...existingCountries.map((country) => ({
+                            country: { connect: { id: country.id } },
+                        })),
+                        ...newCountries.map((country) => ({
+                            country: { create: { id: country.id, name: country.name } },
+                        })),
+                    ],
+                },
+                requirementsOnCourses: {
+                    create: data.courseIds.map((courseId: string) => ({
+                        course: { connect: { id: courseId } },
+                    })),
+                },
+                exampleImages: {
+                    create: data.exampleImages?.map((image: any) => ({
+                        url: image.url,
+                    })),
+                },
+            },
+        });
 
         if (!requirement) {
             logger.error(`Could not create requirement`);
             return;
         }
 
-        // for (const image of data.exampleImages) {
-        //     await t.exampleImage.create({
-        //         data: {
-        //             requirementId: requirement.id,
-        //             url: image.url
-        //         }
-        //     });
-        // }
-
-        for (const student of organisation.students) {
-            await t.directory.create({
-                data: {
-                    requirementId: requirement.id,
-                    studentId: student.id,
-                    status: DirectoryStatus.IN_PROGRESS
-                }
-            });
+        if (organisation.students.length > 0) {
+            for (const student of organisation.students) {
+                await t.directory.create({
+                    data: {
+                        requirementId: requirement.id,
+                        studentId: student.id,
+                        status: DirectoryStatus.IN_PROGRESS,
+                    },
+                });
+            }
         }
-    })
+    });
 
-    return {
-        isValid: !!requirement,
-        data: requirement
-    };
+    return { isValid: !!requirement, data: requirement };
 };
 
 const updateRequirement = async (data: any
