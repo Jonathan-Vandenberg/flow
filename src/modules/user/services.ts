@@ -153,7 +153,7 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
             expertiseArea: createUserData.expertiseArea,
             country: {
                 create: {
-                    name: createUserData.countryName,
+                    name: createUserData.country,
                 },
             },
         };
