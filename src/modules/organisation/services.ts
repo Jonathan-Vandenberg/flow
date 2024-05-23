@@ -57,6 +57,7 @@ const getOrganisationById = async (id: string) => {
         const organisation = await prisma.organisation.findUnique({
             where: { id },
             include: {
+                country: true,
                 students: {
                     include: { course: true },
                     orderBy: { createdAt: 'desc' },
