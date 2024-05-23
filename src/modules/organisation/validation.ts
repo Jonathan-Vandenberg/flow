@@ -39,7 +39,18 @@ export const createOrganisationValidationRules = checkSchema({
         notEmpty: {
             errorMessage: 'The imageUrl field is required'
         }
-    }
+    },
+    locations: {
+        in: ['body'],
+        isArray: {
+            errorMessage: 'The locations must be a string.'
+        },
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        },
+    },
 });
 
 /**

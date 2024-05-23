@@ -71,6 +71,12 @@ const createStudent = async (data: any) => {
             return;
         }
 
+        const existingCountry = await prisma.country.findUnique({
+            where: {
+                name: data.country,
+            },
+        });
+
         try {
             student = await t.student.create({
                 data: {
@@ -96,12 +102,22 @@ const createStudent = async (data: any) => {
                     },
                     name: data.name,
                     age: data.age,
-                    country: data.country,
                     expAttendDate: data.expAttendDate,
                     guardianMobile: data.guardianMobile,
                     guardianEmail: data.guardianEmail,
                     gapYearExplanation: data.gapYearExplanation,
                     previouslyRejected: data.previouslyRejected,
+                    country: existingCountry
+                        ? {
+                            connect: {
+                                id: existingCountry.id,
+                            },
+                        }
+                        : {
+                            create: {
+                                name: data.country,
+                            },
+                        },
                     ...(organisation.requirements.length > 0 && {
                         directories: {
                             create: organisation.requirements.map((requirement) => ({

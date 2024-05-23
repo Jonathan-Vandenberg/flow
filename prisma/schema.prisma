@@ -126,6 +126,7 @@ model Organisation {
   requirements            Requirement[]
   agenciesOnOrganisations AgenciesOnOrganisations[]
   usersOnOrganisations    UsersOnOrganisations[]
+  locations               OrganisationLocation[]
   country                 Country?                  @relation(fields: [countryId], references: [id])
 }
 
@@ -207,15 +208,15 @@ model ExampleImage {
   requirement Requirement @relation(fields: [requirementId], references: [id])
 }
 
-model CourseLocation {
-  id       String @id @default(uuid())
-  courseId String
+model OrganisationLocation {
+  id             String   @id @default(uuid())
+  organisationId String
+  location       String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
 
-  location  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-
-  course Course @relation(fields: [courseId], references: [id])
+  organisation Organisation @relation(fields: [organisationId], references: [id])
+  courses      Course[]
 }
 
 model Task {
@@ -249,13 +250,14 @@ model Contact {
 model Course {
   id             String @id @default(uuid())
   organisationId String
+  locationId     String
 
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  organisation Organisation     @relation(fields: [organisationId], references: [id])
-  locations    CourseLocation[]
+  organisation Organisation         @relation(fields: [organisationId], references: [id])
+  location     OrganisationLocation @relation(fields: [locationId], references: [id])
   requirements Requirement[]
   students     Student[]
 }
