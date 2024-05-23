@@ -1,10 +1,9 @@
 import express from 'express';
 
 import {
-    createUserController, createUserOrganisationController,
+    createUserController,
     getUserByEmailController,
-    getUserByIdController,
-    getUsersByOrganisationIdController,
+    getUserByIdController, getUserByOrganisationIdController,
     updateUserController,
 } from './controller';
 import {
@@ -25,17 +24,6 @@ router.post(
     // isAuthenticated,
     // isValidationResult,
     createUserController
-);
-
-/**
- * Create User and Organisation
- */
-router.post(
-    '/user-org',
-    createUserOrganisationValidationRules,
-    // isAuthenticated,
-    // isValidationResult,
-    createUserOrganisationController
 );
 
 /**
@@ -68,7 +56,7 @@ router.get(
     getUsersByOrganisationIdValidationRules,
     // isAuthenticated,
     // isValidationResult,
-    getUsersByOrganisationIdController
+    getUserByOrganisationIdController
 );
 
 /**

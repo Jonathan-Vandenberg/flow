@@ -33,10 +33,10 @@ export const getUserByEmailController = async (req: Request, res: Response) => {
 /**
  * Get users organisation by ID
  */
-export const getUsersByOrganisationIdController = async (req: Request, res: Response) => {
+export const getUserByOrganisationIdController = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-        const data = await userService.getUsersByOrganisationId(id);
+        const data = await userService.getUserByOrganisationId(id);
         return res.status(200).json(data);
     } catch (e) {
         logger.info(e);
@@ -75,36 +75,6 @@ export const createUserController = async (req: Request, res: Response) => {
     }
     try {
         const data = await userService.createUser(createUserData);
-        return res.status(200).json(data);
-    } catch (e) {
-        logger.info(e);
-        res.status(500).send('Server error, try again or contact support');
-    }
-};
-
-/**
- * Create user and organisation
- */
-export const createUserOrganisationController = async (req: Request, res: Response) => {
-    const {
-        name,
-        country,
-        firstName,
-        lastName,
-        email,
-        mobile,
-    } = req.body;
-
-    const createUserOrgData = {
-        name,
-        country,
-        firstName,
-        lastName,
-        email,
-        mobile,
-    }
-    try {
-        const data = await userService.createUserOrg(createUserOrgData);
         return res.status(200).json(data);
     } catch (e) {
         logger.info(e);

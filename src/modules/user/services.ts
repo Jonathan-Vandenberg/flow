@@ -1,62 +1,48 @@
 import prisma from '../../../prisma/prisma';
-import { Role, User} from "@prisma/client";
+import {Role, User, UsersOnOrganisations} from "@prisma/client";
 import {logger} from "../../utils/logger";
 import {create} from "domain";
 import {createUserController} from "./controller";
 
 
-const getUserById = async (
-    id: string
-): Promise<{ isValid: boolean; message: string, data: any }> => {
+const getUserById = async (id: string): Promise<{ isValid: boolean; message: string; data: any }> => {
     let user: User | null = null;
-    let agencies
-    let organisation
-    let errorMessage
+    let errorMessage;
 
     try {
         user = await prisma.user.findUnique({
-                where: { id },
-                include: {
-                    managedStudents: true,
-                    agency: true
-                }
-        })
-
-        if(user && user.organisationId){
-             organisation = await prisma.organisation.findUnique({
-                where: {
-                    id: user?.organisationId
+            where: { id },
+            include: {
+                managedStudents: true,
+                socialMedia: true,
+                organisations: {
+                    include: {
+                        organisation: true,
+                    },
                 },
-                select: {
-                    agenciesOnOrganisations: true
-                }
-            })
-        }
-
-
-        if (user && organisation?.agenciesOnOrganisations.length) {
-            const managedAgencies = organisation?.agenciesOnOrganisations.filter((agency) => agency.managerId === id);
-            const agencyIds = managedAgencies.map((agency) => agency.agencyId);
-            agencies = await prisma.agency.findMany({
-                where: {
-                    id: { in: agencyIds }
+                agencies: {
+                    include: {
+                        agency: {
+                            include: {
+                                students: true,
+                                users: true,
+                                contacts: true,
+                            },
+                        },
+                    },
                 },
-                include: {
-                    students: true,
-                    users: true,
-                    contacts: true
-                }
-            });
-        }
-    } catch(e: any){
-        errorMessage = e.message
-        logger.error(`ERROR::getUserById::${e.message}`)
+                country: true,
+            },
+        });
+    } catch (e: any) {
+        errorMessage = e.message;
+        logger.error(`ERROR::getUserById::${e.message}`);
     }
 
     return {
         isValid: !!user,
         message: user ? "Fetched User Successfully" : `Failed to fetch User: ${errorMessage}`,
-        data: {...user, agencies}
+        data: user,
     };
 };
 
@@ -64,66 +50,83 @@ const getUserByEmail = async (
     email: string
 ): Promise<{ isValid: boolean; message: string, data: any }> => {
     let user: User | null = null;
-    let agencies
-    let organisation
-    let errorMessage
+    let usersOnOrganisations: UsersOnOrganisations[] = [];
+    let agencies;
+    let errorMessage;
 
     try {
         user = await prisma.user.findUnique({
             where: { email },
             include: {
-                organisation: true,
                 managedStudents: true,
-                agency: true
-            }
-        })
-
-        if(user && user.organisationId){
-            organisation = await prisma.organisation.findUnique({
-                where: {
-                    id: user?.organisationId
+                socialMedia: true,
+                organisations: true,
+                agencies: {
+                    include: {
+                        agency: true,
+                    },
                 },
-                select: {
-                    agenciesOnOrganisations: true
-                }
-            })
-        }
+                country: true,
+            },
+        });
 
-        if (user && organisation?.agenciesOnOrganisations.length) {
-            const managedAgencies = organisation?.agenciesOnOrganisations.filter((agency) => agency.managerId === user?.id);
-            const agencyIds = managedAgencies.map((agency) => agency.agencyId);
+        if (user) {
+            usersOnOrganisations = await prisma.usersOnOrganisations.findMany({
+                where: {
+                    userId: user.id,
+                },
+                include: {
+                    organisation: true,
+                },
+            });
+
+            const organisationIds = usersOnOrganisations.map((org) => org.organisationId);
+            const agenciesOnOrganisations = await prisma.agenciesOnOrganisations.findMany({
+                where: {
+                    organisationId: { in: organisationIds },
+                    managerId: user.id,
+                },
+                include: {
+                    agency: true,
+                },
+            });
+
+            const agencyIds = agenciesOnOrganisations.map((agency) => agency.agencyId);
             agencies = await prisma.agency.findMany({
                 where: {
-                    id: { in: agencyIds }
+                    id: { in: agencyIds },
                 },
                 include: {
                     students: true,
                     users: true,
-                    contacts: true
-                }
+                    contacts: true,
+                },
             });
         }
-    } catch(e: any){
-        errorMessage = e.message
-        logger.error(`ERROR::getUserByEmail::${e.message}`)
+    } catch (e: any) {
+        errorMessage = e.message;
+        logger.error(`ERROR::getUserByEmail::${e.message}`);
     }
 
     return {
         isValid: !!user,
         message: user ? "Fetched User Successfully" : `Failed to fetch User: ${errorMessage}`,
-        data: {...user, agencies}
+        data: { user, usersOnOrganisations, agencies },
     };
 };
 
-const getUsersByOrganisationId = async (
+const getUserByOrganisationId = async (
     id: string
 ): Promise<{ isValid: boolean; message: string, data: any }> => {
     let users
     let errorMessage
 
     try {
-        users = await prisma.user.findMany({
-            where: { organisationId: id }
+        users = await prisma.usersOnOrganisations.findMany({
+            where: { organisationId: id },
+            include: {
+                user: true
+            }
         })
     } catch(e: any){
         errorMessage = e.message
@@ -137,41 +140,53 @@ const getUsersByOrganisationId = async (
     };
 };
 
-const createUser = async (createUserData: any): Promise<{ isValid: boolean; message: string, data: any }> => {
+const createUser = async (createUserData: any): Promise<{ isValid: boolean; message: string; data: any }> => {
     let user;
     let errorMessage;
 
     try {
         const userData = {
-            managerId: createUserData.managerId,
             firstName: createUserData.firstName,
             lastName: createUserData.lastName,
             email: createUserData.email,
-            role: createUserData.role,
             imageUrl: createUserData.imageUrl,
             expertiseArea: createUserData.expertiseArea,
             country: createUserData.country,
-            organisation: {
-                connect: {
-                    id: createUserData.organisationId
-                }
-            }
         };
 
-        if (createUserData.role === Role.AGENT && createUserData.agencyId) {
+        if (createUserData.role === Role.ADMIN || createUserData.role === Role.MANAGER) {
+            // If the user role is ADMIN or MANAGER, create the user and associate with the organization (if provided)
+            user = await prisma.user.create({
+                data: {
+                    ...userData,
+                    organisations: {
+                        create: {
+                            role: createUserData.role,
+                            organisation: {
+                                connect: { id: createUserData.organisationId },
+                            },
+                        },
+                    }
+                },
+            });
+        } else if (createUserData.role === Role.AGENT && createUserData.agencyId) {
             // If the user role is AGENT and agencyId is provided, create the user and associate with the agency
             user = await prisma.user.create({
                 data: {
                     ...userData,
-                    agency: {
-                        connect: {
-                            id: createUserData.agencyId,
+                    agencies: {
+                        create: {
+                            role: createUserData.role,
+                            email: createUserData.email,
+                            agency: {
+                                connect: { id: createUserData.agencyId },
+                            },
                         },
                     },
                 },
             });
         } else {
-            // If the user role is not AGENT or agencyId is not provided, create the user without agency association
+            // If the user role is not ADMIN, MANAGER, or AGENT with agencyId, create the user without any associations
             user = await prisma.user.create({
                 data: userData,
             });
@@ -183,53 +198,8 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
 
     return {
         isValid: !!user,
-        message: user ? "Created User Successfully" : `Failed to create User: ${errorMessage}`,
+        message: user ? 'Created User Successfully' : `Failed to create User: ${errorMessage}`,
         data: user,
-    };
-};
-
-const createUserOrg = async (
-    createUserOrgData: any
-): Promise<{ isValid: boolean; message: string, data: any }> => {
-    let user
-    let organisation
-    let errorMessage
-
-    try{
-        const result = await prisma.user.create({
-            data: {
-                firstName: createUserOrgData.firstName,
-                lastName: createUserOrgData.lastName,
-                email: createUserOrgData.email,
-                role: Role.ADMIN,
-                organisation: {
-                    create: {
-                        name: createUserOrgData.name,
-                        country: createUserOrgData.country,
-                    },
-                },
-            },
-            include: {
-                organisation: {
-                    include: {
-                        users: true
-                    }
-                },
-            },
-        });
-
-        user = result;
-        organisation = result.organisation;
-
-    }catch(e: any){
-        errorMessage = e.message
-        console.log('ERROR::ADD_USER_ORG:', e.message)
-    }
-
-    return {
-        isValid: !!user,
-        message: user ? "Created User Successfully" : `Created to fetch User: ${errorMessage}`,
-        data: {user, organisation}
     };
 };
 
@@ -241,20 +211,47 @@ const updateUser = async (
 
     try{
         user = await prisma.user.update({
-            where: {id: updateUserData.id},
+            where: { id: updateUserData.id },
             data: {
-                agencyId: updateUserData.agencyId,
-                managerId: updateUserData.managerId,
-                organisationId: updateUserData.organisationId,
                 firstName: updateUserData.firstName,
                 lastName: updateUserData.lastName,
                 email: updateUserData.email,
                 mobile: updateUserData.mobile,
-                role: updateUserData.role,
                 imageUrl: updateUserData.imageUrl,
                 expertiseArea: updateUserData.expertiseArea,
-                country: updateUserData.country
-            }
+                country: {
+                    update: {
+                        name: updateUserData.countryName,
+                    },
+                },
+                managedStudents: {
+                    connect: updateUserData.managedStudentIds.map((id: string) => ({ id })),
+                },
+                socialMedia: {
+                    create: updateUserData.newSocialMedia,
+                    update: updateUserData.existingSocialMedia.map((media: any) => ({
+                        where: { id: media.id },
+                        data: media,
+                    })),
+                    delete: updateUserData.deleteSocialMediaIds.map((id: string) => ({ id })),
+                },
+                organisations: {
+                    create: updateUserData.newOrganisations,
+                    update: updateUserData.existingOrganisations.map((org: any) => ({
+                        where: { id: org.id },
+                        data: org,
+                    })),
+                    delete: updateUserData.deleteOrganisationIds.map((id: string) => ({ id })),
+                },
+                agencies: {
+                    create: updateUserData.newAgencies,
+                    update: updateUserData.existingAgencies.map((agency: any) => ({
+                        where: { id: agency.id },
+                        data: agency,
+                    })),
+                    delete: updateUserData.deleteAgencyIds.map((id: string) => ({ id })),
+                },
+            },
         });
     }catch(e: any){
         errorMessage = e.message
@@ -270,9 +267,8 @@ const updateUser = async (
 
 export default {
     createUser,
-    createUserOrg,
     updateUser,
     getUserById,
     getUserByEmail,
-    getUsersByOrganisationId
+    getUserByOrganisationId
 };

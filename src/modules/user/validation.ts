@@ -49,6 +49,17 @@ export const getUsersByOrganisationIdValidationRules = checkSchema({
  * Create User validation rules
  */
 export const createUserValidationRules = checkSchema({
+    organisationId: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The organisationId must be a string.'
+        },
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        }
+    },
     agencyId: {
         in: ['body'],
         isString: {
@@ -60,21 +71,10 @@ export const createUserValidationRules = checkSchema({
             }
         }
     },
-    managerId: {
+    role: {
         in: ['body'],
         isString: {
-            errorMessage: 'The manager Id must be a string.'
-        },
-        optional: {
-            options: {
-                checkFalsy: true
-            }
-        }
-    },
-    organisationId: {
-        in: ['body'],
-        isString: {
-            errorMessage: 'The organisationId must be a string.'
+            errorMessage: 'The role must be a string.'
         },
         optional: {
             options: {
@@ -107,15 +107,6 @@ export const createUserValidationRules = checkSchema({
         },
         notEmpty: {
             errorMessage: 'The email field is required'
-        }
-    },
-    role: {
-        in: ['body'],
-        isString: {
-            errorMessage: 'The role must be a string.'
-        },
-        notEmpty: {
-            errorMessage: 'The role field is required'
         }
     },
     imageUrl: {

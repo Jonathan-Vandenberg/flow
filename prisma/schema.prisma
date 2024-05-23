@@ -16,7 +16,7 @@ enum DocStatus {
 
 enum AreaOfExpertise {
   VISA
-  CONSALTANCY
+  CONSULTANCY
   MARKETING
 }
 
@@ -64,54 +64,76 @@ enum Role {
   AGENT
 }
 
+model Country {
+  id            String         @id @default(uuid())
+  name          String         @unique
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now())
+  users         User[]
+  organisations Organisation[]
+  agencies      Agency[]
+  students      Student[]
+  Requirement   Requirement[]
+}
+
 model User {
-  id             String  @id @default(uuid())
-  agencyId       String?
-  managerId      String?
-  organisationId String?
+  id        String  @id @default(uuid())
+  managerId String?
 
   email         String           @unique
   firstName     String
   lastName      String
   mobile        String?
-  country       String?
-  role          Role             @default(NORMAL)
+  countryId     String?
   imageUrl      String?
   expertiseArea AreaOfExpertise?
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @default(now())
 
   managedStudents         Student[]
-  agency                  Agency?                   @relation("UserToAgency", fields: [agencyId], references: [id])
   socialMedia             SocialMedia[]             @relation("SocialMediaToAgent")
-  organisation            Organisation?             @relation(fields: [organisationId], references: [id])
   agenciesOnOrganisations AgenciesOnOrganisations[]
+  organisations           UsersOnOrganisations[]
+  agencies                UsersOnAgencies[]
+  country                 Country?                  @relation(fields: [countryId], references: [id])
+}
+
+model UsersOnOrganisations {
+  userId         String
+  organisationId String
+  role           Role
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
+
+  user         User         @relation(fields: [userId], references: [id])
+  organisation Organisation @relation(fields: [organisationId], references: [id])
+
+  @@id([userId, organisationId])
 }
 
 model Organisation {
-  id String @id @default(uuid())
-
-  name      String     @unique
-  country   String?
-  subStatus SubStatus? @default(PENDING)
+  id        String    @id @default(uuid())
+  name      String    @unique
+  countryId String?
+  subStatus SubStatus @default(PENDING)
   imageUrl  String?
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @default(now())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
 
-  users                   User[]
   agencies                Agency[]
   students                Student[]
   courses                 Course[]
   requirements            Requirement[]
   agenciesOnOrganisations AgenciesOnOrganisations[]
+  usersOnOrganisations    UsersOnOrganisations[]
+  country                 Country?                  @relation(fields: [countryId], references: [id])
 }
 
 model Agency {
-  id String @id @default(uuid())
-
+  id                   String  @id @default(uuid())
   name                 String
   sector               Sector?
-  country              String?
+  countryId            String?
   district             String?
   market               String?
   commissionPercentage Int     @default(0)
@@ -119,11 +141,26 @@ model Agency {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  organisation            Organisation[]
+  organisations           Organisation[]
   contacts                Contact[]
   students                Student[]
   agenciesOnOrganisations AgenciesOnOrganisations[]
-  users                   User[]                    @relation("UserToAgency")
+  users                   UsersOnAgencies[]
+  country                 Country?                  @relation(fields: [countryId], references: [id])
+}
+
+model UsersOnAgencies {
+  userId    String
+  agencyId  String
+  role      Role
+  email     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  agency Agency @relation(fields: [agencyId], references: [id])
+
+  @@id([userId, agencyId])
 }
 
 model AgenciesOnOrganisations {
@@ -141,24 +178,23 @@ model AgenciesOnOrganisations {
 }
 
 model Requirement {
-  id             String  @id @default(uuid())
+  id             String            @id @default(uuid())
   organisationId String
   courseId       String?
   studentId      String?
-
-  country   String?
-  name      String?
-  details   String
-  status    RequirementStatus?
-  type      RequirementType
-  createdAt DateTime           @default(now())
-  updatedAt DateTime           @default(now())
+  details        String
+  countryId      String?
+  status         RequirementStatus
+  type           RequirementType
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @default(now())
 
   student       Student?       @relation(fields: [studentId], references: [id])
   organisation  Organisation   @relation(fields: [organisationId], references: [id])
   directory     Directory[]
   exampleImages ExampleImage[]
   course        Course?        @relation(fields: [courseId], references: [id])
+  country       Country?       @relation(fields: [countryId], references: [id])
 }
 
 model ExampleImage {
@@ -221,35 +257,36 @@ model Course {
   organisation Organisation     @relation(fields: [organisationId], references: [id])
   locations    CourseLocation[]
   requirements Requirement[]
-  Student      Student[]
+  students     Student[]
 }
 
 model Student {
-  id             String @id @default(uuid())
+  id             String  @id @default(uuid())
   organisationId String
   courseId       String
   agencyId       String
   agentId        String
+  countryId      String?
 
   name               String?
   age                Int?
-  country            String?
   guardianMobile     String?
   guardianEmail      String?
   expAttendDate      DateTime?
   gapYear            Boolean?
   gapYearExplanation String?
   previouslyRejected Boolean?
-  status             StudentStatus? @default(PENDING)
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @default(now())
+  status             StudentStatus @default(PENDING)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @default(now())
 
-  user         User          @relation(fields: [agentId], references: [id])
+  agent        User          @relation(fields: [agentId], references: [id])
   course       Course        @relation(fields: [courseId], references: [id])
   agency       Agency        @relation(fields: [agencyId], references: [id])
   requirements Requirement[]
   directories  Directory[]   @relation("StudentDocsToStudent")
   organisation Organisation  @relation(fields: [organisationId], references: [id])
+  country      Country?      @relation(fields: [countryId], references: [id])
 }
 
 model Document {
@@ -260,9 +297,9 @@ model Document {
   url         String?
   name        String
   description String
-  status      DocStatus? @default(PENDING)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @default(now())
+  status      DocStatus @default(PENDING)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
 
   directory Directory @relation(fields: [directoryId], references: [id])
   task      Task?     @relation("documentToTask", fields: [taskId], references: [id])
@@ -273,9 +310,9 @@ model Directory {
   studentId     String
   requirementId String
 
-  status    DirectoryStatus? @default(IN_PROGRESS)
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @default(now())
+  status    DirectoryStatus @default(IN_PROGRESS)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @default(now())
 
   documents   Document[]
   requirement Requirement @relation(fields: [requirementId], references: [id])

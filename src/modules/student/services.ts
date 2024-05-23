@@ -74,10 +74,26 @@ const createStudent = async (data: any) => {
         try {
             student = await t.student.create({
                 data: {
-                    organisationId: data.organisationId,
-                    courseId: data.courseId,
-                    agentId: data.agentId,
-                    agencyId: data.agencyId,
+                    organisation: {
+                        connect: {
+                            id: data.organisationId
+                        }
+                    },
+                    course: {
+                        connect: {
+                            id: data.courseId
+                        }
+                    },
+                    agency: {
+                        connect: {
+                            id: data.agencyId
+                        }
+                    },
+                    agent: {
+                        connect: {
+                            id: data.agentId
+                        }
+                    },
                     name: data.name,
                     age: data.age,
                     country: data.country,
@@ -86,27 +102,24 @@ const createStudent = async (data: any) => {
                     guardianEmail: data.guardianEmail,
                     gapYearExplanation: data.gapYearExplanation,
                     previouslyRejected: data.previouslyRejected,
+                    ...(organisation.requirements.length > 0 && {
+                        directories: {
+                            create: organisation.requirements.map((requirement) => ({
+                                requirement: {
+                                    connect: {
+                                        id: requirement.id
+                                    }
+                                },
+                                status: DirectoryStatus.IN_PROGRESS
+                            }))
+                        }
+                    })
                 }
             });
 
             if (!student) {
                 logger.error('ERROR::createStudent: Student unable to be created');
                 return;
-            }
-
-            if (!organisation?.requirements?.length) {
-                logger.error("No requirements!");
-                return;
-            }
-
-            for (const requirement of organisation.requirements) {
-                await t.directory.create({
-                    data: {
-                        requirementId: requirement.id,
-                        studentId: student.id,
-                        status: DirectoryStatus.IN_PROGRESS
-                    }
-                });
             }
         } catch (error: any) {
             logger.error(`Error creating student: ${error.message}`);

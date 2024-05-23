@@ -280,3 +280,5 @@
 {"level":"info","message":"Backend is running on port 8080"}
 {"code":"ENOENT","errno":-2,"level":"info","path":"/Users/jonathanvandenberg/2024/rnbackend/src/templates/agency-created.html","syscall":"open"}
 {"level":"info","message":"Backend is running on port 8080"}
+{"level":"info","message":"Backend is running on port 8080"}
+{"level":"info","message":"Backend is running on port 8080"}
