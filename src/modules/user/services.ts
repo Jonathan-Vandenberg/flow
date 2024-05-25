@@ -18,7 +18,11 @@ const getUserById = async (id: string): Promise<{ isValid: boolean; message: str
                 socialMedia: true,
                 usersOnOrganisations: {
                     include: {
-                        organisation: true,
+                        organisation: {
+                            include: {
+                                country: true
+                            }
+                        },
                     },
                 },
                 usersOnAgencies: {
@@ -75,7 +79,11 @@ const getUserByEmail = async (
                 socialMedia: true,
                 usersOnOrganisations: {
                     include: {
-                        organisation: true,
+                        organisation: {
+                            include: {
+                                country: true
+                            }
+                        },
                     },
                 },
                 usersOnAgencies: {
