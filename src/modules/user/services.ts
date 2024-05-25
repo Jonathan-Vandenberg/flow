@@ -72,15 +72,39 @@ const getUserByEmail = async (
         user = await prisma.user.findUnique({
             where: { email },
             include: {
+                country: true,
                 managedStudents: true,
                 socialMedia: true,
-                usersOnOrganisations: true,
-                agenciesOnOrganisations: {
+                usersOnOrganisations: {
                     include: {
-                        agency: true,
+                        organisation: true,
                     },
                 },
-                country: true,
+                usersOnAgencies: {
+                    include: {
+                        agency: {
+                            include: {
+                                students: true,
+                                agenciesOnCountries: {
+                                    include: {
+                                        country: true
+                                    }
+                                },
+                                usersOnAgencies: {
+                                    include: {
+                                        user: {
+                                            include: {
+                                                country: true
+                                            }
+                                        },
+                                        agency: true,
+                                    }
+                                },
+                                contacts: true,
+                            },
+                        },
+                    },
+                },
             },
         });
 
