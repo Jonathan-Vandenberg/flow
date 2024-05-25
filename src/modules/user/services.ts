@@ -13,6 +13,7 @@ const getUserById = async (id: string): Promise<{ isValid: boolean; message: str
         user = await prisma.user.findUnique({
             where: { id },
             include: {
+                country: true,
                 managedStudents: true,
                 socialMedia: true,
                 usersOnOrganisations: {
@@ -32,8 +33,12 @@ const getUserById = async (id: string): Promise<{ isValid: boolean; message: str
                                 },
                                 usersOnAgencies: {
                                     include: {
-                                        user: true,
-                                        agency: true
+                                        user: {
+                                            include: {
+                                                country: true
+                                            }
+                                        },
+                                        agency: true,
                                     }
                                 },
                                 contacts: true,
@@ -41,7 +46,6 @@ const getUserById = async (id: string): Promise<{ isValid: boolean; message: str
                         },
                     },
                 },
-                country: true,
             },
         });
     } catch (e: any) {
