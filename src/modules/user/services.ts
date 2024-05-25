@@ -62,10 +62,8 @@ const getUserById = async (id: string): Promise<{ isValid: boolean; message: str
 
 const getUserByEmail = async (
     email: string
-): Promise<{ isValid: boolean; message: string, data: any }> => {
+): Promise<{ isValid: boolean; message: string; data: any }> => {
     let user: User | null = null;
-    let usersOnOrganisations: UsersOnOrganisations[] = [];
-    let agencies;
     let errorMessage;
 
     try {
@@ -87,18 +85,18 @@ const getUserByEmail = async (
                                 students: true,
                                 agenciesOnCountries: {
                                     include: {
-                                        country: true
-                                    }
+                                        country: true,
+                                    },
                                 },
                                 usersOnAgencies: {
                                     include: {
                                         user: {
                                             include: {
-                                                country: true
-                                            }
+                                                country: true,
+                                            },
                                         },
                                         agency: true,
-                                    }
+                                    },
                                 },
                                 contacts: true,
                             },
@@ -107,40 +105,6 @@ const getUserByEmail = async (
                 },
             },
         });
-
-        if (user) {
-            usersOnOrganisations = await prisma.usersOnOrganisations.findMany({
-                where: {
-                    userId: user.id,
-                },
-                include: {
-                    organisation: true,
-                },
-            });
-
-            const organisationIds = usersOnOrganisations.map((org) => org.organisationId);
-            const agenciesOnOrganisations = await prisma.agenciesOnOrganisations.findMany({
-                where: {
-                    organisationId: { in: organisationIds },
-                    managerId: user.id,
-                },
-                include: {
-                    agency: true,
-                },
-            });
-
-            const agencyIds = agenciesOnOrganisations.map((agency) => agency.agencyId);
-            agencies = await prisma.agency.findMany({
-                where: {
-                    id: { in: agencyIds },
-                },
-                include: {
-                    students: true,
-                    usersOnAgencies: true,
-                    contacts: true,
-                },
-            });
-        }
     } catch (e: any) {
         errorMessage = e.message;
         logger.error(`ERROR::getUserByEmail::${e.message}`);
@@ -149,7 +113,7 @@ const getUserByEmail = async (
     return {
         isValid: !!user,
         message: user ? "Fetched User Successfully" : `Failed to fetch User: ${errorMessage}`,
-        data: { user, usersOnOrganisations, agencies },
+        data: user,
     };
 };
 
