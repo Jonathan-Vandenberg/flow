@@ -332,6 +332,7 @@ model Student {
 
   name               String?
   age                Int?
+  country            String?
   guardianMobile     String?
   guardianEmail      String?
   expAttendDate      DateTime?
@@ -348,7 +349,7 @@ model Student {
   requirements Requirement[]
   directories  Directory[]   @relation("StudentDocsToStudent")
   organisation Organisation  @relation(fields: [organisationId], references: [id])
-  country      Country?      @relation(fields: [countryId], references: [id])
+  Country      Country?      @relation(fields: [countryId], references: [id])
 }
 
 model Document {
