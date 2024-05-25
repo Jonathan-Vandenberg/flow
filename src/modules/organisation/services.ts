@@ -90,6 +90,11 @@ const getOrganisationById = async (id: string) => {
                                 contacts: {
                                     orderBy: { createdAt: 'desc' },
                                 },
+                                agenciesOnCountries: {
+                                    include: {
+                                        country: true
+                                    }
+                                },
                                 usersOnAgencies: {
                                     include: {
                                         user: {
