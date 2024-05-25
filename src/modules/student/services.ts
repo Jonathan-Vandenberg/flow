@@ -96,17 +96,12 @@ const createStudent = async (data: any) => {
                     },
                     name: data.name,
                     age: data.age,
+                    country: data.country,
                     expAttendDate: data.expAttendDate,
                     guardianMobile: data.guardianMobile,
                     guardianEmail: data.guardianEmail,
                     gapYearExplanation: data.gapYearExplanation,
                     previouslyRejected: data.previouslyRejected,
-                    country: {
-                        connectOrCreate: {
-                            where: { name: data.country },
-                            create: { name: data.country },
-                        },
-                    },
                     ...(organisation.requirements.length > 0 && {
                         directories: {
                             create: organisation.requirements.map((requirement) => ({
