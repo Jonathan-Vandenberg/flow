@@ -25,6 +25,11 @@ const getUserById = async (id: string): Promise<{ isValid: boolean; message: str
                         agency: {
                             include: {
                                 students: true,
+                                agenciesOnCountries: {
+                                    include: {
+                                        country: true
+                                    }
+                                },
                                 usersOnAgencies: {
                                     include: {
                                         user: true,
