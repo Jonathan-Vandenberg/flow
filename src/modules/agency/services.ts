@@ -68,7 +68,7 @@ const createAgency = async (data: any) => {
                     firstName: true,
                     lastName: true,
                     email: true,
-                    agenciesOnOrganisations: {
+                    usersOnOrganisations: {
                         where: { organisationId: data.organisationId },
                         select: { organisation: { select: { name: true } } },
                     },
@@ -120,14 +120,14 @@ const createAgency = async (data: any) => {
                 },
             });
 
-            if (agency?.id && manager && manager.agenciesOnOrganisations.length) {
+            if (agency?.id && manager && !!manager?.usersOnOrganisations?.length) {
                 isValid = true;
                 await sendTransactionalEmail({
                     action: EmailAction.AGENCY_CREATED,
                     recipientEmail: "admin@hotclick.pro",
                     dynamicData: {
                         agencyName: data.name,
-                        organisationName: manager.agenciesOnOrganisations[0].organisation?.name || '',
+                        organisationName: manager.usersOnOrganisations[0].organisation?.name || '',
                         managerFirstName: manager.firstName,
                         managerLastName: manager.lastName,
                         commissionPercentage: data.commissionPercentage,
