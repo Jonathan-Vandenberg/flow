@@ -83,16 +83,18 @@ const createRequirement = async (data: any) => {
                             id: data.organisationId,
                         },
                     },
-                    requirementsOnCountries: {
-                        create: data.countries.map((country: string) => ({
-                            country: {
-                                connectOrCreate: {
-                                    where: { name: country },
-                                    create: { name: country },
+                    ...data.countries && ({
+                        requirementsOnCountries: {
+                            create: data.countries.map((country: string) => ({
+                                country: {
+                                    connectOrCreate: {
+                                        where: {name: country},
+                                        create: {name: country},
+                                    },
                                 },
-                            },
-                        })),
-                    },
+                            })),
+                        }
+                    }),
                     ...(data.courseIds && {
                         requirementsOnCourses: {
                             create: data.courseIds.map((courseId: string) => ({
@@ -102,11 +104,13 @@ const createRequirement = async (data: any) => {
                             })),
                         },
                     }),
-                    exampleImages: {
-                        create: data.exampleImages?.map((image: any) => ({
-                            url: image.url,
-                        })),
-                    },
+                    ...(data.exampleImages && {
+                        exampleImages: {
+                            create: data.exampleImages?.map((image: any) => ({
+                                url: image.url,
+                            })),
+                        }
+                    }),
                 },
             });
 
