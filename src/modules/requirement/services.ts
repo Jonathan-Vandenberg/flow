@@ -16,17 +16,20 @@ const getRequirementsByOrgId = async (organisationId: string
     };
 };
 
-const getRequirementsByCourseId = async (courseId: string
-) => {
+const getRequirementsByCourseId = async (courseId: string) => {
     const requirements = await prisma.requirement.findMany({
         where: {
-            courseId
-        }
-    })
+            requirementsOnCourses: {
+                some: {
+                    courseId: courseId,
+                },
+            },
+        },
+    });
 
     return {
         isValid: !!requirements,
-        data: requirements
+        data: requirements,
     };
 };
 
