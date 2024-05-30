@@ -83,7 +83,7 @@ const createRequirement = async (data: any) => {
                             id: data.organisationId,
                         },
                     },
-                    ...data.countries && ({
+                    ...data?.countries && ({
                         requirementsOnCountries: {
                             create: data.countries.map((country: string) => ({
                                 country: {
@@ -95,7 +95,7 @@ const createRequirement = async (data: any) => {
                             })),
                         }
                     }),
-                    ...(data.courseIds && {
+                    ...(data?.courseIds && {
                         requirementsOnCourses: {
                             create: data.courseIds.map((courseId: string) => ({
                                 course: {

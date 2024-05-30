@@ -74,7 +74,6 @@ model Country {
   users                  User[]
   organisations          Organisation[]
   students               Student[]
-  requirements           Requirement[]
   agenciesOnCountries    AgenciesOnCountries[]
   requirementOnCountries RequirementsOnCountries[]
 }
@@ -211,12 +210,8 @@ model Requirement {
   exampleImages           ExampleImage[]
   requirementsOnCourses   RequirementsOnCourses[]
   requirementsOnCountries RequirementsOnCountries[]
-  country                 Country?                  @relation(fields: [countryId], references: [id])
-  countryId               String?
   organisation            Organisation?             @relation(fields: [organisationId], references: [id])
   organisationId          String?
-  course                  Course?                   @relation(fields: [courseId], references: [id])
-  courseId                String?
   student                 Student?                  @relation(fields: [studentId], references: [id])
   studentId               String?
 }
@@ -277,7 +272,6 @@ model Course {
   updatedAt DateTime @default(now())
 
   organisation          Organisation            @relation(fields: [organisationId], references: [id])
-  requirements          Requirement[]
   students              Student[]
   coursesOnLocations    CourseOnLocation[]
   RequirementsOnCourses RequirementsOnCourses[]
