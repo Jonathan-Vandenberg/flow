@@ -151,7 +151,7 @@ const getUserByOrganisationId = async (
 };
 
 const createUser = async (createUserData: any): Promise<{ isValid: boolean; message: string; data: any }> => {
-    let user;
+    let user: User | null = null;
     let errorMessage;
 
     try {
@@ -223,7 +223,7 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
     }
 
     return {
-        isValid: !!user,
+        isValid: user !== null,
         message: user ? 'Created User Successfully' : `Failed to create User: ${errorMessage}`,
         data: user,
     };
