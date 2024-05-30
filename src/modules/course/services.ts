@@ -40,15 +40,17 @@ const createCourse = async (data: any) => {
                         id: data.organisationId,
                     },
                 },
-                coursesOnLocations: {
-                    create: data.locationIds.map((locationId: string) => ({
-                        location: {
-                            connect: {
-                                id: locationId,
+                ...(data.locationIds && data.locationIds.length > 0 && {
+                    coursesOnLocations: {
+                        create: data.locationIds.map((locationId: string) => ({
+                            location: {
+                                connect: {
+                                    id: locationId,
+                                },
                             },
-                        },
-                    })),
-                },
+                        })),
+                    },
+                }),
             },
         });
     } catch(e: any){
