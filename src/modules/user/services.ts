@@ -248,7 +248,7 @@ const createUserOrg = async (createUserOrgData: any): Promise<{ isValid: boolean
                         role: Role.ADMIN,
                         organisation: {
                             create: {
-                                name: createUserOrgData.organisationName,
+                                name: createUserOrgData.orgName,
                                 country: {
                                     connectOrCreate: {
                                         where: { name: createUserOrgData.orgCountry },
