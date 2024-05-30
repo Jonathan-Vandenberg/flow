@@ -261,6 +261,7 @@ const createUserOrg = async (createUserOrgData: any): Promise<{ isValid: boolean
                 },
             },
             include: {
+                country: true,
                 usersOnOrganisations: {
                     include: {
                         organisation: true,

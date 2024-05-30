@@ -51,6 +51,11 @@ export const createCourseValidationRules = checkSchema({
     },
     locationIds: {
         in: ['body'],
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        },
         isArray: {
             errorMessage: 'The location IDs must be in an Array!'
         }
