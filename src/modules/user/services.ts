@@ -155,29 +155,18 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
     let errorMessage;
 
     try {
-        const existingCountry = await prisma.country.findUnique({
-            where: {
-                name: createUserData.country,
-            },
-        });
-
         const userData = {
             firstName: createUserData.firstName,
             lastName: createUserData.lastName,
             email: createUserData.email,
             imageUrl: createUserData.imageUrl,
             expertiseArea: createUserData.expertiseArea,
-            country: existingCountry
-                ? {
-                    connect: {
-                        id: existingCountry.id,
-                    },
-                }
-                : {
-                    create: {
-                        name: createUserData.country,
-                    },
+            country: {
+                connectOrCreate: {
+                    where: { name: createUserData.country },
+                    create: { name: createUserData.country },
                 },
+            },
         };
 
         if (createUserData.role === Role.ADMIN || createUserData.role === Role.MANAGER) {
@@ -224,7 +213,6 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
                 },
             });
         } else {
-            // If the user role is not ADMIN, MANAGER, or AGENT with agencyId, create the user without any associations
             user = await prisma.user.create({
                 data: userData,
             });
@@ -241,6 +229,63 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
     };
 };
 
+const createUserOrg = async (createUserOrgData: any): Promise<{ isValid: boolean; message: string, data: any }> => {
+    let errorMessage;
+    try {
+        const user = await prisma.user.create({
+            data: {
+                firstName: createUserOrgData.firstName,
+                lastName: createUserOrgData.lastName,
+                email: createUserOrgData.email,
+                country: {
+                    connectOrCreate: {
+                        where: { name: createUserOrgData.userCountry },
+                        create: { name: createUserOrgData.userCountry },
+                    },
+                },
+                usersOnOrganisations: {
+                    create: {
+                        role: Role.ADMIN,
+                        organisation: {
+                            create: {
+                                name: createUserOrgData.organisationName,
+                                country: {
+                                    connectOrCreate: {
+                                        where: { name: createUserOrgData.orgCountry },
+                                        create: { name: createUserOrgData.orgCountry },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            include: {
+                usersOnOrganisations: {
+                    include: {
+                        organisation: true,
+                    },
+                },
+            },
+        });
+
+        return {
+            isValid: true,
+            message: "User and organization created successfully",
+            data: user,
+        };
+
+    } catch (e: any) {
+        errorMessage = e.message;
+        console.log('ERROR::ADD_USER_ORG:', e.message);
+
+        return {
+            isValid: false,
+            message: `Failed to create user and organization: ${errorMessage}`,
+            data: null,
+        };
+    }
+};
 const updateUser = async (
     updateUserData: any
 ): Promise<{ isValid: boolean; message: string, data: any }> => {
@@ -305,6 +350,7 @@ const updateUser = async (
 
 export default {
     createUser,
+    createUserOrg,
     updateUser,
     getUserById,
     getUserByEmail,

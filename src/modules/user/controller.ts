@@ -12,7 +12,7 @@ export const getUserByIdController = async (req: Request, res: Response) => {
         return res.status(200).json(data);
     } catch (e) {
         logger.info(e);
-        res.status(500).send('Server error, try again or contact support');
+        res.status(500).send('Server error');
     }
 };
 
@@ -26,7 +26,7 @@ export const getUserByEmailController = async (req: Request, res: Response) => {
         return res.status(200).json(data);
     } catch (e) {
         logger.info(e);
-        res.status(500).send('Server error, try again or contact support');
+        res.status(500).send('Server error');
     }
 }
 
@@ -40,7 +40,7 @@ export const getUserByOrganisationIdController = async (req: Request, res: Respo
         return res.status(200).json(data);
     } catch (e) {
         logger.info(e);
-        res.status(500).send('Server error, try again or contact support');
+        res.status(500).send('Server error');
     }
 };
 
@@ -78,7 +78,37 @@ export const createUserController = async (req: Request, res: Response) => {
         return res.status(200).json(data);
     } catch (e) {
         logger.info(e);
-        res.status(500).send('Server error, try again or contact support');
+        res.status(500).send('Server error');
+    }
+};
+
+/**
+ * Create user and organisation for new user
+ */
+export const createUserOrgController = async (req: Request, res: Response) => {
+    const {
+        firstName,
+        lastName,
+        email,
+        userCountry,
+        orgName,
+        orgCountry,
+    } = req.body;
+
+    const createUserOrgData = {
+        firstName,
+        lastName,
+        email,
+        userCountry,
+        orgName,
+        orgCountry,
+    }
+    try {
+        const data = await userService.createUserOrg(createUserOrgData);
+        return res.status(200).json(data);
+    } catch (e) {
+        logger.info(e);
+        res.status(500).send('Server error');
     }
 };
 
@@ -120,6 +150,6 @@ export const updateUserController = async (req: Request, res: Response) => {
         return res.status(200).json(data);
     } catch (e) {
         logger.info(e);
-        res.status(500).send('Server error, try again or contact support');
+        res.status(500).send('Server error');
     }
 };

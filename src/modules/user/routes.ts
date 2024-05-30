@@ -1,12 +1,13 @@
 import express from 'express';
 
 import {
-    createUserController,
+    createUserController, createUserOrgController,
     getUserByEmailController,
     getUserByIdController, getUserByOrganisationIdController,
     updateUserController,
 } from './controller';
 import {
+    createUserOrgValidationRules,
     createUserValidationRules, getUserByEmailValidationRules,
     getUserByIdValidationRules,
     getUsersByOrganisationIdValidationRules, updateUserValidationRules,
@@ -25,6 +26,19 @@ router.post(
     // isValidationResult,
     createUserController
 );
+
+/**
+ * Create UserOrg
+ */
+router.post(
+    '/user-org',
+    createUserOrgValidationRules,
+    // isAuthenticated,
+    // isValidationResult,
+    createUserOrgController
+);
+
+
 
 /**
  * Get User by id User

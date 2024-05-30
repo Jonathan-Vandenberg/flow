@@ -145,6 +145,66 @@ export const createUserValidationRules = checkSchema({
 });
 
 /**
+ * Create UserOrg validation rules
+ */
+export const createUserOrgValidationRules = checkSchema({
+    firstName: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The firstName must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The firstName field is required'
+        }
+    },
+    lastName: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The lastName must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The lastName field is required'
+        }
+    },
+    email: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The email must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The email field is required'
+        }
+    },
+    userCountry: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The userCountry must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The userCountry field is required'
+        }
+    },
+    orgName:  {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The orgName must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The orgName field is required'
+        }
+    },
+    orgCountry:  {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The orgCountry must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The orgCountry field is required'
+        }
+    }
+});
+
+/**
  * Update User validation rules
  */
 export const updateUserValidationRules = checkSchema({
