@@ -1,6 +1,6 @@
 import prisma from "../../../prisma/prisma";
 import {logger} from "../../utils/logger";
-import {DirectoryStatus, RequirementStatus} from "@prisma/client";
+import {DirectoryStatus, Requirement, RequirementStatus} from "@prisma/client";
 
 const getRequirementsByOrgId = async (organisationId: string
 ) => {
@@ -62,7 +62,8 @@ const getRequirementById = async (id: string
 };
 
 const createRequirement = async (data: any) => {
-    let requirement;
+    let requirement: Requirement | null = null;
+
     try {
         await prisma.$transaction(async (t) => {
             const organisation = await t.organisation.findUnique({
@@ -72,7 +73,7 @@ const createRequirement = async (data: any) => {
 
             if (!organisation) {
                 logger.error(`No organisation found with id ${data.organisationId}`);
-                return;
+                throw new Error(`No organisation found with id ${data.organisationId}`);
             }
 
             requirement = await t.requirement.create({
@@ -82,28 +83,24 @@ const createRequirement = async (data: any) => {
                     status: RequirementStatus.REQUIRED,
                     name: data.name,
                     organisation: {
-                        connect: {
-                            id: data.organisationId,
-                        },
+                        connect: { id: data.organisationId },
                     },
-                    ...data?.countries && ({
+                    ...(data?.countries && {
                         requirementsOnCountries: {
                             create: data.countries.map((country: string) => ({
                                 country: {
                                     connectOrCreate: {
-                                        where: {name: country},
-                                        create: {name: country},
+                                        where: { name: country },
+                                        create: { name: country },
                                     },
                                 },
                             })),
-                        }
+                        },
                     }),
                     ...(data?.courseIds && {
                         requirementsOnCourses: {
                             create: data.courseIds.map((courseId: string) => ({
-                                course: {
-                                    connect: { id: courseId },
-                                },
+                                course: { connect: { id: courseId } },
                             })),
                         },
                     }),
@@ -112,17 +109,12 @@ const createRequirement = async (data: any) => {
                             create: data.exampleImages?.map((image: any) => ({
                                 url: image.url,
                             })),
-                        }
+                        },
                     }),
                 },
             });
 
-            if (!requirement) {
-                logger.error(`Could not create requirement`);
-                return;
-            }
-
-            if (organisation.students.length > 0) {
+            if (organisation.students.length > 0 && requirement) {
                 for (const student of organisation.students) {
                     await t.directory.create({
                         data: {
@@ -135,9 +127,17 @@ const createRequirement = async (data: any) => {
             }
         });
     } catch (e: any) {
-        console.log(e.message);
+        console.error(e.message);
+        return {
+            isValid: false,
+            data: null,
+        };
     }
-    return { isValid: !!requirement, data: requirement };
+
+    return {
+        isValid: requirement !== null,
+        data: requirement,
+    };
 };
 
 const updateRequirement = async (data: any
