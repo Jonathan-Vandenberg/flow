@@ -66,7 +66,20 @@ const getOrganisationById = async (id: string) => {
                     orderBy: { createdAt: 'desc' },
                 },
                 requirements: {
-                    include: { exampleImages: true },
+                    include: { exampleImages: true,
+                        requirementsOnCourses: {
+                            include: {
+                                requirement: true,
+                                course: true
+                            },
+                        },
+                        requirementsOnCountries: {
+                        include: {
+                            requirement: true,
+                            country: true
+                        }
+                        }
+                    },
                     orderBy: { createdAt: 'desc' },
                 },
                 usersOnOrganisations: {
