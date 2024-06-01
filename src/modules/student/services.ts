@@ -57,20 +57,22 @@ const createStudent = async (data: any) => {
             where: { id: data.organisationId },
             include: {
                 requirements: {
-                    select: {
-                        id: true,
-                        details: true,
-                        type: true,
-                        status: true,
+                    include: {
+                        exampleImages: true,
                         requirementsOnCourses: {
-                            where: { courseId: data.courseId },
-                            select: { courseId: true },
+                            include: {
+                                requirement: true,
+                                course: true
+                            },
                         },
                         requirementsOnCountries: {
-                            where: { country: { name: data.country } },
-                            select: { countryId: true },
-                        },
+                            include: {
+                                requirement: true,
+                                country: true
+                            }
+                        }
                     },
+                    orderBy: { createdAt: 'desc' },
                 },
             },
         });
@@ -95,27 +97,39 @@ const createStudent = async (data: any) => {
                     guardianEmail: data.guardianEmail,
                     gapYearExplanation: data.gapYearExplanation,
                     previouslyRejected: data.previouslyRejected,
-                    ...(organisation.requirements.length > 0 && {
-                        directories: {
-                            create: organisation.requirements
-                                .filter((requirement) => {
-                                    const isCourseRequirement = requirement.requirementsOnCourses.some(
-                                        (roc) => roc.courseId === data.courseId
-                                    );
-                                    const isCountryRequirement = requirement.requirementsOnCountries.some(
-                                        (roc) => roc.countryId === data.countryId
-                                    );
-                                    const isGeneralRequirement =
-                                        !requirement.requirementsOnCourses.length &&
-                                        !requirement.requirementsOnCountries.length;
-                                    return isCourseRequirement || isCountryRequirement || isGeneralRequirement;
-                                })
+                    directories: {
+                        create: [
+                            ...organisation.requirements
+                                .filter((requirement) =>
+                                    requirement.requirementsOnCountries.length === 0 &&
+                                    requirement.requirementsOnCourses.length === 0
+                                )
                                 .map((requirement) => ({
                                     requirement: { connect: { id: requirement.id } },
                                     status: DirectoryStatus.IN_PROGRESS,
                                 })),
-                        },
-                    }),
+                            ...organisation.requirements
+                                .filter((requirement) =>
+                                    requirement.requirementsOnCountries.some(
+                                        (roc) => roc.country.name === data.country
+                                    )
+                                )
+                                .map((requirement) => ({
+                                    requirement: { connect: { id: requirement.id } },
+                                    status: DirectoryStatus.IN_PROGRESS,
+                                })),
+                            ...organisation.requirements
+                                .filter((requirement) =>
+                                    requirement.requirementsOnCourses.some(
+                                        (roc) => roc.courseId === data.courseId
+                                    )
+                                )
+                                .map((requirement) => ({
+                                    requirement: { connect: { id: requirement.id } },
+                                    status: DirectoryStatus.IN_PROGRESS,
+                                })),
+                        ],
+                    },
                 },
             });
         } catch (error: any) {
