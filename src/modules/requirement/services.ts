@@ -68,7 +68,12 @@ const createRequirement = async (data: any) => {
         await prisma.$transaction(async (t) => {
             const organisation = await t.organisation.findUnique({
                 where: { id: data.organisationId },
-                include: { students: true },
+                include: {
+                    students: {
+                        include: {
+                            course: true,
+                            }
+                    }},
             });
 
             if (!organisation) {
@@ -116,15 +121,22 @@ const createRequirement = async (data: any) => {
 
             if (organisation.students.length > 0 && requirement) {
                 for (const student of organisation.students) {
-                    await t.directory.create({
-                        data: {
-                            requirementId: requirement.id,
-                            studentId: student.id,
-                            status: DirectoryStatus.IN_PROGRESS,
-                        },
-                    });
+                    const isCountryRelevant = data?.countries?.includes(student.country);
+                    const isCourseRelevant = data?.courseIds?.includes(student.course.id);
+                    const isGeneralRequirement = !data?.countries && !data?.courseIds;
+
+                    if (isGeneralRequirement || (isCountryRelevant && isCourseRelevant)) {
+                        await t.directory.create({
+                            data: {
+                                requirementId: requirement.id,
+                                studentId: student.id,
+                                status: DirectoryStatus.IN_PROGRESS,
+                            },
+                        });
+                    }
                 }
             }
+
         });
     } catch (e: any) {
         console.error(e.message);
