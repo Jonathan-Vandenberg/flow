@@ -155,67 +155,106 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
     let errorMessage;
 
     try {
-        const userData = {
-            firstName: createUserData.firstName,
-            lastName: createUserData.lastName,
-            email: createUserData.email,
-            imageUrl: createUserData.imageUrl,
-            expertiseArea: createUserData.expertiseArea,
-            country: {
-                connectOrCreate: {
-                    where: { name: createUserData.country },
-                    create: { name: createUserData.country },
-                },
-            },
-        };
+        const existingUser = await prisma.user.findUnique({
+            where: { email: createUserData.email },
+        });
 
-        if (createUserData.role === Role.ADMIN || createUserData.role === Role.MANAGER) {
-            // If the user role is ADMIN or MANAGER, create the user and associate with the organization (if provided)
-            user = await prisma.user.create({
-                data: {
-                    ...userData,
-                    usersOnOrganisations: {
-                        create: {
-                            role: createUserData.role,
-                            organisation: {
-                                connect: {
-                                    id: createUserData.organisationId,
+        if (existingUser) {
+            if (createUserData.role === Role.AGENT && createUserData.agencyId) {
+                user = await prisma.user.update({
+                    where: { id: existingUser.id },
+                    data: {
+                        usersOnOrganisations: {
+                            create: {
+                                role: createUserData.role,
+                                organisation: {
+                                    connect: { id: createUserData.organisationId },
+                                },
+                            },
+                        },
+                        usersOnAgencies: {
+                            create: {
+                                role: createUserData.role,
+                                email: createUserData.email,
+                                agency: {
+                                    connect: { id: createUserData.agencyId },
                                 },
                             },
                         },
                     },
-                },
-            });
-        } else if (createUserData.role === Role.AGENT && createUserData.agencyId) {
-            // If the user role is AGENT and agencyId is provided, create the user and associate with the agency
-            user = await prisma.user.create({
-                data: {
-                    ...userData,
-                    usersOnOrganisations: {
-                        create: {
-                            role: createUserData.role,
-                            organisation: {
-                                connect: {
-                                    id: createUserData.organisationId,
+                });
+            } else {
+                user = await prisma.user.update({
+                    where: { id: existingUser.id },
+                    data: {
+                        usersOnOrganisations: {
+                            create: {
+                                role: createUserData.role,
+                                organisation: {
+                                    connect: { id: createUserData.organisationId },
                                 },
                             },
                         },
                     },
-                    usersOnAgencies: {
-                        create: {
-                            role: createUserData.role,
-                            email: createUserData.email,
-                            agency: {
-                                connect: { id: createUserData.agencyId },
-                            },
-                        },
-                    },
-                },
-            });
+                });
+            }
         } else {
-            user = await prisma.user.create({
-                data: userData,
-            });
+            const userData = {
+                firstName: createUserData.firstName,
+                lastName: createUserData.lastName,
+                email: createUserData.email,
+                imageUrl: createUserData.imageUrl,
+                expertiseArea: createUserData.expertiseArea,
+                country: {
+                    connectOrCreate: {
+                        where: { name: createUserData.country },
+                        create: { name: createUserData.country },
+                    },
+                },
+            };
+
+            if (createUserData.role === Role.ADMIN || createUserData.role === Role.MANAGER) {
+                user = await prisma.user.create({
+                    data: {
+                        ...userData,
+                        usersOnOrganisations: {
+                            create: {
+                                role: createUserData.role,
+                                organisation: {
+                                    connect: { id: createUserData.organisationId },
+                                },
+                            },
+                        },
+                    },
+                });
+            } else if (createUserData.role === Role.AGENT && createUserData.agencyId) {
+                user = await prisma.user.create({
+                    data: {
+                        ...userData,
+                        usersOnOrganisations: {
+                            create: {
+                                role: createUserData.role,
+                                organisation: {
+                                    connect: { id: createUserData.organisationId },
+                                },
+                            },
+                        },
+                        usersOnAgencies: {
+                            create: {
+                                role: createUserData.role,
+                                email: createUserData.email,
+                                agency: {
+                                    connect: { id: createUserData.agencyId },
+                                },
+                            },
+                        },
+                    },
+                });
+            } else {
+                user = await prisma.user.create({
+                    data: userData,
+                });
+            }
         }
     } catch (e: any) {
         errorMessage = e.message;
@@ -224,7 +263,7 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
 
     return {
         isValid: user !== null,
-        message: user ? 'Created User Successfully' : `Failed to create User: ${errorMessage}`,
+        message: user ? 'User associated with organization successfully' : `Failed to associate user: ${errorMessage}`,
         data: user,
     };
 };
