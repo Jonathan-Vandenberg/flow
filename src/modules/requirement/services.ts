@@ -125,11 +125,19 @@ const createRequirement = async (data: any) => {
                     const isCourseRelevant = data?.courseIds?.includes(student.course.id);
                     const isGeneralRequirement = !data?.countries && !data?.courseIds;
 
-                    if (isGeneralRequirement || (isCountryRelevant && isCourseRelevant)) {
+                    if (isGeneralRequirement || isCountryRelevant || isCourseRelevant) {
                         await t.directory.create({
                             data: {
-                                requirementId: requirement.id,
-                                studentId: student.id,
+                                requirement: {
+                                    connect: {
+                                        id: requirement.id,
+                                    },
+                                },
+                                student: {
+                                    connect: {
+                                        id: student.id,
+                                    },
+                                },
                                 status: DirectoryStatus.IN_PROGRESS,
                             },
                         });
