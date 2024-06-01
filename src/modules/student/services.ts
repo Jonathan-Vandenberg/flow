@@ -51,21 +51,28 @@ const getStudentById = async (id: string
 
 const createStudent = async (data: any) => {
     let student;
+
     await prisma.$transaction(async (t) => {
         const organisation = await t.organisation.findUnique({
-            where: {
-                id: data.organisationId
-            },
-            include:{
+            where: { id: data.organisationId },
+            include: {
                 requirements: {
                     select: {
                         id: true,
                         details: true,
                         type: true,
-                        status: true
-                    }
-                }
-            }
+                        status: true,
+                        requirementsOnCourses: {
+                            where: { courseId: data.courseId },
+                            select: { courseId: true },
+                        },
+                        requirementsOnCountries: {
+                            where: { country: { name: data.country } },
+                            select: { countryId: true },
+                        },
+                    },
+                },
+            },
         });
 
         if (!organisation) {
@@ -76,26 +83,10 @@ const createStudent = async (data: any) => {
         try {
             student = await t.student.create({
                 data: {
-                    organisation: {
-                        connect: {
-                            id: data.organisationId
-                        }
-                    },
-                    course: {
-                        connect: {
-                            id: data.courseId
-                        }
-                    },
-                    agency: {
-                        connect: {
-                            id: data.agencyId
-                        }
-                    },
-                    agent: {
-                        connect: {
-                            id: data.agentId
-                        }
-                    },
+                    organisation: { connect: { id: data.organisationId } },
+                    course: { connect: { id: data.courseId } },
+                    agency: { connect: { id: data.agencyId } },
+                    agent: { connect: { id: data.agentId } },
                     name: data.name,
                     age: data.age,
                     country: data.country,
@@ -106,28 +97,34 @@ const createStudent = async (data: any) => {
                     previouslyRejected: data.previouslyRejected,
                     ...(organisation.requirements.length > 0 && {
                         directories: {
-                            create: organisation.requirements.map((requirement) => ({
-                                requirement: {
-                                    connect: {
-                                        id: requirement.id
-                                    }
-                                },
-                                status: DirectoryStatus.IN_PROGRESS
-                            }))
-                        }
-                    })
-                }
+                            create: organisation.requirements
+                                .filter((requirement) => {
+                                    const isCourseRequirement = requirement.requirementsOnCourses.some(
+                                        (roc) => roc.courseId === data.courseId
+                                    );
+                                    const isCountryRequirement = requirement.requirementsOnCountries.some(
+                                        (roc) => roc.countryId === data.countryId
+                                    );
+                                    const isGeneralRequirement =
+                                        !requirement.requirementsOnCourses.length &&
+                                        !requirement.requirementsOnCountries.length;
+                                    return isCourseRequirement || isCountryRequirement || isGeneralRequirement;
+                                })
+                                .map((requirement) => ({
+                                    requirement: { connect: { id: requirement.id } },
+                                    status: DirectoryStatus.IN_PROGRESS,
+                                })),
+                        },
+                    }),
+                },
             });
         } catch (error: any) {
             logger.error(`Error creating student: ${error.message}`);
-            console.log(error.message)
+            console.log(error.message);
         }
     });
 
-    return {
-        data: student,
-        isValid: !!student
-    };
+    return { data: student, isValid: !!student };
 };
 
 
