@@ -90,7 +90,7 @@ const createRequirement = async (data: any) => {
                     organisation: {
                         connect: { id: data.organisationId },
                     },
-                    ...(data?.countries && {
+                    ...(!!data?.countries?.length && {
                         requirementsOnCountries: {
                             create: data.countries.map((country: string) => ({
                                 country: {
@@ -102,14 +102,14 @@ const createRequirement = async (data: any) => {
                             })),
                         },
                     }),
-                    ...(data?.courseIds && {
+                    ...(!!data?.courseIds?.length && {
                         requirementsOnCourses: {
                             create: data.courseIds.map((courseId: string) => ({
                                 course: { connect: { id: courseId } },
                             })),
                         },
                     }),
-                    ...(data.exampleImages && {
+                    ...(!!data.exampleImages?.length && {
                         exampleImages: {
                             create: data.exampleImages?.map((image: any) => ({
                                 url: image.url,
@@ -141,6 +141,8 @@ const createRequirement = async (data: any) => {
                                 status: DirectoryStatus.IN_PROGRESS,
                             },
                         });
+
+                        // TODO email/notification
                     }
                 }
             }
