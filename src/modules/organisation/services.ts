@@ -59,7 +59,10 @@ const getOrganisationById = async (id: string) => {
             include: {
                 country: true,
                 students: {
-                    include: { course: true },
+                    include: {
+                        course: true,
+                        directories: true
+                    },
                     orderBy: { createdAt: 'desc' },
                 },
                 courses: {
