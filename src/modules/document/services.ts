@@ -35,6 +35,8 @@ const getDoc = async (id: string) => {
 
         const signedUrl = await s3.getSignedUrlPromise('getObject', params);
 
+        console.log(';signed URL', signedUrl)
+
         return {
             isValid: true,
             data: {
@@ -43,6 +45,7 @@ const getDoc = async (id: string) => {
             },
         };
     } catch (error) {
+
         console.error(error);
         return {
             isValid: false,

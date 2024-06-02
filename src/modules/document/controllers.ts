@@ -22,6 +22,7 @@ export const getDocController = async (req: Request, res: Response) => {
 
     try {
         const data = await documentService.getDoc(id);
+        console.log('data', data)
         return res.status(200).json(data);
     } catch (e) {
         logger.info(e);
