@@ -22,6 +22,11 @@ const getDir = async (id: string
         directory = await prisma.directory.findUnique({
             where: {
                 id
+            },
+            include: {
+                requirement: true,
+                documents: true,
+                student: true
             }
         })
     }catch(e: any){
