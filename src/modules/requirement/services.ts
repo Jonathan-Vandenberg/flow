@@ -90,7 +90,7 @@ const createRequirement = async (data: any) => {
                     organisation: {
                         connect: { id: data.organisationId },
                     },
-                    ...(data?.countries?.length > 0 && {
+                    ...(data?.countries?.filter(Boolean).length > 0 && {
                         requirementsOnCountries: {
                             create: data.countries.map((country: string) => ({
                                 country: {
@@ -102,14 +102,14 @@ const createRequirement = async (data: any) => {
                             })),
                         },
                     }),
-                    ...(data?.courseIds?.length > 0 && {
+                    ...(data?.courseIds?.filter(Boolean).length > 0 && {
                         requirementsOnCourses: {
                             create: data.courseIds.map((courseId: string) => ({
                                 course: { connect: { id: courseId } },
                             })),
                         },
                     }),
-                    ...(data?.exampleImages?.length > 0 && {
+                    ...(data?.exampleImages?.filter(Boolean).length > 0 && {
                         exampleImages: {
                             create: data.exampleImages?.map((image: any) => ({
                                 url: image.url,
