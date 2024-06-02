@@ -28,19 +28,34 @@ const getDoc = async (id: string
     };
 };
 
-const createDoc = async (data: any
-) => {
-    let document
+const createDoc = async (data: any) => {
+    let document;
+
     try {
         document = await prisma.document.create({
-            data
-        })
-    } catch (e: any) {console.log(e.message)}
+            data: {
+                directory: {
+                    connect: {
+                        id: data.directoryId,
+                    },
+                },
+                url: data.url,
+                name: data.name,
+                description: data.description,
+            },
+            include: {
+                directory: true,
+                task: true,
+            },
+        });
+    } catch (e: any) {
+        console.log(e.message);
+    }
 
     return {
         data: document,
-        isValid: !!document
-    }
+        isValid: !!document?.id,
+    };
 };
 
 const updateDoc = async (data: any
