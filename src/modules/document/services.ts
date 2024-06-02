@@ -1,4 +1,7 @@
 import prisma from "../../../prisma/prisma";
+import { S3 } from 'aws-sdk';
+
+const s3 = new S3();
 
 const getDocsByDirectoryId = async (directoryId: string
 ) => {
@@ -14,18 +17,38 @@ const getDocsByDirectoryId = async (directoryId: string
     };
 };
 
-const getDoc = async (id: string
-) => {
-    const document = await prisma.document.findUnique({
-        where: {
-            id
-        }
-    })
+const getDoc = async (id: string, res: any) => {
+    try {
+        const document = await prisma.document.findUnique({
+            where: { id },
+        });
 
-    return {
-        isValid: !!document,
-        data: document
-    };
+        if (!document) {
+            return res.status(404).json({ error: 'Document not found' });
+        }
+
+        const params = {
+            Bucket: process.env.BUCKET_NAME,
+            Key: document.url,
+            Expires: 3600, // URL expiration time in seconds
+        };
+
+        const signedUrl = await s3.getSignedUrlPromise('getObject', params);
+
+        return {
+            isValid: true,
+            data: {
+                ...document,
+                signedUrl,
+            },
+        };
+    } catch (error) {
+        console.error(error);
+        return {
+            isValid: false,
+            error: 'Failed to generate signed URL',
+        };
+    }
 };
 
 const createDoc = async (data: any) => {
