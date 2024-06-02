@@ -1,5 +1,6 @@
 import prisma from "../../../prisma/prisma";
 import { S3 } from 'aws-sdk';
+import {logger} from "../../utils/logger";
 
 const s3 = new S3();
 
@@ -17,16 +18,15 @@ const getDocsByDirectoryId = async (directoryId: string
     };
 };
 
-const getDoc = async (id: string, res: any) => {
+const getDoc = async (id: string) => {
     try {
         const document = await prisma.document.findUnique({
             where: { id },
         });
 
-        if (!document) {
-            return res.status(404).json({ error: 'Document not found' });
+        if(!document){
+            return logger.error('GET_DOC_ERROR::No document found!')
         }
-
         const params = {
             Bucket: process.env.BUCKET_NAME,
             Key: document.url,
