@@ -22,6 +22,17 @@ const getDoc = async (id: string) => {
     try {
         const document = await prisma.document.findUnique({
             where: { id },
+            include: {
+                directory: {
+                    select: {
+                        requirement: {
+                            select: {
+                                id: true
+                            }
+                        }
+                    }
+                }
+            }
         });
 
         if(!document){
@@ -34,8 +45,6 @@ const getDoc = async (id: string) => {
         };
 
         const signedUrl = await s3.getSignedUrlPromise('getObject', params);
-
-        console.log(';signed URL', signedUrl)
 
         return {
             isValid: true,
