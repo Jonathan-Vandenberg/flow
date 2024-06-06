@@ -38,10 +38,6 @@ export const createMessageController = async (req: Request, res: Response) => {
         messages
     } = req.body
 
-    const createData = {
-        messages
-    }
-
     try {
         const data = await messageService.createMessage(messages);
         return res.status(200).json(data);

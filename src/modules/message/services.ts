@@ -56,10 +56,12 @@ const getMessagesByUserId = async (userId: string
 
 const createMessage = async (data: any) => {
     let messages: Message[] | null = null;
+    console.log('MESSAGES: ', data)
     await prisma.$transaction(async (t) => {
         try {
             messages = [];
             for (const message of data) {
+                console.log('MESSAGE: ', message)
                 const createdMessage = await t.message.create({
                     data: {
                         content: message.content,
