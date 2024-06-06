@@ -35,21 +35,15 @@ export const getMessagesByUserIdController = async (req: Request, res: Response)
  */
 export const createMessageController = async (req: Request, res: Response) => {
     const {
-        documentId,
-        receiverId,
-        senderId,
-        content
+        messages
     } = req.body
 
     const createData = {
-        documentId,
-        receiverId,
-        senderId,
-        content
+        messages
     }
 
     try {
-        const data = await messageService.createMessage(createData);
+        const data = await messageService.createMessage(messages);
         return res.status(200).json(data);
     } catch (e: any) {
         res.status(500).send('Unexpected error. Could not create message - ' + e.message);

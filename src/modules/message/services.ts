@@ -55,20 +55,26 @@ const getMessagesByUserId = async (userId: string
 };
 
 const createMessage = async (data: any) => {
-    let message: Message | null = null;
+    let messages: Message[] | null = null;
+    await prisma.$transaction(async (t) => {
         try {
-            message = await prisma.message.create({
-                data: {
-                    content: data.content,
-                    senderId: data.senderId,
-                    receiverId: data.receiverId,
-                    documentId: data.documentId,
-                },
-            });
+            messages = [];
+            for (const message of data) {
+                const createdMessage = await t.message.create({
+                    data: {
+                        content: message.content,
+                        senderId: message.senderId,
+                        receiverId: message.receiverId,
+                        documentId: message.documentId,
+                    },
+                });
+                messages.push(createdMessage);
+            }
         } catch (e: any) {
-            logger.error(`ERROR::createMessage: Failed to create message: ` + e.message);
+            logger.error(`ERROR::createMessage: Failed to create messages: ` + e.message);
         }
-    return { data: message, isValid: !!message };
+    });
+    return { data: messages, isValid: !!messages };
 };
 
 export default {

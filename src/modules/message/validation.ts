@@ -35,40 +35,13 @@ export const getMessagesByUserIdValidationRules = checkSchema({
  * Create message
  */
 export const createMessageValidationRules = checkSchema({
-    documentId: {
+    messages: {
         in: ['body'],
-        isString: {
-            errorMessage: 'The documentId must be a string.'
+        isArray: {
+            errorMessage: 'The messages must be in an array.'
         },
         notEmpty: {
             errorMessage: 'The documentId field is required'
         }
-    },
-    senderId: {
-        in: ['body'],
-        isString: {
-            errorMessage: 'The senderId must be a string.'
-        },
-        notEmpty: {
-            errorMessage: 'The senderId field is required'
-        }
-    },
-    receiverId: {
-        in: ['body'],
-        isString: {
-            errorMessage: 'The receiverId must be a string.'
-        },
-        notEmpty: {
-            errorMessage: 'The receiverId field is required'
-        }
-    },
-    content: {
-        in: ['body'],
-        isString: {
-            errorMessage: 'The content must be a string.'
-        },
-        notEmpty: {
-            errorMessage: 'The content field is required'
-        }
-    },
+    }
 });
