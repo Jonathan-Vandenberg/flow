@@ -17,6 +17,7 @@ import directory from './modules/directory/routes'
 import document from './modules/document/routes'
 import requirement from './modules/requirement/routes'
 import course from './modules/course/routes'
+import message from './modules/message/routes'
 import {ENV_DEPLOYED} from "./constants/environment";
 
 dotenv.config();
@@ -44,6 +45,7 @@ app.use('/directory', directory);
 app.use('/document', document)
 app.use('/requirement', requirement)
 app.use('/course', course)
+app.use('/message', message)
 
 app.get('/', function (req, res) {
     res.send('Backend API service is running!');
