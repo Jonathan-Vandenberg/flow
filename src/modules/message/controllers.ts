@@ -34,10 +34,10 @@ export const getMessagesByUserIdController = async (req: Request, res: Response)
  * Create message
  */
 export const createMessageController = async (req: Request, res: Response) => {
-    const {
-        messages
-    } = req.body
-
+    const messages = req.body;
+    if (!messages || !Array.isArray(messages)) {
+        return res.status(400).send('Invalid request. Messages must be an array.');
+    }
     try {
         const data = await messageService.createMessage(messages);
         return res.status(200).json(data);

@@ -56,12 +56,9 @@ const getMessagesByUserId = async (userId: string
 
 const createMessage = async (data: any) => {
     let messages: Message[] = [];
-    console.log('MESSAGES: ', data);
-
     await prisma.$transaction(async (t) => {
         try {
             for (const message of data) {
-                console.log('MESSAGE: ', message);
                 const createdMessage = await t.message.create({
                     data: {
                         content: message.content,
@@ -79,7 +76,7 @@ const createMessage = async (data: any) => {
                 messages.push(createdMessage);
             }
         } catch (e: any) {
-            logger.error(`ERROR::createMessage: Failed to create messages: ` + e.message);
+            console.error(`ERROR::createMessage: Failed to create messages: ` + e.message);
             throw e;
         }
     });

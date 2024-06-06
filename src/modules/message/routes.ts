@@ -13,6 +13,17 @@ import {
 const router = express.Router();
 
 /**
+ * Create message
+ */
+router.post(
+    '/',
+    createMessageValidationRules,
+    // isAuthenticated,
+    // isValidationResult,
+    createMessageController
+);
+
+/**
  * Get messages by document ID
  */
 router.get(
@@ -32,17 +43,6 @@ router.get(
     // isAuthenticated,
     // isValidationResult,
     getMessagesByUserIdController
-);
-
-/**
- * Create message
- */
-router.post(
-    '/',
-    createMessageValidationRules,
-    // isAuthenticated,
-    // isValidationResult,
-    createMessageController
 );
 
 export default router;
