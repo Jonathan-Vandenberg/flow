@@ -123,7 +123,11 @@ const createRequirement = async (data: any) => {
                 for (const student of organisation.students) {
                     const isCountryRelevant = data?.countries?.includes(student.country);
                     const isCourseRelevant = data?.courseIds?.includes(student.course.id);
-                    const isGeneralRequirement = !!data?.countries?.length && !!data?.courseIds?.length;
+                    const isGeneralRequirement = data?.countries?.length === 0 && data?.courseIds?.length === 0
+
+                    console.log('isGeneralRequirement', isGeneralRequirement)
+                    console.log('data?.countries?.length', data?.countries?.length)
+                    console.log('data?.courseIds?.length', data?.courseIds?.length)
 
                     if (isGeneralRequirement || isCountryRelevant || isCourseRelevant) {
                         await t.directory.create({
