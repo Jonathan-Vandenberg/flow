@@ -178,6 +178,9 @@ const getUserByEmail = async (
                                 },
                                 usersOnAgencies: {
                                     select: {
+                                        userId: true,
+                                        agencyId: true,
+                                        role: true,
                                         user: {
                                             select: {
                                                 id: true,
