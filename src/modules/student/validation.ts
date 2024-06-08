@@ -1,7 +1,7 @@
 import { checkSchema } from 'express-validator';
 
 /**
- * Get agents by manager ID
+ * Get students by agent Id
  */
 export const getAllStudentsByAgentIdValidationRules = checkSchema({
     agentId: {
@@ -16,7 +16,7 @@ export const getAllStudentsByAgentIdValidationRules = checkSchema({
 });
 
 /**
- * Get agents by manager ID
+ * Get student by ID
  */
 export const getStudentByIdValidationRules = checkSchema({
     id: {
@@ -26,6 +26,21 @@ export const getStudentByIdValidationRules = checkSchema({
         },
         notEmpty: {
             errorMessage: 'The student id field is required'
+        }
+    }
+});
+
+/**
+ * Get students by organisation ID
+ */
+export const getStudentsByOrganisationIdValidationRules = checkSchema({
+    id: {
+        in: ['params'],
+        isString: {
+            errorMessage: 'The organisation id must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The organisation id field is required'
         }
     }
 });

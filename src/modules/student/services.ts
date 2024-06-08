@@ -49,6 +49,35 @@ const getStudentById = async (id: string
     };
 };
 
+const getStudentsByOrganisationId = async (id: string
+) => {
+    const student = await prisma.organisation.findUnique({
+        where: {
+            id
+        },
+        select: {
+            students: {
+                include: {
+                    course: true,
+                    agency: true,
+                    agent: true,
+                    directories: {
+                        include: {
+                            documents: true,
+                            requirement: true
+                        }
+                    }
+                }
+            }
+        }
+    })
+
+    return {
+        isValid: !!student,
+        data: student
+    };
+};
+
 const createStudent = async (data: any) => {
     let student;
 
@@ -165,6 +194,7 @@ const updateStudent = async (data: any
 
 export default {
     getAllStudentsByAgentId,
+    getStudentsByOrganisationId,
     getStudentById,
     createStudent,
     updateStudent

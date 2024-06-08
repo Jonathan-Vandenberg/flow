@@ -2,12 +2,12 @@ import express from 'express';
 import {
     createStudentValidationRules,
     getAllStudentsByAgentIdValidationRules,
-    getStudentByIdValidationRules, updateStudentValidationRules
+    getStudentByIdValidationRules, getStudentsByOrganisationIdValidationRules, updateStudentValidationRules
 } from "./validation";
 import {
     createStudentController,
     getAllStudentsByAgentIdController,
-    getStudentByIdController,
+    getStudentByIdController, getStudentsByOrganisationIdController,
     updateStudentController
 } from "./controllers";
 
@@ -33,6 +33,18 @@ router.get(
     // isAuthenticated,
     // isValidationResult,
     getStudentByIdController
+);
+
+
+/**
+ * Get students by Organisations ID
+ */
+router.get(
+    '/organisation-students/:id',
+    getStudentsByOrganisationIdValidationRules,
+    // isAuthenticated,
+    // isValidationResult,
+    getStudentsByOrganisationIdController
 );
 
 /**

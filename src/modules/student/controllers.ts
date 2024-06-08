@@ -31,6 +31,20 @@ export const getStudentByIdController = async (req: Request, res: Response) => {
 };
 
 /**
+ * Get students by organisation IO
+ */
+export const getStudentsByOrganisationIdController = async (req: Request, res: Response) => {
+    const { id } = req.params
+    try {
+        const data = await studentService.getStudentsByOrganisationId(id);
+        return res.status(200).json(data);
+    } catch (e: any) {
+        logger.info(e);
+        res.status(500).send('Unexpected error. Could not get agents by manager ID - ' + e.message);
+    }
+};
+
+/**
  * Create student
  */
 export const createStudentController = async (req: Request, res: Response) => {
