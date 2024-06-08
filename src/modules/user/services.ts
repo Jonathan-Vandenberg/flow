@@ -17,35 +17,88 @@ const getUserById = async (id: string): Promise<{ isValid: boolean; message: str
                 managedStudents: true,
                 socialMedia: true,
                 usersOnOrganisations: {
-                    include: {
+                    select: {
+                        userId: true,
+                        organisationId: true,
+                        role: true,
                         organisation: {
-                            include: {
-                                country: true
+                            select: {
+                                id: true,
+                                countryId: true,
+                                name: true,
+                                subStatus: true,
+                                imageUrl: true,
+                                country: {
+                                    select: {
+                                        name: true,
+                                    }
+                                },
                             }
                         },
                     },
                 },
                 usersOnAgencies: {
-                    include: {
+                    select: {
+                        userId: true,
+                        agencyId: true,
+                        role: true,
                         agency: {
-                            include: {
+                            select: {
+                                id: true,
+                                name: true,
+                                sector: true,
+                                district: true,
+                                market: true,
                                 students: true,
                                 agenciesOnCountries: {
-                                    include: {
-                                        country: true
-                                    }
-                                },
-                                usersOnAgencies: {
-                                    include: {
-                                        user: {
-                                            include: {
-                                                country: true
+                                    select: {
+                                        agencyId: true,
+                                        countryId: true,
+                                        country: {
+                                            select: {
+                                                name: true,
+                                                id: true
                                             }
                                         },
-                                        agency: true,
+                                    },
+                                },
+                                usersOnAgencies: {
+                                    select: {
+                                        user: {
+                                            select: {
+                                                id: true,
+                                                managerId: true,
+                                                expertiseArea: true,
+                                                email: true,
+                                                firstName: true,
+                                                lastName: true,
+                                                mobile: true,
+                                                countryId: true,
+                                                imageUrl: true,
+                                                country: true,
+                                            },
+                                        },
+                                        agency: {
+                                            select: {
+                                                name: true,
+                                                sector: true,
+                                                district: true,
+                                                market: true,
+                                                commissionPercentage: true,
+                                            }
+                                        },
+                                    },
+                                },
+                                contacts: {
+                                    select: {
+                                        id: true,
+                                        agencyId: true,
+                                        name: true,
+                                        title: true,
+                                        email: true,
+                                        mobile: true,
                                     }
                                 },
-                                contacts: true,
                             },
                         },
                     },
@@ -78,35 +131,88 @@ const getUserByEmail = async (
                 managedStudents: true,
                 socialMedia: true,
                 usersOnOrganisations: {
-                    include: {
+                    select: {
+                        userId: true,
+                        organisationId: true,
+                        role: true,
                         organisation: {
-                            include: {
-                                country: true
+                            select: {
+                                id: true,
+                                countryId: true,
+                                name: true,
+                                subStatus: true,
+                                imageUrl: true,
+                                country: {
+                                    select: {
+                                        name: true,
+                                    }
+                                },
                             }
                         },
                     },
                 },
                 usersOnAgencies: {
-                    include: {
+                    select: {
+                        userId: true,
+                        agencyId: true,
+                        role: true,
                         agency: {
-                            include: {
+                            select: {
+                                id: true,
+                                name: true,
+                                sector: true,
+                                district: true,
+                                market: true,
                                 students: true,
                                 agenciesOnCountries: {
-                                    include: {
-                                        country: true,
+                                    select: {
+                                        agencyId: true,
+                                        countryId: true,
+                                        country: {
+                                            select: {
+                                                name: true,
+                                                id: true
+                                            }
+                                        },
                                     },
                                 },
                                 usersOnAgencies: {
-                                    include: {
+                                    select: {
                                         user: {
-                                            include: {
+                                            select: {
+                                                id: true,
+                                                managerId: true,
+                                                expertiseArea: true,
+                                                email: true,
+                                                firstName: true,
+                                                lastName: true,
+                                                mobile: true,
+                                                countryId: true,
+                                                imageUrl: true,
                                                 country: true,
                                             },
                                         },
-                                        agency: true,
+                                        agency: {
+                                            select: {
+                                                name: true,
+                                                sector: true,
+                                                district: true,
+                                                market: true,
+                                                commissionPercentage: true,
+                                            }
+                                        },
                                     },
                                 },
-                                contacts: true,
+                                contacts: {
+                                    select: {
+                                        id: true,
+                                        agencyId: true,
+                                        name: true,
+                                        title: true,
+                                        email: true,
+                                        mobile: true,
+                                    }
+                                },
                             },
                         },
                     },

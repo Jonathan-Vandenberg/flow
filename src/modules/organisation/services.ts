@@ -62,7 +62,12 @@ const getOrganisationById = async (id: string) => {
                 name: true,
                 subStatus: true,
                 imageUrl: true,
-                country: true,
+                country: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
                 courses: {
                     orderBy: { createdAt: 'desc' },
                     select: {
