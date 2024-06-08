@@ -197,6 +197,7 @@ const getUserByEmail = async (
                                         },
                                         agency: {
                                             select: {
+                                                id: true,
                                                 name: true,
                                                 sector: true,
                                                 district: true,
