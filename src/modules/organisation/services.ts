@@ -140,7 +140,7 @@ const getOrganisationById = async (id: string) => {
 
 const getUsersOnOrganisations = async (id: string) => {
     try {
-        const uoo = await prisma.organisation.findUnique({
+        const organisation = await prisma.organisation.findUnique({
             where: { id },
             select: {
                 id: true,
@@ -157,8 +157,8 @@ const getUsersOnOrganisations = async (id: string) => {
         });
 
         return {
-            isValid: !!uoo?.id,
-            data: uoo
+            isValid: organisation?.usersOnOrganisations?.length ?? 0 > 0,
+            data: organisation?.usersOnOrganisations ?? []
         };
     } catch (e: any) {
         console.error(e.message);
@@ -172,9 +172,6 @@ const getAgenciesOnOrganisations = async (id: string) => {
             where: { id },
             select: {
                 id: true,
-                courses: {
-                    orderBy: { createdAt: 'desc' },
-                },
                 agenciesOnOrganisations: {
                     orderBy: { createdAt: 'desc' },
                     include: {
@@ -210,8 +207,8 @@ const getAgenciesOnOrganisations = async (id: string) => {
         });
 
         return {
-            isValid: !!organisation?.id,
-            data: organisation
+            isValid: organisation?.agenciesOnOrganisations?.length ?? 0 > 0,
+            data: organisation?.agenciesOnOrganisations ?? []
         };
     } catch (e: any) {
         console.error(e.message);

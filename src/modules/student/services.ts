@@ -51,7 +51,7 @@ const getStudentById = async (id: string
 
 const getStudentsByOrganisationId = async (id: string
 ) => {
-    const student = await prisma.organisation.findUnique({
+    const organisation = await prisma.organisation.findUnique({
         where: {
             id
         },
@@ -73,8 +73,8 @@ const getStudentsByOrganisationId = async (id: string
     })
 
     return {
-        isValid: !!student,
-        data: student
+        isValid: organisation?.students?.length ?? 0 > 0,
+        data: organisation?.students
     };
 };
 
