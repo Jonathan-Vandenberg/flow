@@ -64,6 +64,9 @@ const getUserById = async (id: string): Promise<{ isValid: boolean; message: str
                                 },
                                 usersOnAgencies: {
                                     select: {
+                                        userId: true,
+                                        agencyId: true,
+                                        role: true,
                                         user: {
                                             select: {
                                                 id: true,
@@ -80,6 +83,7 @@ const getUserById = async (id: string): Promise<{ isValid: boolean; message: str
                                         },
                                         agency: {
                                             select: {
+                                                id: true,
                                                 name: true,
                                                 sector: true,
                                                 district: true,
