@@ -37,3 +37,31 @@ export const getOrganisationByIdController = async (req: Request, res: Response)
         res.status(500).send('Server error, check the backend' + e.message);
     }
 };
+
+/**
+ * Get users on organisations
+ */
+export const getUsersOnOrganisationsController = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const data = await organisationService.getUsersOnOrganisations(id);
+        return res.status(200).json(data);
+    } catch (e: any) {
+        logger.info(e.message);
+        res.status(500).send('Server error, check the backend' + e.message);
+    }
+};
+
+/**
+ * Get users on agencies
+ */
+export const getAgenciesOnOrganisationsController = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const data = await organisationService.getAgenciesOnOrganisations(id);
+        return res.status(200).json(data);
+    } catch (e: any) {
+        logger.info(e.message);
+        res.status(500).send('Server error, check the backend' + e.message);
+    }
+};

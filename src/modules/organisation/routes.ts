@@ -1,19 +1,16 @@
 import express from 'express';
-import {createOrganisationController, getOrganisationByIdController} from "./controllers";
-import {createOrganisationValidationRules, getOrganisationByIdValidationRules} from "./validation";
+import {
+    createOrganisationController, getAgenciesOnOrganisationsController,
+    getOrganisationByIdController,
+    getUsersOnOrganisationsController
+} from "./controllers";
+import {
+    createOrganisationValidationRules, getAgenciesOnOrganisationsValidationRules,
+    getOrganisationByIdValidationRules,
+    getUsersOnOrganisationsValidationRules
+} from "./validation";
 
 const router = express.Router();
-//
-// /**
-//  * Get all organisations
-//  */
-// router.get(
-//     '/',
-//     getAllOrganisationsValidationRules,
-//     // isAuthenticated,
-//     // isValidationResult
-// );
-//
 /**
  * Get organisation by ID
  */
@@ -26,6 +23,28 @@ router.get(
 );
 
 /**
+ * Get usersOnOrganisations by ID
+ */
+router.get(
+    '/users-on-organisations/:id',
+    getUsersOnOrganisationsValidationRules,
+    // isAuthenticated,
+    // isValidationResult,
+    getUsersOnOrganisationsController
+);
+
+/**
+ * Get usersOnAgencies by ID
+ */
+router.get(
+    '/agencies-on-organisations/:id',
+    getAgenciesOnOrganisationsValidationRules,
+    // isAuthenticated,
+    // isValidationResult,
+    getAgenciesOnOrganisationsController
+);
+
+/**
  * Create organisation
  */
 router.post(
@@ -35,15 +54,5 @@ router.post(
     // isValidationResult,
     createOrganisationController
 );
-
-// /**
-//  * Update organisation
-//  */
-// router.get(
-//     '/',
-//     updateOrganisationValidationRules,
-//     // isAuthenticated,
-//     // isValidationResult
-// );
 
 export default router;

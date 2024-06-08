@@ -69,6 +69,36 @@ export const getOrganisationByIdValidationRules = checkSchema({
 });
 
 /**
+ * Get organisation by ID
+ */
+export const getUsersOnOrganisationsValidationRules = checkSchema({
+    id: {
+        in: ['params'],
+        isString: {
+            errorMessage: 'The organisation id must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The organisation id field is required'
+        }
+    }
+});
+
+/**
+ * Get organisation by ID
+ */
+export const getAgenciesOnOrganisationsValidationRules = checkSchema({
+    id: {
+        in: ['params'],
+        isString: {
+            errorMessage: 'The organisation id must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The organisation id field is required'
+        }
+    }
+});
+
+/**
  * Create User and Organisation
  */
 export const createUserOrganisationValidationRules = checkSchema({

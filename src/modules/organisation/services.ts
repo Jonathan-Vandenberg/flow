@@ -138,7 +138,90 @@ const getOrganisationById = async (id: string) => {
     }
 };
 
+const getUsersOnOrganisations = async (id: string) => {
+    try {
+        const uoo = await prisma.organisation.findUnique({
+            where: { id },
+            select: {
+                id: true,
+                usersOnOrganisations: {
+                    include: {
+                        user: {
+                            include: {
+                                country: true
+                            }
+                        }
+                    }
+                },
+            },
+        });
+
+        return {
+            isValid: !!uoo?.id,
+            data: uoo
+        };
+    } catch (e: any) {
+        console.error(e.message);
+        return null;
+    }
+};
+
+const getAgenciesOnOrganisations = async (id: string) => {
+    try {
+        const organisation = await prisma.organisation.findUnique({
+            where: { id },
+            select: {
+                id: true,
+                courses: {
+                    orderBy: { createdAt: 'desc' },
+                },
+                agenciesOnOrganisations: {
+                    orderBy: { createdAt: 'desc' },
+                    include: {
+                        agency: {
+                            include: {
+                                students: {
+                                    include: { course: true },
+                                    orderBy: { createdAt: 'desc' },
+                                },
+                                contacts: {
+                                    orderBy: { createdAt: 'desc' },
+                                },
+                                agenciesOnCountries: {
+                                    include: {
+                                        country: true
+                                    }
+                                },
+                                usersOnAgencies: {
+                                    include: {
+                                        user: {
+                                            include: {
+                                                country: true
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                        },
+                        user: true,
+                    },
+                },
+            },
+        });
+
+        return {
+            isValid: !!organisation?.id,
+            data: organisation
+        };
+    } catch (e: any) {
+        console.error(e.message);
+        return null;
+    }
+};
+
 export default {
+    getAgenciesOnOrganisations,
+    getUsersOnOrganisations,
     createOrganisation,
     getOrganisationById
 }
