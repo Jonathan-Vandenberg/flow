@@ -58,13 +58,6 @@ const getOrganisationById = async (id: string) => {
             where: { id },
             include: {
                 country: true,
-                students: {
-                    include: {
-                        course: true,
-                        directories: true
-                    },
-                    orderBy: { createdAt: 'desc' },
-                },
                 courses: {
                     orderBy: { createdAt: 'desc' },
                 },
@@ -84,46 +77,6 @@ const getOrganisationById = async (id: string) => {
                         }
                     },
                     orderBy: { createdAt: 'desc' },
-                },
-                usersOnOrganisations: {
-                  include: {
-                      user: {
-                          include: {
-                              country: true
-                          }
-                      }
-                  }
-                },
-                agenciesOnOrganisations: {
-                    orderBy: { createdAt: 'desc' },
-                    include: {
-                        agency: {
-                            include: {
-                                students: {
-                                    include: { course: true },
-                                    orderBy: { createdAt: 'desc' },
-                                },
-                                contacts: {
-                                    orderBy: { createdAt: 'desc' },
-                                },
-                                agenciesOnCountries: {
-                                    include: {
-                                        country: true
-                                    }
-                                },
-                                usersOnAgencies: {
-                                    include: {
-                                        user: {
-                                            include: {
-                                                country: true
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                        },
-                        user: true,
-                    },
                 },
             },
         });
