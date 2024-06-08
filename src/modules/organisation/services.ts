@@ -56,27 +56,74 @@ const getOrganisationById = async (id: string) => {
     try {
         const organisation = await prisma.organisation.findUnique({
             where: { id },
-            include: {
+            select: {
+                id: true,
+                countryId: true,
+                name: true,
+                subStatus: true,
+                imageUrl: true,
                 country: true,
                 courses: {
                     orderBy: { createdAt: 'desc' },
+                    select: {
+                        id: true,
+                        name: true,
+                    }
                 },
                 requirements: {
-                    include: { exampleImages: true,
+                    orderBy: { createdAt: 'desc' },
+                    select: {
+                        id: true,
+                        name: true,
+                        details: true,
+                        status: true,
+                        type: true,
+                        studentId: true,
+                        exampleImages: true,
                         requirementsOnCourses: {
-                            include: {
-                                requirement: true,
-                                course: true
+                            select: {
+                                id: true,
+                                requirementId: true,
+                                courseId: true,
+                                requirement: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        details: true,
+                                        status: true,
+                                        type: true,
+                                        studentId: true,
+                                    }
+                                },
+                                course: {
+                                    select: {
+                                        id: true,
+                                        name: true
+                                    }
+                                }
                             },
                         },
                         requirementsOnCountries: {
                         include: {
-                            requirement: true,
-                            country: true
+                            requirement: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    details: true,
+                                    status: true,
+                                    type: true,
+                                    studentId: true,
+                                }
+                            },
+                            country: {
+                                select: {
+                                    id: true,
+                                    name: true
+                                }
+                            }
                         }
                         }
                     },
-                    orderBy: { createdAt: 'desc' },
                 },
             },
         });
