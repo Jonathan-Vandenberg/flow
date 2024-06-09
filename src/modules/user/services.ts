@@ -279,10 +279,18 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
                     where: { id: existingUser.id },
                     data: {
                         usersOnOrganisations: {
-                            create: {
-                                role: createUserData.role,
-                                organisation: {
-                                    connect: { id: createUserData.organisationId },
+                            connectOrCreate: {
+                                where: {
+                                    userId_organisationId: {
+                                        userId: existingUser.id,
+                                        organisationId: createUserData.organisationId,
+                                    },
+                                },
+                                create: {
+                                    role: createUserData.role,
+                                    organisation: {
+                                        connect: { id: createUserData.organisationId },
+                                    },
                                 },
                             },
                         },
@@ -298,17 +306,22 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
                     },
                 });
             } else {
-                console.log('existingUser.id', existingUser.id)
-                console.log('createUserData.role', createUserData.role)
-                console.log('createUserData.organisationId', createUserData.organisationId)
                 user = await prisma.user.update({
                     where: { id: existingUser.id },
                     data: {
                         usersOnOrganisations: {
-                            create: {
-                                role: createUserData.role,
-                                organisation: {
-                                    connect: { id: createUserData.organisationId },
+                            connectOrCreate: {
+                                where: {
+                                    userId_organisationId: {
+                                        userId: existingUser.id,
+                                        organisationId: createUserData.organisationId,
+                                    },
+                                },
+                                create: {
+                                    role: createUserData.role,
+                                    organisation: {
+                                        connect: { id: createUserData.organisationId },
+                                    },
                                 },
                             },
                         },
