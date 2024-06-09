@@ -455,39 +455,39 @@ const updateUser = async (
                 email: updateUserData.email,
                 mobile: updateUserData.mobile,
                 imageUrl: updateUserData.imageUrl,
-                expertiseArea: updateUserData.expertiseArea,
-                country: {
-                    update: {
-                        name: updateUserData.countryName,
-                    },
-                },
-                managedStudents: {
-                    connect: updateUserData.managedStudentIds.map((id: string) => ({ id })),
-                },
-                socialMedia: {
-                    create: updateUserData.newSocialMedia,
-                    update: updateUserData.existingSocialMedia.map((media: any) => ({
-                        where: { id: media.id },
-                        data: media,
-                    })),
-                    delete: updateUserData.deleteSocialMediaIds.map((id: string) => ({ id })),
-                },
-                usersOnOrganisations: {
-                    create: updateUserData.newOrganisations,
-                    update: updateUserData.existingOrganisations.map((org: any) => ({
-                        where: { id: org.id },
-                        data: org,
-                    })),
-                    delete: updateUserData.deleteOrganisationIds.map((id: string) => ({ id })),
-                },
-                agenciesOnOrganisations: {
-                    create: updateUserData.newAgencies,
-                    update: updateUserData.existingAgencies.map((agency: any) => ({
-                        where: { id: agency.id },
-                        data: agency,
-                    })),
-                    delete: updateUserData.deleteAgencyIds.map((id: string) => ({ id })),
-                },
+                // expertiseArea: updateUserData.expertiseArea,
+                // country: {
+                //     update: {
+                //         name: updateUserData.countryName,
+                //     },
+                // },
+                // managedStudents: {
+                //     connect: updateUserData.managedStudentIds.map((id: string) => ({ id })),
+                // },
+                // socialMedia: {
+                //     create: updateUserData.newSocialMedia,
+                //     update: updateUserData.existingSocialMedia.map((media: any) => ({
+                //         where: { id: media.id },
+                //         data: media,
+                //     })),
+                //     delete: updateUserData.deleteSocialMediaIds.map((id: string) => ({ id })),
+                // },
+                // usersOnOrganisations: {
+                //     create: updateUserData.newOrganisations,
+                //     update: updateUserData.existingOrganisations.map((org: any) => ({
+                //         where: { id: org.id },
+                //         data: org,
+                //     })),
+                //     delete: updateUserData.deleteOrganisationIds.map((id: string) => ({ id })),
+                // },
+                // agenciesOnOrganisations: {
+                //     create: updateUserData.newAgencies,
+                //     update: updateUserData.existingAgencies.map((agency: any) => ({
+                //         where: { id: agency.id },
+                //         data: agency,
+                //     })),
+                //     delete: updateUserData.deleteAgencyIds.map((id: string) => ({ id })),
+                // },
             },
         });
     }catch(e: any){
