@@ -298,6 +298,9 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
                     },
                 });
             } else {
+                console.log('existingUser.id', existingUser.id)
+                console.log('createUserData.role', createUserData.role)
+                console.log('createUserData.organisationId', createUserData.organisationId)
                 user = await prisma.user.update({
                     where: { id: existingUser.id },
                     data: {
