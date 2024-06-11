@@ -1,6 +1,7 @@
 import prisma from "../../../prisma/prisma";
 import { S3 } from 'aws-sdk';
 import {logger} from "../../utils/logger";
+import {DirectoryStatus, DocStatus} from "@prisma/client";
 
 const s3 = new S3();
 
@@ -105,19 +106,37 @@ const createDoc = async (data: any) => {
     };
 };
 
-const updateDoc = async (data: any
-) => {
+const updateDoc = async (data: any) => {
     const document = await prisma.document.update({
-        where: {
-            id: data.id
-        },
-        data
-    })
+        where: { id: data.id },
+        data,
+    });
 
-    return {
-        data: document,
-        isValid: !!document
+    if (document) {
+        const directory = await prisma.directory.findUnique({
+            where: { id: document.directoryId },
+            include: {
+                documents: true,
+            },
+        });
+
+        if (directory) {
+            const allDocsComplete = directory.documents.every(
+                (doc) => doc.status === DocStatus.COMPLETE
+            );
+
+            if (allDocsComplete) {
+                await prisma.directory.update({
+                    where: { id: directory.id },
+                    data: {
+                        status: DirectoryStatus.COMPLETE,
+                    },
+                });
+            }
+        }
     }
+
+    return { data: document, isValid: !!document };
 };
 
 export default {
