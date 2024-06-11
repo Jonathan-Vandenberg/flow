@@ -184,12 +184,6 @@ const updateDoc = async (data: any) => {
                             data: { status: StudentStatus.PENDING },
                         });
                     }
-
-                    console.log('Document updated:', document);
-                    console.log('Directory found:', directory);
-                    console.log('All documents complete:', allDocsComplete);
-                    console.log('Student Directories:', studentDirectories);
-                    console.log('All requirements complete:', allRequirementsComplete);
                 }
             }
         })

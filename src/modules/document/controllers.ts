@@ -22,7 +22,6 @@ export const getDocController = async (req: Request, res: Response) => {
 
     try {
         const data = await documentService.getDoc(id);
-        console.log('data', data)
         return res.status(200).json(data);
     } catch (e) {
         logger.info(e);
@@ -59,6 +58,5 @@ export const updateDocController = async (req: Request, res: Response) => {
     } catch (e: any) {
         logger.info(e);
         res.status(500).send('Server error');
-        console.log('ERROR::updateDocController: ' + e.message)
     }
 };
