@@ -56,8 +56,9 @@ export const updateDocController = async (req: Request, res: Response) => {
     try {
         const data = await documentService.updateDoc(updateData);
         return res.status(200).json(data);
-    } catch (e) {
+    } catch (e: any) {
         logger.info(e);
-        res.status(500).send('Server error, check the backend');
+        res.status(500).send('Server error');
+        console.log('ERROR::updateDocController: ' + e.message)
     }
 };
