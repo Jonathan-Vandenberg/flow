@@ -108,10 +108,10 @@ const createDoc = async (data: any) => {
 };
 
 const updateDoc = async (data: any) => {
-
+    let document: any = null;
     try{
         await prisma.$transaction(async (t) => {
-            const document = await t.document.update({
+             document = await t.document.update({
                 where: { id: data.id },
                 data,
             });
