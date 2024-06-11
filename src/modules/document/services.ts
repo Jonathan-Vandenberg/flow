@@ -1,7 +1,7 @@
 import prisma from "../../../prisma/prisma";
 import { S3 } from 'aws-sdk';
 import {logger} from "../../utils/logger";
-import {DirectoryStatus, DocStatus, RequirementStatus, StudentStatus} from "@prisma/client";
+import {DirectoryStatus, DocStatus, Document, RequirementStatus, StudentStatus} from "@prisma/client";
 
 const s3 = new S3();
 
@@ -68,8 +68,6 @@ const getDoc = async (id: string) => {
             },
         };
     } catch (error) {
-
-        console.error(error);
         return {
             isValid: false,
             error: 'Failed to generate signed URL',
@@ -108,7 +106,7 @@ const createDoc = async (data: any) => {
 };
 
 const updateDoc = async (data: any) => {
-    let document: any = null;
+    let document: Document | null = null;
     try{
         await prisma.$transaction(async (t) => {
              document = await t.document.update({
