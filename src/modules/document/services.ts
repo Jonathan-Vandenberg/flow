@@ -164,13 +164,13 @@ const updateDoc = async (data: any) => {
                         });
                     }
 
-                    const studentRequirements = await t.requirement.findMany({
-                        where: { student: { id: directory.student.id } },
-                        select: { status: true },
+                    const studentDirectories = await t.directory.findMany({
+                        where: { studentId: directory.student.id },
+                        select: { requirement: { select: { status: true } } },
                     });
 
-                    const allRequirementsComplete = studentRequirements.every(
-                        (req) => req.status === RequirementStatus.PASSED
+                    const allRequirementsComplete = studentDirectories.every(
+                        (dir) => dir.requirement.status === RequirementStatus.PASSED
                     );
 
                     if (allRequirementsComplete) {
@@ -188,7 +188,7 @@ const updateDoc = async (data: any) => {
                     console.log('Document updated:', document);
                     console.log('Directory found:', directory);
                     console.log('All documents complete:', allDocsComplete);
-                    console.log('Student requirements:', studentRequirements);
+                    console.log('Student Directories:', studentDirectories);
                     console.log('All requirements complete:', allRequirementsComplete);
                 }
             }
