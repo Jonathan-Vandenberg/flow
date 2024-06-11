@@ -149,6 +149,20 @@ const updateDoc = async (data: any) => {
                         status: RequirementStatus.PASSED,
                     },
                 });
+            } else {
+                await prisma.directory.update({
+                    where: { id: directory.id },
+                    data: {
+                        status: DirectoryStatus.IN_PROGRESS,
+                    },
+                });
+
+                await prisma.requirement.update({
+                    where: { id: directory.requirement.id },
+                    data: {
+                        status: RequirementStatus.REQUIRED,
+                    },
+                });
             }
         }
     }
