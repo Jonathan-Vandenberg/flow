@@ -1,7 +1,7 @@
 import prisma from "../../../prisma/prisma";
 import { S3 } from 'aws-sdk';
 import {logger} from "../../utils/logger";
-import {DirectoryStatus, DocStatus, RequirementStatus} from "@prisma/client";
+import {DirectoryStatus, DocStatus, RequirementStatus, StudentStatus} from "@prisma/client";
 
 const s3 = new S3();
 
@@ -108,64 +108,89 @@ const createDoc = async (data: any) => {
 };
 
 const updateDoc = async (data: any) => {
-    const document = await prisma.document.update({
-        where: { id: data.id },
-        data,
-    });
 
-    if (document) {
-        const directory = await prisma.directory.findUnique({
-            where: { id: document.directoryId },
-            select: {
-                id: true,
-                documents: {
+    try{
+        await prisma.$transaction(async (t) => {
+            const document = await t.document.update({
+                where: { id: data.id },
+                data,
+            });
+
+            if (document) {
+                const directory = await t.directory.findUnique({
+                    where: { id: document.directoryId },
                     select: {
-                        status: true
-                    }
-                },
-                requirement: {
-                    select: {
-                        id: true
+                        id: true,
+                        documents: {
+                            select: {
+                                status: true
+                            }
+                        },
+                        requirement: {
+                            select: {
+                                id: true
+                            }
+                        },
+                        student: {
+                            select:{
+                                id: true
+                            }
+                        }
+                    },
+                });
+
+                if (directory) {
+                    const allDocsComplete = directory.documents.every(
+                        (doc) => doc.status === DocStatus.COMPLETE
+                    );
+
+                    if (allDocsComplete) {
+                        await t.directory.update({
+                            where: { id: directory.id },
+                            data: { status: DirectoryStatus.COMPLETE },
+                        });
+
+                        await t.requirement.update({
+                            where: { id: directory.requirement.id },
+                            data: { status: RequirementStatus.PASSED },
+                        });
+
+                        const studentRequirements = await t.requirement.findMany({
+                            where: { studentId: directory.student.id },
+                            select: { status: true },
+                        });
+
+                        const allRequirementsComplete = studentRequirements.every(
+                            (req) => req.status === RequirementStatus.PASSED
+                        );
+
+                        if (allRequirementsComplete) {
+                            await t.student.update({
+                                where: { id: directory.student.id },
+                                data: { status: StudentStatus.ACCEPTED },
+                            });
+                        } else {
+                            await t.student.update({
+                                where: { id: directory.student.id },
+                                data: { status: StudentStatus.PENDING },
+                            });
+                        }
+                    } else {
+                        await t.directory.update({
+                            where: { id: directory.id },
+                            data: { status: DirectoryStatus.IN_PROGRESS },
+                        });
+
+                        await t.requirement.update({
+                            where: { id: directory.requirement.id },
+                            data: { status: RequirementStatus.REQUIRED },
+                        });
                     }
                 }
-            },
-        });
-
-        if (directory) {
-            const allDocsComplete = directory.documents.every(
-                (doc) => doc.status === DocStatus.COMPLETE
-            );
-
-            if (allDocsComplete) {
-                await prisma.directory.update({
-                    where: { id: directory.id },
-                    data: {
-                        status: DirectoryStatus.COMPLETE,
-                    },
-                });
-
-                await prisma.requirement.update({
-                    where: { id: directory.requirement.id },
-                    data: {
-                        status: RequirementStatus.PASSED,
-                    },
-                });
-            } else {
-                await prisma.directory.update({
-                    where: { id: directory.id },
-                    data: {
-                        status: DirectoryStatus.IN_PROGRESS,
-                    },
-                });
-
-                await prisma.requirement.update({
-                    where: { id: directory.requirement.id },
-                    data: {
-                        status: RequirementStatus.REQUIRED,
-                    },
-                });
             }
-        }
+        })
+    } catch(e: any){
+        console.log('ERROR: ' + e.message)
     }
 
     return { data: document, isValid: !!document };
