@@ -147,33 +147,23 @@ const updateDoc = async (data: any) => {
                             where: { id: directory.id },
                             data: { status: DirectoryStatus.COMPLETE },
                         });
-
-                        await t.requirement.update({
-                            where: { id: directory.requirement.id },
-                            data: { status: RequirementStatus.PASSED },
-                        });
                     } else {
                         await t.directory.update({
                             where: { id: directory.id },
                             data: { status: DirectoryStatus.IN_PROGRESS },
                         });
-
-                        await t.requirement.update({
-                            where: { id: directory.requirement.id },
-                            data: { status: RequirementStatus.REQUIRED },
-                        });
                     }
 
                     const studentDirectories = await t.directory.findMany({
                         where: { studentId: directory.student.id },
-                        select: { requirement: { select: { status: true } } },
+                        select: { status: true },
                     });
 
-                    const allRequirementsComplete = studentDirectories.every(
-                        (dir) => dir.requirement.status === RequirementStatus.PASSED
+                    const allDirectoriesComplete = studentDirectories.every(
+                        (dir) => dir.status === DirectoryStatus.COMPLETE
                     );
 
-                    if (allRequirementsComplete) {
+                    if (allDirectoriesComplete) {
                         await t.student.update({
                             where: { id: directory.student.id },
                             data: { status: StudentStatus.ACCEPTED },
