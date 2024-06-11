@@ -165,7 +165,7 @@ const updateDoc = async (data: any) => {
                     }
 
                     const studentRequirements = await t.requirement.findMany({
-                        where: { studentId: directory.student.id },
+                        where: { student: { id: directory.student.id } },
                         select: { status: true },
                     });
 
