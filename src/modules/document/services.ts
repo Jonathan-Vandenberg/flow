@@ -154,27 +154,6 @@ const updateDoc = async (data: any) => {
                             where: { id: directory.requirement.id },
                             data: { status: RequirementStatus.PASSED },
                         });
-
-                        const studentRequirements = await t.requirement.findMany({
-                            where: { studentId: directory.student.id },
-                            select: { status: true },
-                        });
-
-                        const allRequirementsComplete = studentRequirements.every(
-                            (req) => req.status === RequirementStatus.PASSED
-                        );
-
-                        if (allRequirementsComplete) {
-                            await t.student.update({
-                                where: { id: directory.student.id },
-                                data: { status: StudentStatus.ACCEPTED },
-                            });
-                        } else {
-                            await t.student.update({
-                                where: { id: directory.student.id },
-                                data: { status: StudentStatus.PENDING },
-                            });
-                        }
                     } else {
                         await t.directory.update({
                             where: { id: directory.id },
@@ -184,6 +163,27 @@ const updateDoc = async (data: any) => {
                         await t.requirement.update({
                             where: { id: directory.requirement.id },
                             data: { status: RequirementStatus.REQUIRED },
+                        });
+                    }
+
+                    const studentRequirements = await t.requirement.findMany({
+                        where: { studentId: directory.student.id },
+                        select: { status: true },
+                    });
+
+                    const allRequirementsComplete = studentRequirements.every(
+                        (req) => req.status === RequirementStatus.PASSED
+                    );
+
+                    if (allRequirementsComplete) {
+                        await t.student.update({
+                            where: { id: directory.student.id },
+                            data: { status: StudentStatus.ACCEPTED },
+                        });
+                    } else {
+                        await t.student.update({
+                            where: { id: directory.student.id },
+                            data: { status: StudentStatus.PENDING },
                         });
                     }
                 }
