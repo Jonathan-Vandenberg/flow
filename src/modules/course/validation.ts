@@ -88,4 +88,16 @@ export const updateCourseValidationRules = checkSchema({
     }
 });
 
+export const deleteCourseValidationRules = checkSchema({
+    id: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The course ID  must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The organisationId field is required'
+        }
+    },
+});
+
 

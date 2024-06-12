@@ -1,12 +1,12 @@
 import express from 'express';
 import {
-    createCourseValidationRules,
+    createCourseValidationRules, deleteCourseValidationRules,
     getCourseByIdValidationRules,
     getCoursesByOrgIdValidationRules,
     updateCourseValidationRules
 } from "./validation";
 import {
-    createCourseController,
+    createCourseController, deleteCourseController,
     getCourseByIdController,
     getCoursesByOrgIdController,
     updateCourseController
@@ -57,5 +57,19 @@ router.patch(
     // isValidationResult,
     updateCourseController
 );
+
+/**
+ * Delete course
+ */
+router.delete(
+    '/',
+    deleteCourseValidationRules,
+    // isAuthenticated,
+    // isValidationResult,
+    deleteCourseController
+
+);
+
+
 
 export default router;

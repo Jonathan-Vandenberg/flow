@@ -75,9 +75,34 @@ const updateCourse = async (data: any
     };
 };
 
+const deleteCourse = async (data: any) => {
+    const course = await prisma.course.delete({
+        where: {
+            id: data.id,
+        },
+        include: {
+            students: true,
+        },
+    });
+
+    if (course?.students.length > 0) {
+        await prisma.student.updateMany({
+            where: {
+                courseId: data.id,
+            },
+            data: {
+                courseId: null,
+            },
+        });
+    }
+
+    return { isValid: !!course?.id, data: course };
+};
+
 export default {
     getCoursesByOrgId,
     getCourseById,
     createCourse,
-    updateCourse
+    updateCourse,
+    deleteCourse
 }

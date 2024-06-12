@@ -322,7 +322,7 @@ model Contact {
 model Student {
   id             String  @id @default(uuid())
   organisationId String
-  courseId       String
+  courseId       String?
   agencyId       String
   agentId        String
   countryId      String?
@@ -341,7 +341,7 @@ model Student {
   updatedAt          DateTime      @default(now())
 
   agent        User          @relation(fields: [agentId], references: [id])
-  course       Course        @relation(fields: [courseId], references: [id])
+  course       Course?       @relation(fields: [courseId], references: [id])
   agency       Agency        @relation(fields: [agencyId], references: [id])
   requirements Requirement[]
   directories  Directory[]   @relation("StudentDocsToStudent")

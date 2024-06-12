@@ -73,3 +73,23 @@ export const updateCourseController = async (req: Request, res: Response) => {
         res.status(500).send('Server error, check the backend');
     }
 };
+
+
+/**
+ * Delete course by ID
+ */
+export const deleteCourseController = async (req: Request, res: Response) => {
+    const { id,
+    } = req.body;
+
+    const deleteCourseData = {
+        id,
+    }
+    try {
+        const data = await courseService.deleteCourse(deleteCourseData);
+        return res.status(200).json(data);
+    } catch (e) {
+        logger.info(e);
+        res.status(500).send('Server error, check the backend');
+    }
+};
