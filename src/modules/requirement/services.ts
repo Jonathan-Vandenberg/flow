@@ -129,7 +129,7 @@ const createRequirement = async (data: any) => {
             if (organisation.students.length > 0 && requirement && !data?.studentId) {
                 for (const student of organisation.students) {
                     const isCountryRelevant = data?.countries?.includes(student.country);
-                    const isCourseRelevant = data?.courseIds?.includes(student.course.id);
+                    const isCourseRelevant = data?.courseIds?.includes(student.course?.id);
                     const isGeneralRequirement = data?.countries?.length === 0 && data?.courseIds?.length === 0
 
                     if (isGeneralRequirement || isCountryRelevant || isCourseRelevant) {
