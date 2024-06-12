@@ -1,6 +1,6 @@
 import prisma from "../../../prisma/prisma";
 import {logger} from "../../utils/logger";
-import {DirectoryStatus, Requirement, RequirementStatus} from "@prisma/client";
+import {DirectoryStatus, Requirement, RequirementStatus, StudentStatus} from "@prisma/client";
 
 const getRequirementsByOrgId = async (organisationId: string
 ) => {
@@ -170,6 +170,27 @@ const createRequirement = async (data: any) => {
                         status: DirectoryStatus.IN_PROGRESS,
                     },
                 });
+
+                const studentDirectories = await t.directory.findMany({
+                    where: { studentId: data?.studentId },
+                    select: { status: true },
+                });
+
+                const allDirectoriesComplete = studentDirectories.every(
+                    (dir) => dir.status === DirectoryStatus.COMPLETE
+                );
+
+                if (allDirectoriesComplete) {
+                    await t.student.update({
+                        where: { id: data?.studentId },
+                        data: { status: StudentStatus.ACCEPTED },
+                    });
+                } else {
+                    await t.student.update({
+                        where: { id: data?.studentId },
+                        data: { status: StudentStatus.PENDING },
+                    });
+                }
             }
 
         });
