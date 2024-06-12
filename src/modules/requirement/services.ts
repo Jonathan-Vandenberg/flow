@@ -90,6 +90,13 @@ const createRequirement = async (data: any) => {
                     organisation: {
                         connect: { id: data.organisationId },
                     },
+                    ...(data?.studentId && {
+                        student: {
+                            connect: {
+                                id: data?.studentId
+                            }
+                        }
+                    }),
                     ...(data?.countries?.filter(Boolean).length > 0 && {
                         requirementsOnCountries: {
                             create: data.countries.map((country: string) => ({
@@ -119,7 +126,7 @@ const createRequirement = async (data: any) => {
                 },
             });
 
-            if (organisation.students.length > 0 && requirement) {
+            if (organisation.students.length > 0 && requirement && !data?.studentId) {
                 for (const student of organisation.students) {
                     const isCountryRelevant = data?.countries?.includes(student.country);
                     const isCourseRelevant = data?.courseIds?.includes(student.course.id);
@@ -145,6 +152,24 @@ const createRequirement = async (data: any) => {
                         // TODO email/notification
                     }
                 }
+            }
+
+            if(data?.studentId){
+                await t.directory.create({
+                    data: {
+                        requirement: {
+                            connect: {
+                                id: requirement.id,
+                            },
+                        },
+                        student: {
+                            connect: {
+                                id: data?.studentId,
+                            },
+                        },
+                        status: DirectoryStatus.IN_PROGRESS,
+                    },
+                });
             }
 
         });
