@@ -100,6 +100,11 @@ const createDoc = async (data: any) => {
                 where: { id: data.directoryId },
                 data: { status: DirectoryStatus.IN_PROGRESS },
             });
+
+            await t.student.update({
+                where: { id: data.directoryId },
+                data: { status: StudentStatus.PENDING },
+            });
         } catch (e: any) {
             console.log(e.message);
         }
