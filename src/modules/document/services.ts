@@ -76,32 +76,39 @@ const getDoc = async (id: string) => {
 };
 
 const createDoc = async (data: any) => {
-    let document;
-
-    try {
-        document = await prisma.document.create({
-            data: {
-                directory: {
-                    connect: {
-                        id: data.directoryId,
+    let document: Document | null = null
+    await prisma.$transaction(async (t) => {
+        try {
+            document = await t.document.create({
+                data: {
+                    directory: {
+                        connect: {
+                            id: data.directoryId,
+                        },
                     },
+                    url: data.url,
+                    name: data.name,
+                    description: data.description,
                 },
-                url: data.url,
-                name: data.name,
-                description: data.description,
-            },
-            include: {
-                directory: true,
-                task: true,
-            },
-        });
-    } catch (e: any) {
-        console.log(e.message);
-    }
+                include: {
+                    directory: true,
+                    task: true,
+                },
+            });
+
+            await t.directory.update({
+                where: { id: data.directoryId },
+                data: { status: DirectoryStatus.IN_PROGRESS },
+            });
+        } catch (e: any) {
+            console.log(e.message);
+        }
+    })
+
 
     return {
         data: document,
-        isValid: !!document?.id,
+        isValid: document !== null,
     };
 };
 
