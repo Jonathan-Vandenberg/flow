@@ -392,8 +392,8 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
     }
 
     return {
-        isValid: user !== null,
-        message: user ? 'User associated with organization successfully' : `Failed to associate user: ${errorMessage}`,
+        isValid: !!user?.id,
+        message: !!user?.id ? 'User associated with organization successfully' : `Failed to associate user: ${errorMessage}`,
         data: user,
     };
 };
