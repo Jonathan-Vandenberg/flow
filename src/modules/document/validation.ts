@@ -43,6 +43,15 @@ export const createDocRules = checkSchema({
             errorMessage: 'The directory ID field is required'
         }
     },
+    studentId: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The studentId ID must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The studentId ID field is required'
+        }
+    },
     name: {
         in: ['body'],
         isString: {

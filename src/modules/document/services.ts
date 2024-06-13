@@ -76,7 +76,7 @@ const getDoc = async (id: string) => {
 };
 
 const createDoc = async (data: any) => {
-    let document: Document | null = null
+    let document: Document | null = null;
     await prisma.$transaction(async (t) => {
         try {
             document = await t.document.create({
@@ -90,10 +90,6 @@ const createDoc = async (data: any) => {
                     name: data.name,
                     description: data.description,
                 },
-                include: {
-                    directory: true,
-                    task: true,
-                },
             });
 
             await t.directory.update({
@@ -102,19 +98,15 @@ const createDoc = async (data: any) => {
             });
 
             await t.student.update({
-                where: { id: data.directoryId },
+                where: { id: data.studentId },
                 data: { status: StudentStatus.PENDING },
             });
         } catch (e: any) {
             console.log(e.message);
         }
-    })
+    });
 
-
-    return {
-        data: document,
-        isValid: document !== null,
-    };
+    return { data: document, isValid: document !== null };
 };
 
 const updateDoc = async (data: any) => {

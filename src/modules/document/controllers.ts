@@ -30,8 +30,8 @@ export const getDocController = async (req: Request, res: Response) => {
 };
 
 export const createDocController = async (req: Request, res: Response) => {
-    const { directoryId, name, description, url } = req.body;
-    const createData= { directoryId, name, description, url }
+    const { directoryId, name, description, url, studentId } = req.body;
+    const createData= { directoryId, name, description, url, studentId }
 
     try {
         const data = await documentService.createDoc(createData);
