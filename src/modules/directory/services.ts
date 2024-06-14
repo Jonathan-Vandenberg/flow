@@ -25,8 +25,18 @@ const getDir = async (id: string
             },
             include: {
                 requirement: true,
-                documents: true,
-                student: true
+                documents: {
+                    include: {
+                        messages: {
+                            select: {
+                               isRead: true,
+                               receiverId: true,
+                               senderId: true
+                            }
+                        }
+                    }
+                },
+                student: true,
             }
         })
     }catch(e: any){
