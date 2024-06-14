@@ -1,5 +1,5 @@
 import prisma from "../../../prisma/prisma";
-import {DirectoryStatus, DocStatus, StudentStatus} from "@prisma/client";
+import {Directory, DirectoryStatus, DocStatus, StudentStatus} from "@prisma/client";
 
 const getDirsByStudentId = async (studentId: string
 ) => {
@@ -17,7 +17,7 @@ const getDirsByStudentId = async (studentId: string
 
 const getDir = async (id: string
 ) => {
-    let directory
+    let directory: Directory | null = null
     try{
         directory = await prisma.directory.findUnique({
             where: {

@@ -32,6 +32,21 @@ export const getMessagesByUserIdValidationRules = checkSchema({
 
 
 /**
+ * Get messages by User ID
+ */
+export const updateMessageByIdValidationRules = checkSchema({
+    ids: {
+        in: ['body'],
+        isArray: {
+            errorMessage: 'The ids must be in an array.'
+        },
+        notEmpty: {
+            errorMessage: 'The ids must be in an array'
+        }
+    }
+});
+
+/**
  * Create message
  */
 export const createMessageValidationRules = checkSchema({

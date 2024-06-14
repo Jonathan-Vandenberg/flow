@@ -2,12 +2,12 @@ import express from 'express';
 import {
     getMessagesByDocumentIdValidationRules,
     getMessagesByUserIdValidationRules,
-    createMessageValidationRules
+    createMessageValidationRules, updateMessageByIdValidationRules
 } from "./validation";
 import {
     createMessageController,
     getMessagesByDocumentIdController,
-    getMessagesByUserIdController,
+    getMessagesByUserIdController, updateMessageByIdController,
 } from "./controllers";
 
 const router = express.Router();
@@ -43,6 +43,17 @@ router.get(
     // isAuthenticated,
     // isValidationResult,
     getMessagesByUserIdController
+);
+
+/**
+ * Update message by ID
+ */
+router.patch(
+    '/',
+    updateMessageByIdValidationRules,
+    // isAuthenticated,
+    // isValidationResult,
+    updateMessageByIdController
 );
 
 export default router;
