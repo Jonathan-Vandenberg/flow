@@ -36,7 +36,7 @@ export const getMessagesByUserIdController = async (req: Request, res: Response)
 export const updateMessageByIdController = async (req: Request, res: Response) => {
     const ids = req.body
     try {
-        const data = await messageService.getMessagesByUserId(ids);
+        const data = await messageService.updateMessagesById(ids);
         return res.status(200).json(data);
     } catch (e: any) {
         logger.info(e);
