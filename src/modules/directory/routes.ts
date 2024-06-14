@@ -59,4 +59,15 @@ router.patch(
     updateDirController
 );
 
+/**
+ * Delete directory
+ */
+router.delete(
+    '/',
+    updateDirRules,
+    // isAuthenticated,
+    // isValidationResult,
+    updateDirController
+);
+
 export default router;

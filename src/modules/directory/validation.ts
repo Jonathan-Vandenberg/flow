@@ -55,9 +55,46 @@ export const createDirRules = checkSchema({
 });
 
 /**
- * Create studentDocs
+ * Update studentDocs
  */
 export const updateDirRules = checkSchema({
+    id: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The studentDocsId must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The studentDocsId field is required'
+        }
+    },
+    status: {
+        in: ['body'],
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        },
+        isString: {
+            errorMessage: 'The status is required'
+        }
+    },
+    studentId: {
+        in: ['body'],
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        },
+        isString: {
+            errorMessage: 'The studentId is required'
+        }
+    }
+});
+
+/**
+ * Delete studentDocs
+ */
+export const deleteDirRules = checkSchema({
     id: {
         in: ['body'],
         isString: {

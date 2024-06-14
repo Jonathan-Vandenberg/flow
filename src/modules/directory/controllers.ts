@@ -13,7 +13,7 @@ export const getDirsByStudentIdController = async (req: Request, res: Response) 
         return res.status(200).json(data);
     } catch (e) {
         logger.info(e);
-        res.status(500).send('Server error, check the backend');
+        res.status(500).send('Server error');
     }
 };
 
@@ -25,7 +25,7 @@ export const getDirController = async (req: Request, res: Response) => {
         return res.status(200).json(data);
     } catch (e) {
         logger.info(e);
-        res.status(500).send('Server error, check the backend');
+        res.status(500).send('Server error');
     }
 };
 
@@ -37,22 +37,38 @@ export const createDirController = async (req: Request, res: Response) => {
         return res.status(200).json(data);
     } catch (e) {
         logger.info(e);
-        res.status(500).send('Server error, check the backend');
+        res.status(500).send('Server error');
     }
 };
 
 export const updateDirController = async (req: Request, res: Response) => {
     const { id, studentId, status } = req.body;
 
-    const updateDate = {
+    const updateData = {
         id, studentId, status
     }
 
     try {
-        const data = await directoryService.updateDir(updateDate);
+        const data = await directoryService.updateDir(updateData);
         return res.status(200).json(data);
     } catch (e) {
         logger.info(e);
-        res.status(500).send('Server error, check the backend');
+        res.status(500).send('Server error');
+    }
+};
+
+export const deleteDirController = async (req: Request, res: Response) => {
+    const { id, studentId, status } = req.body;
+
+    const deleteData = {
+        id, studentId, status
+    }
+
+    try {
+        const data = await directoryService.deleteDir(deleteData);
+        return res.status(200).json(data);
+    } catch (e) {
+        logger.info(e);
+        res.status(500).send('Server error');
     }
 };

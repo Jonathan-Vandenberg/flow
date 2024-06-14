@@ -1,5 +1,5 @@
 import prisma from "../../../prisma/prisma";
-import {DirectoryStatus} from "@prisma/client";
+import {DirectoryStatus, DocStatus, StudentStatus} from "@prisma/client";
 
 const getDirsByStudentId = async (studentId: string
 ) => {
@@ -76,9 +76,65 @@ const updateDir = async (data: any
         isValid: !!directory?.id
     }
 };
+
+const deleteDir = async (data: any) => {
+    let isValid = false;
+    try {
+        await prisma.$transaction(async (t) => {
+            const directoryToDelete = await t.directory.findUnique({
+                where: { id: data.id },
+                include: { requirement: {
+                    select: {
+                        id: true,
+                        studentId: true
+                    }} },
+            });
+
+            if (
+                directoryToDelete?.requirement &&
+                directoryToDelete?.requirement?.studentId === data.studentId
+            ) {
+                await t.requirement.delete({
+                    where: { id: directoryToDelete.requirement.id },
+                });
+            }
+
+            await t.directory.delete({
+                where: { id: data.id },
+            });
+
+            const studentDirectories = await t.directory.findMany({
+                where: { studentId: data.studentId },
+                select: { status: true },
+            });
+
+            const allDirectoriesComplete = studentDirectories.every(
+                (dir) => dir.status === DirectoryStatus.COMPLETE
+            );
+
+            if (allDirectoriesComplete) {
+                await t.student.update({
+                    where: { id: data.studentId },
+                    data: { status: StudentStatus.ACCEPTED },
+                });
+            } else {
+                await t.student.update({
+                    where: { id: data.studentId },
+                    data: { status: StudentStatus.PENDING },
+                });
+            }
+            isValid = true
+        });
+    } catch (e: any) {
+        console.log(e.message);
+    }
+    return { data: {}, isValid, message: isValid ? 'Successfully removed requirement' : 'Failed to remove requirement' };
+};
+
 export default {
     getDirsByStudentId,
     getDir,
     createDir,
-    updateDir
+    updateDir,
+    deleteDir
 }
