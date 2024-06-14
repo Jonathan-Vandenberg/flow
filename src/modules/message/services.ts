@@ -54,32 +54,6 @@ const getMessagesByUserId = async (userId: string
     };
 };
 
-const updateMessagesById = async (ids: string[]
-) => {
-    try{
-        for(const id in ids){
-            await prisma.message.update({
-                where: {
-                    id
-                },
-                data: {
-                    isRead: true
-                }
-            })
-        }
-        return {
-            isValid: true,
-            data: 'Messages marked as read'
-        };
-    } catch(e: any){
-        logger.error('ERROR::getMessagesByUserId: Failed to get messages by User ID: ' + e.message)
-        return {
-            isValid: false,
-            data: 'Failed to mark messages as read'
-        };
-    }
-};
-
 const createMessage = async (data: any) => {
     let messages: Message[] = [];
     await prisma.$transaction(async (t) => {
@@ -110,9 +84,34 @@ const createMessage = async (data: any) => {
     return { data: messages, isValid: messages.length > 0 };
 };
 
+const updateMessages = async (ids: string[]) => {
+    try {
+        await prisma.message.updateMany({
+            where: {
+                id: {
+                    in: ids,
+                },
+            },
+            data: {
+                isRead: true,
+            },
+        });
+        return {
+            isValid: true,
+            data: 'Messages marked as read',
+        };
+    } catch (e: any) {
+        logger.error('ERROR::updateMessages: Failed to update messages: ' + e.message);
+        return {
+            isValid: false,
+            data: 'Failed to mark messages as read',
+        };
+    }
+};
+
 export default {
+    updateMessages,
     getMessagesByDocumentId,
     getMessagesByUserId,
     createMessage,
-    updateMessagesById
 }

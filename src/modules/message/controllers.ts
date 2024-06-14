@@ -34,10 +34,14 @@ export const getMessagesByUserIdController = async (req: Request, res: Response)
  * Update messages by ID
  */
 export const updateMessageByIdController = async (req: Request, res: Response) => {
-    const ids = req.body
+    const ids = req.body;
     try {
-        const data = await messageService.updateMessagesById(ids);
-        return res.status(200).json(data);
+        const data = await messageService.updateMessages(ids);
+        if (data.isValid) {
+            return res.status(200).json(data);
+        } else {
+            return res.status(500).send('Failed to mark messages as read');
+        }
     } catch (e: any) {
         logger.info(e);
         res.status(500).send('Unexpected error. Could not update messages: ' + e.message);
