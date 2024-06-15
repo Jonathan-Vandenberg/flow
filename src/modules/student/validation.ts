@@ -42,6 +42,15 @@ export const getStudentsByOrganisationIdValidationRules = checkSchema({
         notEmpty: {
             errorMessage: 'The organisation id field is required'
         }
+    },
+    userId: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The userId must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The userId field is required'
+        }
     }
 });
 

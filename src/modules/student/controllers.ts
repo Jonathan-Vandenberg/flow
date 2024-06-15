@@ -34,9 +34,11 @@ export const getStudentByIdController = async (req: Request, res: Response) => {
  * Get students by organisation IO
  */
 export const getStudentsByOrganisationIdController = async (req: Request, res: Response) => {
-    const { id } = req.params
+    const { id } = req.params;
+    const { userId } = req.body;
+
     try {
-        const data = await studentService.getStudentsByOrganisationId(id);
+        const data = await studentService.getStudentsByOrganisationId(id, userId);
         return res.status(200).json(data);
     } catch (e: any) {
         logger.info(e);

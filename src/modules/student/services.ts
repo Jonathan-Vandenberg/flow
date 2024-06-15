@@ -55,12 +55,9 @@ const getStudentById = async (id: string
     };
 };
 
-const getStudentsByOrganisationId = async (id: string
-) => {
+const getStudentsByOrganisationId = async (id: string, userId: string) => {
     const organisation = await prisma.organisation.findUnique({
-        where: {
-            id
-        },
+        where: { id },
         select: {
             students: {
                 include: {
@@ -72,21 +69,43 @@ const getStudentsByOrganisationId = async (id: string
                             documents: {
                                 include: {
                                     messages: {
-                                        select: {isRead: true, receiverId: true, senderId: true}
-                                    }
-                                }
+                                        where: {
+                                            isRead: false,
+                                            receiverId: userId,
+                                        },
+                                    },
+                                },
                             },
-                            requirement: true
-                        }
-                    }
-                }
-            }
-        }
-    })
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    const studentsWithUnreadMessages = organisation?.students.map((student: any) => {
+        const unreadMessages = student.directories.reduce(
+            (count: number, directory: any) => {
+                const unreadCount = directory.documents.reduce(
+                    (docCount: number, document: any) => {
+                        return docCount + document.messages.length;
+                    },
+                    0,
+                );
+                return count + unreadCount;
+            },
+            0,
+        );
+
+        return {
+            ...student,
+            unreadMessages,
+        };
+    });
 
     return {
         isValid: organisation?.students?.length ?? 0 > 0,
-        data: organisation?.students
+        data: studentsWithUnreadMessages,
     };
 };
 
