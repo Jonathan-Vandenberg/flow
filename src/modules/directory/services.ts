@@ -30,6 +30,16 @@ const getDir = async (id: string
                         messages: {
                             select: {
                                isRead: true,
+                                receiver: {
+                                   select: {
+                                       id: true
+                                   }
+                                },
+                                sender: {
+                                   select: {
+                                       id: true
+                                   }
+                                },
                                receiverId: true,
                                senderId: true
                             }
