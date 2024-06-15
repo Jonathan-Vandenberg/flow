@@ -34,8 +34,7 @@ export const getStudentByIdController = async (req: Request, res: Response) => {
  * Get students by organisation IO
  */
 export const getStudentsByOrganisationIdController = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { userId } = req.body;
+    const { id, userId } = req.params;
 
     try {
         const data = await studentService.getStudentsByOrganisationId(id, userId);

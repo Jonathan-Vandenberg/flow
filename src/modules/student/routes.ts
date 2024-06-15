@@ -40,7 +40,7 @@ router.get(
  * Get students by Organisations ID
  */
 router.get(
-    '/organisation-students/:id',
+    '/organisation-students/:id/:userId',
     getStudentsByOrganisationIdValidationRules,
     // isAuthenticated,
     // isValidationResult,

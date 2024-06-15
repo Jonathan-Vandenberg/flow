@@ -44,7 +44,7 @@ export const getStudentsByOrganisationIdValidationRules = checkSchema({
         }
     },
     userId: {
-        in: ['body'],
+        in: ['params'],
         isString: {
             errorMessage: 'The userId must be a string.'
         },
