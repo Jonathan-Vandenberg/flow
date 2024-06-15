@@ -69,7 +69,13 @@ const getStudentsByOrganisationId = async (id: string
                     agent: true,
                     directories: {
                         include: {
-                            documents: true,
+                            documents: {
+                                include: {
+                                    messages: {
+                                        select: {isRead: true, receiverId: true, senderId: true}
+                                    }
+                                }
+                            },
                             requirement: true
                         }
                     }
