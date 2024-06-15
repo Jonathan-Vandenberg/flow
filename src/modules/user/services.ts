@@ -361,6 +361,7 @@ const createUser = async (createUserData: any): Promise<{ isValid: boolean; mess
                 user = await prisma.user.create({
                     data: {
                         ...userData,
+                        managerId: createUserData.managerId,
                         usersOnOrganisations: {
                             create: {
                                 role: createUserData.role,
