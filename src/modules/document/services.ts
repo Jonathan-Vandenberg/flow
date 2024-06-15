@@ -40,6 +40,7 @@ const getDoc = async (id: string) => {
                                         firstName: true,
                                         lastName: true,
                                         imageUrl: true,
+                                        managerId: true
                                     }
                                 }
                             }
