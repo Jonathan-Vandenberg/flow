@@ -34,7 +34,6 @@ const getDoc = async (id: string) => {
                         student: {
                             select: {
                                 id: true,
-                                agencyId: true,
                                 agent: {
                                     select: {
                                         id: true,
@@ -42,6 +41,11 @@ const getDoc = async (id: string) => {
                                         lastName: true,
                                         imageUrl: true,
                                         managerId: true
+                                    }
+                                },
+                                agency: {
+                                    select: {
+                                        id: true
                                     }
                                 }
                             }
