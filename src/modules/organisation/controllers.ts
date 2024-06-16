@@ -56,9 +56,9 @@ export const getUsersOnOrganisationsController = async (req: Request, res: Respo
  * Get users on agencies
  */
 export const getAgenciesOnOrganisationsController = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id, userId } = req.params;
     try {
-        const data = await organisationService.getAgenciesOnOrganisations(id);
+        const data = await organisationService.getAgenciesOnOrganisations(id, userId);
         return res.status(200).json(data);
     } catch (e: any) {
         logger.info(e.message);
