@@ -285,8 +285,11 @@ const getAgenciesOnOrganisations = async (id: string, userId: string) => {
                 );
 
                 return {
-                    ...userOnAgency.user,
-                    unreadMessages: unreadCount,
+                    ...userOnAgency,
+                    user: {
+                        ...userOnAgency.user,
+                        unreadMessages: unreadCount,
+                    },
                 };
             });
 
