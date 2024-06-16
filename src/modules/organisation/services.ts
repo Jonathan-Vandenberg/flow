@@ -264,35 +264,36 @@ const getAgenciesOnOrganisations = async (id: string, userId: string) => {
                 0,
             );
 
-            const unreadMessagesFromUsers = agencyOnOrganisation.agency?.usersOnAgencies?.reduce(
-                (count: number, userOnAgency: any) => {
-                    const unreadCount = userOnAgency.user.students?.reduce(
-                        (studentCount: number, student: any) => {
-                            const unreadStudentCount = student?.directories?.reduce(
-                                (dirCount: number, directory: any) => {
-                                    const unreadDirCount = directory?.documents?.reduce(
-                                        (docCount: number, document: any) => {
-                                            return docCount + document?.messages?.length;
-                                        },
-                                        0,
-                                    );
-                                    return dirCount + unreadDirCount;
-                                },
-                                0,
-                            );
-                            return studentCount + unreadStudentCount;
-                        },
-                        0,
-                    );
-                    return count + unreadCount;
-                },
-                0,
-            );
+            const usersWithUnreadMessages = agencyOnOrganisation.agency?.usersOnAgencies?.map((userOnAgency: any) => {
+                const unreadCount = userOnAgency.user.managedStudents?.reduce(
+                    (studentCount: number, student: any) => {
+                        const unreadStudentCount = student?.directories?.reduce(
+                            (dirCount: number, directory: any) => {
+                                const unreadDirCount = directory?.documents?.reduce(
+                                    (docCount: number, document: any) => {
+                                        return docCount + document?.messages?.length;
+                                    },
+                                    0,
+                                );
+                                return dirCount + unreadDirCount;
+                            },
+                            0,
+                        );
+                        return studentCount + unreadStudentCount;
+                    },
+                    0,
+                );
+
+                return {
+                    ...userOnAgency.user,
+                    unreadMessages: unreadCount,
+                };
+            });
 
             return {
                 ...agencyOnOrganisation,
                 unreadAgencyMessages: unreadMessagesFromStudents,
-                unreadUserMessages: unreadMessagesFromUsers
+                usersOnAgencies: usersWithUnreadMessages,
             };
         });
 
