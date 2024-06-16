@@ -245,7 +245,7 @@ const getAgenciesOnOrganisations = async (id: string, userId: string) => {
         });
 
         const agenciesWithUnreadMessages = organisation?.agenciesOnOrganisations.map((agencyOnOrganisation: any) => {
-            const unreadMessagesFromStudents = agencyOnOrganisation.agency?.students?.reduce(
+            const unreadMessagesOnDocuments = agencyOnOrganisation.agency?.students?.reduce(
                 (count: number, student: any) => {
                     const unreadCount = student?.directories?.reduce(
                         (dirCount: number, directory: any) => {
@@ -284,6 +284,8 @@ const getAgenciesOnOrganisations = async (id: string, userId: string) => {
                     0,
                 );
 
+                console.log('UNREAD COUNt: ', unreadCount)
+
                 return {
                     ...userOnAgency,
                     user: {
@@ -293,9 +295,11 @@ const getAgenciesOnOrganisations = async (id: string, userId: string) => {
                 };
             });
 
+            console.log('USERS WITH UNREAD MESSAGES', usersWithUnreadMessages)
+
             return {
                 ...agencyOnOrganisation,
-                unreadAgencyMessages: unreadMessagesFromStudents,
+                unreadAgencyMessages: unreadMessagesOnDocuments,
                 usersOnAgencies: usersWithUnreadMessages,
             };
         });
