@@ -52,7 +52,7 @@ export const getStudentsByAgencyIdController = async (req: Request, res: Respons
     const { agencyId, userId } = req.params;
 
     try {
-        const data = await studentService.getStudentsByOrganisationId(agencyId, userId);
+        const data = await studentService.getStudentsByAgencyId(agencyId, userId);
         return res.status(200).json(data);
     } catch (e: any) {
         logger.info(e);
