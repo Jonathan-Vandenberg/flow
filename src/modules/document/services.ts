@@ -34,6 +34,7 @@ const getDoc = async (id: string) => {
                         student: {
                             select: {
                                 id: true,
+                                agencyId: true,
                                 agent: {
                                     select: {
                                         id: true,
