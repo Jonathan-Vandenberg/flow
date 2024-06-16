@@ -1,5 +1,5 @@
 import prisma from "../../../prisma/prisma";
-import {Role} from "@prisma/client";
+import {AgenciesOnOrganisations, Role} from "@prisma/client";
 
 const createOrganisation = async (data: any) => {
     let organisation;
@@ -143,7 +143,7 @@ const getOrganisationById = async (id: string) => {
     }
 };
 
-const getUsersOnOrganisations = async (id: string) => {
+const getUsersOnOrganisations = async (id: string, userId: string) => {
     try {
         const organisation = await prisma.organisation.findUnique({
             where: { id },
@@ -153,17 +153,68 @@ const getUsersOnOrganisations = async (id: string) => {
                     include: {
                         user: {
                             include: {
-                                country: true
-                            }
-                        }
-                    }
+                                country: true,
+                                managedStudents: {
+                                    orderBy: { createdAt: 'desc' },
+                                    select: {
+                                        directories: {
+                                            orderBy: { createdAt: 'desc' },
+                                            select: {
+                                                documents: {
+                                                    orderBy: { createdAt: 'desc' },
+                                                    select: {
+                                                        messages: {
+                                                            orderBy: { createdAt: 'desc' },
+                                                            where: {
+                                                                isRead: false,
+                                                                receiverId: userId,
+                                                            },
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
                 },
             },
         });
 
+        const usersWithUnreadMessages = organisation?.usersOnOrganisations.map((userOnOrganisation: any) => {
+            const unreadCount = userOnOrganisation.user.managedStudents?.reduce(
+                (studentCount: number, student: any) => {
+                    const unreadStudentCount = student?.directories?.reduce(
+                        (dirCount: number, directory: any) => {
+                            const unreadDirCount = directory?.documents?.reduce(
+                                (docCount: number, document: any) => {
+                                    return docCount + document?.messages?.length;
+                                },
+                                0,
+                            );
+                            return dirCount + unreadDirCount;
+                        },
+                        0,
+                    );
+                    return studentCount + unreadStudentCount;
+                },
+                0,
+            );
+
+            return {
+                ...userOnOrganisation,
+                user: {
+                    ...userOnOrganisation.user,
+                    unreadMessages: unreadCount,
+                },
+            };
+        });
+
         return {
             isValid: organisation?.usersOnOrganisations?.length ?? 0 > 0,
-            data: organisation?.usersOnOrganisations ?? []
+            data: usersWithUnreadMessages ?? [],
         };
     } catch (e: any) {
         console.error(e.message);
@@ -284,8 +335,6 @@ const getAgenciesOnOrganisations = async (id: string, userId: string) => {
                     0,
                 );
 
-                console.log('UNREAD COUNt: ', unreadCount)
-
                 return {
                     ...userOnAgency,
                     user: {
@@ -294,8 +343,6 @@ const getAgenciesOnOrganisations = async (id: string, userId: string) => {
                     },
                 };
             });
-
-            console.log('USERS WITH UNREAD MESSAGES', usersWithUnreadMessages)
 
             return {
                 ...agencyOnOrganisation,

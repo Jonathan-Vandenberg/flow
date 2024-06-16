@@ -42,9 +42,9 @@ export const getOrganisationByIdController = async (req: Request, res: Response)
  * Get users on organisations
  */
 export const getUsersOnOrganisationsController = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id, userId } = req.params;
     try {
-        const data = await organisationService.getUsersOnOrganisations(id);
+        const data = await organisationService.getUsersOnOrganisations(id, userId);
         return res.status(200).json(data);
     } catch (e: any) {
         logger.info(e.message);

@@ -80,6 +80,15 @@ export const getUsersOnOrganisationsValidationRules = checkSchema({
         notEmpty: {
             errorMessage: 'The organisation id field is required'
         }
+    },
+    userId: {
+        in: ['params'],
+        isString: {
+            errorMessage: 'The userId must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The userId field is required'
+        }
     }
 });
 
