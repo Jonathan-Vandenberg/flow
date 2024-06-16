@@ -55,6 +55,60 @@ const getStudentById = async (id: string
     };
 };
 
+const getStudentsByAgencyId = async (agencyId: string, userId: string) => {
+    const agency = await prisma.agency.findUnique({
+        where: { id: agencyId },
+        select: {
+            students: {
+                include: {
+                    course: true,
+                    agency: true,
+                    agent: true,
+                    directories: {
+                        include: {
+                            documents: {
+                                include: {
+                                    messages: {
+                                        where: {
+                                            isRead: false,
+                                            receiverId: userId,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    const studentsWithUnreadMessages = agency?.students.map((student: any) => {
+        const unreadMessages = student.directories.reduce(
+            (count: number, directory: any) => {
+                const unreadCount = directory.documents.reduce(
+                    (docCount: number, document: any) => {
+                        return docCount + document.messages.length;
+                    },
+                    0,
+                );
+                return count + unreadCount;
+            },
+            0,
+        );
+
+        return {
+            ...student,
+            unreadMessages,
+        };
+    });
+
+    return {
+        isValid: agency?.students?.length ?? 0 > 0,
+        data: studentsWithUnreadMessages,
+    };
+};
+
 const getStudentsByOrganisationId = async (id: string, userId: string) => {
     const organisation = await prisma.organisation.findUnique({
         where: { id },
@@ -226,6 +280,7 @@ const updateStudent = async (data: any
 export default {
     getAllStudentsByAgentId,
     getStudentsByOrganisationId,
+    getStudentsByAgencyId,
     getStudentById,
     createStudent,
     updateStudent

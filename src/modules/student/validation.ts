@@ -55,6 +55,30 @@ export const getStudentsByOrganisationIdValidationRules = checkSchema({
 });
 
 /**
+ * Get students by organisation ID
+ */
+export const getStudentsByAgencyIdValidationRules = checkSchema({
+    agencyId: {
+        in: ['params'],
+        isString: {
+            errorMessage: 'The agencyId must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The agencyId field is required'
+        }
+    },
+    userId: {
+        in: ['params'],
+        isString: {
+            errorMessage: 'The userId must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The userId field is required'
+        }
+    }
+});
+
+/**
  * Create student
  */
 export const createStudentValidationRules = checkSchema({
