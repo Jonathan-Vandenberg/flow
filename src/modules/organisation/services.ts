@@ -171,7 +171,7 @@ const getUsersOnOrganisations = async (id: string) => {
     }
 };
 
-const getAgenciesOnOrganisations = async (id: string) => {
+const getAgenciesOnOrganisations = async (id: string, userId: string) => {
     try {
         const organisation = await prisma.organisation.findUnique({
             where: { id },
@@ -183,26 +183,59 @@ const getAgenciesOnOrganisations = async (id: string) => {
                         agency: {
                             include: {
                                 students: {
-                                    include: { course: true },
+                                    select: {
+                                        course: true,
+                                        directories: {
+                                            select: {
+                                                documents: {
+                                                    select: {
+                                                        messages: {
+                                                            where: {
+                                                                isRead: false,
+                                                                receiverId: userId,
+                                                            },
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
                                     orderBy: { createdAt: 'desc' },
                                 },
-                                contacts: {
-                                    orderBy: { createdAt: 'desc' },
-                                },
-                                agenciesOnCountries: {
-                                    include: {
-                                        country: true
-                                    }
-                                },
+                                contacts: { orderBy: { createdAt: 'desc' } },
+                                agenciesOnCountries: { include: { country: true } },
                                 usersOnAgencies: {
-                                    include: {
+                                    orderBy: { createdAt: 'desc' },
+                                    select: {
                                         user: {
                                             include: {
-                                                country: true
-                                            }
-                                        }
-                                    }
-                                }
+                                                country: true,
+                                                managedStudents: {
+                                                    orderBy: { createdAt: 'desc' },
+                                                    select: {
+                                                        directories: {
+                                                            orderBy: { createdAt: 'desc' },
+                                                            select: {
+                                                                documents: {
+                                                                    orderBy: { createdAt: 'desc' },
+                                                                    select: {
+                                                                        messages: {
+                                                                            orderBy: { createdAt: 'desc' },
+                                                                            where: {
+                                                                                isRead: false,
+                                                                                receiverId: userId,
+                                                                            },
+                                                                        },
+                                                                    },
+                                                                },
+                                                            },
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
                             },
                         },
                         user: true,
@@ -211,9 +244,61 @@ const getAgenciesOnOrganisations = async (id: string) => {
             },
         });
 
+        const agenciesWithUnreadMessages = organisation?.agenciesOnOrganisations.map((agencyOnOrganisation: any) => {
+            const unreadMessagesFromStudents = agencyOnOrganisation.agency?.students?.reduce(
+                (count: number, student: any) => {
+                    const unreadCount = student?.directories?.reduce(
+                        (dirCount: number, directory: any) => {
+                            const unreadDirCount = directory?.documents?.reduce(
+                                (docCount: number, document: any) => {
+                                    return docCount + document?.messages?.length;
+                                },
+                                0,
+                            );
+                            return dirCount + unreadDirCount;
+                        },
+                        0,
+                    );
+                    return count + unreadCount;
+                },
+                0,
+            );
+
+            const unreadMessagesFromUsers = agencyOnOrganisation.agency?.usersOnAgencies?.reduce(
+                (count: number, userOnAgency: any) => {
+                    const unreadCount = userOnAgency.user.students?.reduce(
+                        (studentCount: number, student: any) => {
+                            const unreadStudentCount = student?.directories?.reduce(
+                                (dirCount: number, directory: any) => {
+                                    const unreadDirCount = directory?.documents?.reduce(
+                                        (docCount: number, document: any) => {
+                                            return docCount + document?.messages?.length;
+                                        },
+                                        0,
+                                    );
+                                    return dirCount + unreadDirCount;
+                                },
+                                0,
+                            );
+                            return studentCount + unreadStudentCount;
+                        },
+                        0,
+                    );
+                    return count + unreadCount;
+                },
+                0,
+            );
+
+            return {
+                ...agencyOnOrganisation,
+                unreadAgencyMessages: unreadMessagesFromStudents,
+                unreadUserMessages: unreadMessagesFromUsers
+            };
+        });
+
         return {
             isValid: organisation?.agenciesOnOrganisations?.length ?? 0 > 0,
-            data: organisation?.agenciesOnOrganisations ?? []
+            data: agenciesWithUnreadMessages ?? [],
         };
     } catch (e: any) {
         console.error(e.message);
