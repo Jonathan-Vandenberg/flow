@@ -206,7 +206,7 @@ const getAgenciesOnOrganisations = async (id: string, userId: string) => {
                                 agenciesOnCountries: { include: { country: true } },
                                 usersOnAgencies: {
                                     orderBy: { createdAt: 'desc' },
-                                    select: {
+                                    include: {
                                         user: {
                                             include: {
                                                 country: true,
