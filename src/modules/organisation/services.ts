@@ -154,26 +154,10 @@ const getUsersOnOrganisations = async (id: string, userId: string) => {
                         user: {
                             include: {
                                 country: true,
-                                managedStudents: {
-                                    orderBy: { createdAt: 'desc' },
-                                    select: {
-                                        directories: {
-                                            orderBy: { createdAt: 'desc' },
-                                            select: {
-                                                documents: {
-                                                    orderBy: { createdAt: 'desc' },
-                                                    select: {
-                                                        messages: {
-                                                            orderBy: { createdAt: 'desc' },
-                                                            where: {
-                                                                isRead: false,
-                                                                receiverId: userId,
-                                                            },
-                                                        },
-                                                    },
-                                                },
-                                            },
-                                        },
+                                receivedMessages: {
+                                    where: {
+                                        isRead: false,
+                                        receiverId: userId,
                                     },
                                 },
                             },
@@ -184,24 +168,7 @@ const getUsersOnOrganisations = async (id: string, userId: string) => {
         });
 
         const usersWithUnreadMessages = organisation?.usersOnOrganisations.map((userOnOrganisation: any) => {
-            const unreadCount = userOnOrganisation.user.managedStudents?.reduce(
-                (studentCount: number, student: any) => {
-                    const unreadStudentCount = student?.directories?.reduce(
-                        (dirCount: number, directory: any) => {
-                            const unreadDirCount = directory?.documents?.reduce(
-                                (docCount: number, document: any) => {
-                                    return docCount + document?.messages?.length;
-                                },
-                                0,
-                            );
-                            return dirCount + unreadDirCount;
-                        },
-                        0,
-                    );
-                    return studentCount + unreadStudentCount;
-                },
-                0,
-            );
+            const unreadCount = userOnOrganisation.user.receivedMessages.length;
 
             return {
                 ...userOnOrganisation,
