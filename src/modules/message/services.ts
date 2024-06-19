@@ -88,8 +88,16 @@ const updateGroup = async (data: { groupId: string, memberIds: string[], action:
             data: {
                 ...(data.action === 'add' && {
                     groupMembers: {
-                        create: data.memberIds.map((userId) => ({
-                            user: { connect: { id: userId } },
+                        connectOrCreate: data.memberIds.map((userId) => ({
+                            where: {
+                                userId_groupId: {
+                                    userId,
+                                    groupId: data.groupId,
+                                },
+                            },
+                            create: {
+                                userId,
+                            },
                         })),
                     },
                 }),
@@ -117,7 +125,6 @@ const updateGroup = async (data: { groupId: string, memberIds: string[], action:
     }
     return { data: group, isValid: !!group };
 };
-
 export default {
     getMessagesByDocumentId,
     getMessagesByUserId,
