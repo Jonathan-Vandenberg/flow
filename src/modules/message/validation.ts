@@ -67,9 +67,8 @@ export const createMessageValidationRules = checkSchema({
                 for (const message of value) {
                     if (
                         !message.content ||
-                        !message.documentId ||
-                        !message.receiverId ||
-                        !message.senderId
+                        !message.senderId ||
+                        !message.groupId
                     ) {
                         return false;
                     }
@@ -89,19 +88,9 @@ export const createMessageValidationRules = checkSchema({
         },
     },
     'messages.*.documentId': {
-        notEmpty: {
-            errorMessage: 'The documentId field is required for each message.',
-        },
+        optional: true,
         isUUID: {
             errorMessage: 'The documentId field must be a valid UUID.',
-        },
-    },
-    'messages.*.receiverId': {
-        notEmpty: {
-            errorMessage: 'The receiverId field is required for each message.',
-        },
-        isUUID: {
-            errorMessage: 'The receiverId field must be a valid UUID.',
         },
     },
     'messages.*.senderId': {
@@ -110,6 +99,13 @@ export const createMessageValidationRules = checkSchema({
         },
         isUUID: {
             errorMessage: 'The senderId field must be a valid UUID.',
+        },
+    },'messages.*.groupId': {
+        notEmpty: {
+            errorMessage: 'The groupId field is required for each message.',
+        },
+        isUUID: {
+            errorMessage: 'The groupId field must be a valid UUID.',
         },
     },
 });
