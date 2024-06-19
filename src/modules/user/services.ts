@@ -16,6 +16,12 @@ const getUserById = async (id: string): Promise<{ isValid: boolean; message: str
                 country: true,
                 managedStudents: true,
                 socialMedia: true,
+                groups: {
+                    select: {
+                        id: true,
+                        studentId: true
+                    }
+                },
                 usersOnOrganisations: {
                     select: {
                         userId: true,
