@@ -22,6 +22,16 @@ const getUserById = async (id: string): Promise<{ isValid: boolean; message: str
                         studentId: true
                     }
                 },
+                groupMembers: {
+                    select: {
+                        group: {
+                            select: {
+                                id: true,
+                                studentId: true
+                            }
+                        },
+                    }
+                },
                 usersOnOrganisations: {
                     select: {
                         userId: true,
@@ -145,6 +155,16 @@ const getUserByEmail = async (
                         id: true,
                         studentId: true
                     }
+                },
+                groupMembers: {
+                  select: {
+                      group: {
+                          select: {
+                              id: true,
+                              studentId: true
+                          }
+                      },
+                  }
                 },
                 usersOnOrganisations: {
                     select: {
