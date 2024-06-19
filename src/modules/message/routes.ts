@@ -8,7 +8,7 @@ import {
 import {
     createMessageController,
     getMessagesByDocumentIdController,
-    getMessagesByUserIdController, updateGroupController, updateMessageByIdController,
+    getMessagesByUserIdController, updateGroupController,
 } from "./controllers";
 
 const router = express.Router();

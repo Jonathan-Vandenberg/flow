@@ -36,13 +36,7 @@ const getStudentById = async (id: string
             agent: true,
             directories: {
                 include: {
-                    documents: {
-                        include: {
-                            messages: {
-                                select: {isRead: true, senderId: true}
-                            }
-                        }
-                    },
+                    documents: true,
                     requirement: true
                 }
             }
@@ -66,15 +60,7 @@ const getStudentsByAgencyId = async (agencyId: string, userId: string) => {
                     agent: true,
                     directories: {
                         include: {
-                            documents: {
-                                include: {
-                                    messages: {
-                                        where: {
-                                            isRead: false,
-                                        },
-                                    },
-                                },
-                            },
+                            documents: true
                         },
                     },
                 },
@@ -82,29 +68,9 @@ const getStudentsByAgencyId = async (agencyId: string, userId: string) => {
         },
     });
 
-    const studentsWithUnreadMessages = agency?.students.map((student: any) => {
-        const unreadMessages = student.directories.reduce(
-            (count: number, directory: any) => {
-                const unreadCount = directory.documents.reduce(
-                    (docCount: number, document: any) => {
-                        return docCount + document.messages.length;
-                    },
-                    0,
-                );
-                return count + unreadCount;
-            },
-            0,
-        );
-
-        return {
-            ...student,
-            unreadMessages,
-        };
-    });
-
     return {
         isValid: agency?.students?.length ?? 0 > 0,
-        data: studentsWithUnreadMessages,
+        data: agency?.students,
     };
 };
 
@@ -127,29 +93,9 @@ const getStudentsByOrganisationId = async (id: string, userId: string) => {
         },
     });
 
-    const studentsWithUnreadMessages = organisation?.students.map((student: any) => {
-        const unreadMessages = student.directories.reduce(
-            (count: number, directory: any) => {
-                const unreadCount = directory.documents.reduce(
-                    (docCount: number, document: any) => {
-                        return docCount + document.messages.length;
-                    },
-                    0,
-                );
-                return count + unreadCount;
-            },
-            0,
-        );
-
-        return {
-            ...student,
-            unreadMessages,
-        };
-    });
-
     return {
         isValid: organisation?.students?.length ?? 0 > 0,
-        data: studentsWithUnreadMessages,
+        data: organisation?.students,
     };
 };
 

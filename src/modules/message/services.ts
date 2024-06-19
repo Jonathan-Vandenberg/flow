@@ -50,19 +50,6 @@ const createMessage = async (data: any) => {
     return { data: messages, isValid: messages.length > 0 };
 };
 
-const updateMessages = async (ids: string[]) => {
-    try {
-        await prisma.message.updateMany({
-            where: { id: { in: ids } },
-            data: { isRead: true },
-        });
-        return { isValid: true, data: 'Messages marked as read' };
-    } catch (e: any) {
-        logger.error('ERROR::updateMessages: Failed to update messages: ' + e.message);
-        return { isValid: false, data: 'Failed to mark messages as read' };
-    }
-};
-
 const updateGroup = async (data: {
     groupId: string,
     memberIds: string[],
@@ -106,7 +93,6 @@ const updateGroup = async (data: {
 };
 
 export default {
-    updateMessages,
     getMessagesByDocumentId,
     getMessagesByUserId,
     createMessage,

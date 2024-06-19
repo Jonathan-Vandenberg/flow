@@ -161,21 +161,9 @@ const getUsersOnOrganisations = async (id: string, userId: string) => {
             },
         });
 
-        const usersWithUnreadMessages = organisation?.usersOnOrganisations.map((userOnOrganisation: any) => {
-            const unreadCount = userOnOrganisation.user.receivedMessages.length;
-
-            return {
-                ...userOnOrganisation,
-                user: {
-                    ...userOnOrganisation.user,
-                    unreadMessages: unreadCount,
-                },
-            };
-        });
-
         return {
             isValid: organisation?.usersOnOrganisations?.length ?? 0 > 0,
-            data: usersWithUnreadMessages ?? [],
+            data: organisation?.usersOnOrganisations ?? [],
         };
     } catch (e: any) {
         console.error(e.message);
@@ -220,65 +208,9 @@ const getAgenciesOnOrganisations = async (id: string, userId: string) => {
             },
         });
 
-        const agenciesWithUnreadMessages = organisation?.agenciesOnOrganisations.map((agencyOnOrganisation: any) => {
-            const unreadMessagesOnDocuments = agencyOnOrganisation.agency?.students?.reduce(
-                (count: number, student: any) => {
-                    const unreadCount = student?.directories?.reduce(
-                        (dirCount: number, directory: any) => {
-                            const unreadDirCount = directory?.documents?.reduce(
-                                (docCount: number, document: any) => {
-                                    return docCount + document?.messages?.length;
-                                },
-                                0,
-                            );
-                            return dirCount + unreadDirCount;
-                        },
-                        0,
-                    );
-                    return count + unreadCount;
-                },
-                0,
-            );
-
-            const usersWithUnreadMessages = agencyOnOrganisation.agency?.usersOnAgencies?.map((userOnAgency: any) => {
-                const unreadCount = userOnAgency.user.managedStudents?.reduce(
-                    (studentCount: number, student: any) => {
-                        const unreadStudentCount = student?.directories?.reduce(
-                            (dirCount: number, directory: any) => {
-                                const unreadDirCount = directory?.documents?.reduce(
-                                    (docCount: number, document: any) => {
-                                        return docCount + document?.messages?.length;
-                                    },
-                                    0,
-                                );
-                                return dirCount + unreadDirCount;
-                            },
-                            0,
-                        );
-                        return studentCount + unreadStudentCount;
-                    },
-                    0,
-                );
-
-                return {
-                    ...userOnAgency,
-                    user: {
-                        ...userOnAgency.user,
-                        unreadMessages: unreadCount,
-                    },
-                };
-            });
-
-            return {
-                ...agencyOnOrganisation,
-                unreadAgencyMessages: unreadMessagesOnDocuments,
-                usersOnAgencies: usersWithUnreadMessages,
-            };
-        });
-
         return {
             isValid: organisation?.agenciesOnOrganisations?.length ?? 0 > 0,
-            data: agenciesWithUnreadMessages ?? [],
+            data: organisation?.agenciesOnOrganisations ?? [],
         };
     } catch (e: any) {
         console.error(e.message);
