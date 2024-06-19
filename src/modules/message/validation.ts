@@ -113,3 +113,52 @@ export const createMessageValidationRules = checkSchema({
         },
     },
 });
+
+/**
+ * Create Group
+ */
+export const createGroupValidationRules = checkSchema({
+    studentId: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The studentId must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The studentId must be a string.'
+        }
+    },
+    memberIds: {
+        in: ['body'],
+        isArray: {
+            errorMessage: 'The memberIds must be in an array.'
+        },
+        notEmpty: {
+            errorMessage: 'The memberIds must be in an array.'
+        }
+    }
+});
+
+/**
+ * Update Group
+ */
+export const updateGroupValidationRules = checkSchema({
+    groupId: {
+        in: ['body'],
+        isString: { errorMessage: 'The groupId must be a string.' },
+        notEmpty: { errorMessage: 'The groupId must be a string.' },
+    },
+    memberIds: {
+        in: ['body'],
+        isArray: { errorMessage: 'The memberIds must be in an array.' },
+        notEmpty: { errorMessage: 'The memberIds must be in an array.' },
+    },
+    action: {
+        in: ['body'],
+        isString: { errorMessage: 'The action must be a string.' },
+        notEmpty: { errorMessage: 'The action must be a string.' },
+        isIn: {
+            options: [['add', 'remove']],
+            errorMessage: 'The action must be either "add" or "remove".',
+        },
+    },
+});

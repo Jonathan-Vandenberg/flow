@@ -25,17 +25,7 @@ const getDir = async (id: string
             },
             include: {
                 requirement: true,
-                documents: {
-                    include: {
-                        messages: {
-                            select: {
-                               isRead: true,
-                               receiverId: true,
-                               senderId: true
-                            }
-                        }
-                    }
-                },
+                documents: true,
                 student: true,
             }
         })

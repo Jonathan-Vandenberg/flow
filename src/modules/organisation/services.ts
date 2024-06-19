@@ -154,12 +154,6 @@ const getUsersOnOrganisations = async (id: string, userId: string) => {
                         user: {
                             include: {
                                 country: true,
-                                receivedMessages: {
-                                    where: {
-                                        isRead: false,
-                                        receiverId: userId,
-                                    },
-                                },
                             },
                         },
                     },
@@ -203,20 +197,6 @@ const getAgenciesOnOrganisations = async (id: string, userId: string) => {
                                 students: {
                                     select: {
                                         course: true,
-                                        directories: {
-                                            select: {
-                                                documents: {
-                                                    select: {
-                                                        messages: {
-                                                            where: {
-                                                                isRead: false,
-                                                                receiverId: userId,
-                                                            },
-                                                        },
-                                                    },
-                                                },
-                                            },
-                                        },
                                     },
                                     orderBy: { createdAt: 'desc' },
                                 },
@@ -228,28 +208,6 @@ const getAgenciesOnOrganisations = async (id: string, userId: string) => {
                                         user: {
                                             include: {
                                                 country: true,
-                                                managedStudents: {
-                                                    orderBy: { createdAt: 'desc' },
-                                                    select: {
-                                                        directories: {
-                                                            orderBy: { createdAt: 'desc' },
-                                                            select: {
-                                                                documents: {
-                                                                    orderBy: { createdAt: 'desc' },
-                                                                    select: {
-                                                                        messages: {
-                                                                            orderBy: { createdAt: 'desc' },
-                                                                            where: {
-                                                                                isRead: false,
-                                                                                receiverId: userId,
-                                                                            },
-                                                                        },
-                                                                    },
-                                                                },
-                                                            },
-                                                        },
-                                                    },
-                                                },
                                             },
                                         },
                                     },

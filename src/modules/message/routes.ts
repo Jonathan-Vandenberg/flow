@@ -2,12 +2,13 @@ import express from 'express';
 import {
     getMessagesByDocumentIdValidationRules,
     getMessagesByUserIdValidationRules,
-    createMessageValidationRules, updateMessageByIdValidationRules
+    createMessageValidationRules,
+    updateGroupValidationRules,
 } from "./validation";
 import {
     createMessageController,
     getMessagesByDocumentIdController,
-    getMessagesByUserIdController, updateMessageByIdController,
+    getMessagesByUserIdController, updateGroupController, updateMessageByIdController,
 } from "./controllers";
 
 const router = express.Router();
@@ -46,14 +47,14 @@ router.get(
 );
 
 /**
- * Update message by ID
+ * Update group
  */
 router.patch(
     '/',
-    updateMessageByIdValidationRules,
+    updateGroupValidationRules,
     // isAuthenticated,
     // isValidationResult,
-    updateMessageByIdController
+    updateGroupController
 );
 
 export default router;

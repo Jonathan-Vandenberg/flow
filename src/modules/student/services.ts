@@ -39,7 +39,7 @@ const getStudentById = async (id: string
                     documents: {
                         include: {
                             messages: {
-                                select: {isRead: true, receiverId: true, senderId: true}
+                                select: {isRead: true, senderId: true}
                             }
                         }
                     },
@@ -71,7 +71,6 @@ const getStudentsByAgencyId = async (agencyId: string, userId: string) => {
                                     messages: {
                                         where: {
                                             isRead: false,
-                                            receiverId: userId,
                                         },
                                     },
                                 },
@@ -120,16 +119,7 @@ const getStudentsByOrganisationId = async (id: string, userId: string) => {
                     agent: true,
                     directories: {
                         include: {
-                            documents: {
-                                include: {
-                                    messages: {
-                                        where: {
-                                            isRead: false,
-                                            receiverId: userId,
-                                        },
-                                    },
-                                },
-                            },
+                            documents: true,
                         },
                     },
                 },
@@ -196,6 +186,37 @@ const createStudent = async (data: any) => {
             return;
         }
 
+        const agent = await t.user.findUnique({
+            where: {
+                id: data.agentId
+            },
+            select: {
+                id: true,
+                managerId: true,
+                email: true
+            }
+        })
+
+        if(!agent || !agent.managerId){
+            logger.error(`No agent or manager ID found with agent ID ${data.agentId}`);
+            return;
+        }
+
+        const manager = await t.user.findUnique({
+            where: {
+                id: agent.managerId
+            },
+            select: {
+                id: true,
+                email: true
+            }
+        })
+
+        if(!manager){
+            logger.error(`No manager found with agent ID ${data.agentId}`);
+            return;
+        }
+
         try {
             student = await t.student.create({
                 data: {
@@ -245,6 +266,30 @@ const createStudent = async (data: any) => {
                         ],
                     },
                 },
+            });
+
+            await t.group.create({
+                data: {
+                    student: { connect: { id: student.id } },
+                    groupMembers: {
+                        create: [agent, manager].filter(Boolean).map((user) => ({
+                            user: {
+                                connect: {
+                                    id: user.id,
+                                    email: user.email
+                                }
+                            }
+                        }))
+                    }
+                },
+                include: {
+                    groupMembers: {
+                        include: {
+                            user: true
+                        }
+                    },
+                    student: true
+                }
             });
         } catch (error: any) {
             logger.error(`Error creating student: ${error.message}`);
