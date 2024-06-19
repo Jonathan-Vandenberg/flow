@@ -117,25 +117,16 @@ export const createMessageValidationRules = checkSchema({
 /**
  * Create Group
  */
-export const createGroupValidationRules = checkSchema({
-    studentId: {
+export const getGroupValidationRules = checkSchema({
+    id: {
         in: ['body'],
         isString: {
-            errorMessage: 'The studentId must be a string.'
+            errorMessage: 'The id must be a string.'
         },
         notEmpty: {
-            errorMessage: 'The studentId must be a string.'
+            errorMessage: 'The id must be present.'
         }
     },
-    memberIds: {
-        in: ['body'],
-        isArray: {
-            errorMessage: 'The memberIds must be in an array.'
-        },
-        notEmpty: {
-            errorMessage: 'The memberIds must be in an array.'
-        }
-    }
 });
 
 /**

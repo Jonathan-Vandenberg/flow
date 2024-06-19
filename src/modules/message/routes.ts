@@ -3,10 +3,10 @@ import {
     getMessagesByDocumentIdValidationRules,
     getMessagesByUserIdValidationRules,
     createMessageValidationRules,
-    updateGroupValidationRules,
+    updateGroupValidationRules, getGroupValidationRules,
 } from "./validation";
 import {
-    createMessageController,
+    createMessageController, getGroupController,
     getMessagesByDocumentIdController,
     getMessagesByUserIdController, updateGroupController,
 } from "./controllers";
@@ -33,6 +33,17 @@ router.get(
     // isAuthenticated,
     // isValidationResult,
     getMessagesByDocumentIdController
+);
+
+/**
+ * Get group
+ */
+router.get(
+    '/group/:id',
+    getGroupValidationRules,
+    // isAuthenticated,
+    // isValidationResult,
+    getGroupController
 );
 
 /**

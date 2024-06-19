@@ -15,6 +15,22 @@ const getMessagesByDocumentId = async (documentId: string) => {
     return { isValid: !!messages, data: messages };
 };
 
+const getGroup = async (id: string) => {
+    let group: Group | null = null;
+    try {
+        group = await prisma.group.findUnique({
+            where: { id },
+            include: {
+                messages: true,
+                groupMembers: true,
+                student: true, },
+        });
+    } catch (e: any) {
+        logger.error('ERROR::getGroup: Could not get group: ' + e.message);
+    }
+    return { isValid: !!group, data: group };
+};
+
 const getMessagesByUserId = async (userId: string) => {
     let messages: Message[] | null = null;
     try {
@@ -96,5 +112,6 @@ export default {
     getMessagesByDocumentId,
     getMessagesByUserId,
     createMessage,
+    getGroup,
     updateGroup
 };

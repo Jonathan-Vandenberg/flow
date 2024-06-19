@@ -17,6 +17,20 @@ export const getMessagesByDocumentIdController = async (req: Request, res: Respo
 };
 
 /**
+ * Get group
+ */
+export const getGroupController = async (req: Request, res: Response) => {
+    const { id } = req.params
+    try {
+        const data = await messageService.getGroup(id);
+        return res.status(200).json(data);
+    } catch (e: any) {
+        logger.info(e);
+        res.status(500).send('Unexpected error. Could not get group - ' + e.message);
+    }
+};
+
+/**
  * Get messages by User Id
  */
 export const getMessagesByUserIdController = async (req: Request, res: Response) => {
