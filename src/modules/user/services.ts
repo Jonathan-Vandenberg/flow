@@ -134,6 +134,12 @@ const getUserByEmail = async (
                 country: true,
                 managedStudents: true,
                 socialMedia: true,
+                groups: {
+                    select: {
+                        id: true,
+                        studentId: true
+                    }
+                },
                 usersOnOrganisations: {
                     select: {
                         userId: true,
