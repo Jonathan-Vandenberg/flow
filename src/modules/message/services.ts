@@ -30,7 +30,8 @@ const getGroup = async (id: string) => {
                            select: {
                                id: true,
                                firstName: true,
-                               lastName: true
+                               lastName: true,
+                               imageUrl: true
                            }
                        }
                     }
