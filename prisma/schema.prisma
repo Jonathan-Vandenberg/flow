@@ -400,13 +400,13 @@ model Message {
   content    String
   senderId   String
   groupId    String?
-  documentId String
+  documentId String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  sender   User     @relation(fields: [senderId], references: [id])
-  group    Group?   @relation(fields: [groupId], references: [id])
-  document Document @relation(fields: [documentId], references: [id])
+  sender   User      @relation(fields: [senderId], references: [id])
+  group    Group?    @relation(fields: [groupId], references: [id])
+  document Document? @relation(fields: [documentId], references: [id])
 }
 
 model Group {
