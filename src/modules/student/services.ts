@@ -34,6 +34,7 @@ const getStudentById = async (id: string
             course: true,
             agency: true,
             agent: true,
+            group: true,
             directories: {
                 include: {
                     documents: true,

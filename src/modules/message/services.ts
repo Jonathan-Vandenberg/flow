@@ -31,7 +31,7 @@ const getGroup = async (id: string) => {
                                id: true,
                                firstName: true,
                                lastName: true,
-                               imageUrl: true
+                               imageUrl: true,
                            }
                        }
                     }
