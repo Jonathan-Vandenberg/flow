@@ -21,7 +21,20 @@ const getGroup = async (id: string) => {
         group = await prisma.group.findUnique({
             where: { id },
             include: {
-                messages: true,
+                messages: {
+                    select: {
+                        id: true,
+                        createdAt: true,
+                       content: true,
+                       sender: {
+                           select: {
+                               id: true,
+                               firstName: true,
+                               lastName: true
+                           }
+                       }
+                    }
+                },
                 groupMembers: true,
                 student: true, },
         });
