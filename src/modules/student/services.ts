@@ -216,6 +216,7 @@ const createStudent = async (data: any) => {
 
             const group = await t.group.create({
                 data: {
+                    user: { connect: { id: manager.id } },
                     student: { connect: { id: student.id } },
                     groupMembers: {
                         create: [agent, manager].filter(Boolean).map((user) => ({
