@@ -34,10 +34,10 @@ export const getStudentByIdController = async (req: Request, res: Response) => {
  * Get students by organisation IO
  */
 export const getStudentsByOrganisationIdController = async (req: Request, res: Response) => {
-    const { id, userId } = req.params;
+    const { id } = req.params;
 
     try {
-        const data = await studentService.getStudentsByOrganisationId(id, userId);
+        const data = await studentService.getStudentsByOrganisationId(id);
         return res.status(200).json(data);
     } catch (e: any) {
         logger.info(e);
@@ -49,10 +49,10 @@ export const getStudentsByOrganisationIdController = async (req: Request, res: R
  * Get students by agency IO
  */
 export const getStudentsByAgencyIdController = async (req: Request, res: Response) => {
-    const { agencyId, userId } = req.params;
+    const { agencyId } = req.params;
 
     try {
-        const data = await studentService.getStudentsByAgencyId(agencyId, userId);
+        const data = await studentService.getStudentsByAgencyId(agencyId);
         return res.status(200).json(data);
     } catch (e: any) {
         logger.info(e);

@@ -42,9 +42,9 @@ export const getOrganisationByIdController = async (req: Request, res: Response)
  * Get users on organisations
  */
 export const getUsersOnOrganisationsController = async (req: Request, res: Response) => {
-    const { id, userId } = req.params;
+    const { id } = req.params;
     try {
-        const data = await organisationService.getUsersOnOrganisations(id, userId);
+        const data = await organisationService.getUsersOnOrganisations(id);
         return res.status(200).json(data);
     } catch (e: any) {
         logger.info(e.message);
@@ -56,9 +56,9 @@ export const getUsersOnOrganisationsController = async (req: Request, res: Respo
  * Get users on agencies
  */
 export const getAgenciesOnOrganisationsController = async (req: Request, res: Response) => {
-    const { id, userId } = req.params;
+    const { id } = req.params;
     try {
-        const data = await organisationService.getAgenciesOnOrganisations(id, userId);
+        const data = await organisationService.getAgenciesOnOrganisations(id);
         return res.status(200).json(data);
     } catch (e: any) {
         logger.info(e.message);

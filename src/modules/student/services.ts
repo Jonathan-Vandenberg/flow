@@ -49,7 +49,7 @@ const getStudentById = async (id: string
     };
 };
 
-const getStudentsByAgencyId = async (agencyId: string, userId: string) => {
+const getStudentsByAgencyId = async (agencyId: string) => {
     const agency = await prisma.agency.findUnique({
         where: { id: agencyId },
         select: {
@@ -74,7 +74,7 @@ const getStudentsByAgencyId = async (agencyId: string, userId: string) => {
     };
 };
 
-const getStudentsByOrganisationId = async (id: string, userId: string) => {
+const getStudentsByOrganisationId = async (id: string) => {
     const organisation = await prisma.organisation.findUnique({
         where: { id },
         select: {

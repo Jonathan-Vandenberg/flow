@@ -43,7 +43,7 @@ router.get(
  * Get students by Organisations ID
  */
 router.get(
-    '/organisation-students/:id/:userId',
+    '/organisation-students/:id',
     getStudentsByOrganisationIdValidationRules,
     // isAuthenticated,
     // isValidationResult,
@@ -54,7 +54,7 @@ router.get(
  * Get students by Agency ID
  */
 router.get(
-    '/agency-students/:agencyId/:userId',
+    '/agency-students/:agencyId',
     getStudentsByAgencyIdValidationRules,
     // isAuthenticated,
     // isValidationResult,

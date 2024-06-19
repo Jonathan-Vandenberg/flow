@@ -26,7 +26,7 @@ router.get(
  * Get usersOnOrganisations by ID
  */
 router.get(
-    '/users-on-organisations/:id/:userId',
+    '/users-on-organisations/:id',
     getUsersOnOrganisationsValidationRules,
     // isAuthenticated,
     // isValidationResult,
@@ -37,7 +37,7 @@ router.get(
  * Get usersOnAgencies by ID
  */
 router.get(
-    '/agencies-on-organisations/:id/:userId',
+    '/agencies-on-organisations/:id',
     getAgenciesOnOrganisationsValidationRules,
     // isAuthenticated,
     // isValidationResult,

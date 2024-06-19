@@ -143,7 +143,7 @@ const getOrganisationById = async (id: string) => {
     }
 };
 
-const getUsersOnOrganisations = async (id: string, userId: string) => {
+const getUsersOnOrganisations = async (id: string) => {
     try {
         const organisation = await prisma.organisation.findUnique({
             where: { id },
@@ -171,7 +171,7 @@ const getUsersOnOrganisations = async (id: string, userId: string) => {
     }
 };
 
-const getAgenciesOnOrganisations = async (id: string, userId: string) => {
+const getAgenciesOnOrganisations = async (id: string) => {
     try {
         const organisation = await prisma.organisation.findUnique({
             where: { id },
