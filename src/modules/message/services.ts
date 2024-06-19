@@ -80,31 +80,27 @@ const createMessage = async (data: any) => {
     return { data: messages, isValid: messages.length > 0 };
 };
 
-const updateGroup = async (data: {
-    groupId: string,
-    memberIds: string[],
-    action: 'add' | 'remove' }
-) => {
+const updateGroup = async (data: { groupId: string, memberIds: string[], action: 'add' | 'remove' }) => {
     let group: Group | null = null;
     try {
         group = await prisma.group.update({
             where: { id: data.groupId },
             data: {
-                groupMembers: {
-                    ...data.action === 'add' && {
+                ...(data.action === 'add' && {
+                    groupMembers: {
                         create: data.memberIds.map((userId) => ({
                             user: { connect: { id: userId } },
                         })),
                     },
-                    ...data.action === 'remove' && {
-                        delete: data.memberIds.map((userId) => ({
-                            userId_groupId: {
-                                userId,
-                                groupId: data.groupId,
-                            },
-                        })),
+                }),
+                ...(data.action === 'remove' && {
+                    groupMembers: {
+                        deleteMany: {
+                            userId: { in: data.memberIds },
+                            groupId: data.groupId,
+                        },
                     },
-                },
+                }),
             },
             include: {
                 groupMembers: {
