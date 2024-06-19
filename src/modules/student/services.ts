@@ -214,7 +214,7 @@ const createStudent = async (data: any) => {
                 },
             });
 
-            await t.group.create({
+            const group = await t.group.create({
                 data: {
                     student: { connect: { id: student.id } },
                     groupMembers: {
@@ -237,6 +237,8 @@ const createStudent = async (data: any) => {
                     student: true
                 }
             });
+
+            console.log('GROUP: ', group)
         } catch (error: any) {
             logger.error(`Error creating student: ${error.message}`);
             console.log(error.message);
