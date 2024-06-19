@@ -412,14 +412,14 @@ model Message {
 model Group {
   id        String   @id @default(uuid())
   studentId String?  @unique
-  userId    String
+  userId    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   messages     Message[]
   groupMembers GroupMember[]
   student      Student?      @relation(fields: [studentId], references: [id])
-  user         User          @relation(fields: [userId], references: [id])
+  user         User?         @relation(fields: [userId], references: [id])
 }
 
 model GroupMember {
