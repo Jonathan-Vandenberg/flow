@@ -36,7 +36,19 @@ const getGroup = async (id: string) => {
                        }
                     }
                 },
-                groupMembers: true,
+                groupMembers: {
+                    include: {
+                        user: {
+                            select: {
+                                usersOnOrganisations: {
+                                    select: {
+                                        role: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
                 student: true, },
         });
     } catch (e: any) {
