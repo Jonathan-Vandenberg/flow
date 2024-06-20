@@ -42,6 +42,7 @@ const getGroup = async (id: string) => {
                             select: {
                                 usersOnOrganisations: {
                                     select: {
+                                        userId: true,
                                         role: true,
                                     },
                                 },
