@@ -36,8 +36,20 @@ const getStudentById = async (id: string
             agent: true,
             group: {
                 include: {
-                    groupMembers: true
-                }
+                    groupMembers: {
+                        include: {
+                            user: {
+                                select: {
+                                    usersOnOrganisations: {
+                                        select: {
+                                            role: true,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
             },
             directories: {
                 include: {
