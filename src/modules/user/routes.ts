@@ -1,6 +1,7 @@
 import express from 'express';
 
 import {
+    createDeviceTokenController,
     createUserController, createUserOrgController,
     getUserByEmailController,
     getUserByIdController, getUserByOrganisationIdController,
@@ -93,7 +94,7 @@ router.post(
     createDeviceTokenValidationRules,
     // isAuthenticated,
     // isValidationResult,
-    updateUserController
+    createDeviceTokenController
 );
 
 export default router;
