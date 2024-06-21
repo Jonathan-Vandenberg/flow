@@ -559,7 +559,14 @@ const createDeviceToken = async (
 
     try{
         deviceToken = await prisma.deviceToken.create({
-            data
+            data: {
+                token: data.token,
+                user: {
+                    connect: {
+                        id: data.userId
+                    }
+                }
+            }
         });
     }catch(e: any){
         errorMessage = e.message
