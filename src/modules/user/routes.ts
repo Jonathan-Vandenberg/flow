@@ -7,6 +7,7 @@ import {
     updateUserController,
 } from './controller';
 import {
+    createDeviceTokenValidationRules,
     createUserOrgValidationRules,
     createUserValidationRules, getUserByEmailValidationRules,
     getUserByIdValidationRules,
@@ -79,6 +80,17 @@ router.get(
 router.patch(
     '/',
     updateUserValidationRules,
+    // isAuthenticated,
+    // isValidationResult,
+    updateUserController
+);
+
+/**
+ * Create device token
+ */
+router.post(
+    '/device-token',
+    createDeviceTokenValidationRules,
     // isAuthenticated,
     // isValidationResult,
     updateUserController

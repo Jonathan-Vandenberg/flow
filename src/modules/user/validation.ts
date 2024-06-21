@@ -319,3 +319,32 @@ export const updateUserValidationRules = checkSchema({
         }
     }
 });
+
+/**
+ * Create device token rules
+ */
+export const createDeviceTokenValidationRules = checkSchema({
+    userId: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The userId must be a string.'
+        },
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        }
+    },
+    token: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The token must be a string.'
+        },
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        }
+    },
+});
+

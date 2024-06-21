@@ -32,6 +32,12 @@ const getGroup = async (id: string) => {
                                firstName: true,
                                lastName: true,
                                imageUrl: true,
+                               deviceToken: {
+                                   select: {
+                                       userId: true,
+                                       token: true
+                                   }
+                               }
                            }
                        }
                     }

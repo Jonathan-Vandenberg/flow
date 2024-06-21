@@ -153,3 +153,25 @@ export const updateUserController = async (req: Request, res: Response) => {
         res.status(500).send('Server error');
     }
 };
+
+/**
+ * Create device token
+ */
+export const createDeviceTokenController = async (req: Request, res: Response) => {
+    const {
+        userId,
+        token
+    } = req.body;
+
+    const deviceTokenData = {
+        userId,
+        token
+    }
+    try {
+        const data = await userService.createDeviceToken(deviceTokenData);
+        return res.status(200).json(data);
+    } catch (e) {
+        logger.info(e);
+        res.status(500).send('Server error');
+    }
+};

@@ -551,11 +551,34 @@ const updateUser = async (
     };
 };
 
+const createDeviceToken = async (
+    data: any
+): Promise<{ isValid: boolean; message: string, data: any }> => {
+    let deviceToken
+    let errorMessage
+
+    try{
+        deviceToken = await prisma.deviceToken.create({
+            data
+        });
+    }catch(e: any){
+        errorMessage = e.message
+        console.log('ERROR::CREATE_DEVICE_TOKEN:', e.message)
+    }
+
+    return {
+        isValid: !!deviceToken,
+        message: deviceToken ? "Created Device Token Successfully" : `Failed to Create Device Token: ${errorMessage}`,
+        data: deviceToken
+    };
+};
+
 export default {
     createUser,
     createUserOrg,
     updateUser,
     getUserById,
     getUserByEmail,
-    getUserByOrganisationId
+    getUserByOrganisationId,
+    createDeviceToken
 };
