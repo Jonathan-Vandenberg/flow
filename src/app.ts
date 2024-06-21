@@ -19,12 +19,16 @@ import requirement from './modules/requirement/routes'
 import course from './modules/course/routes'
 import message from './modules/message/routes'
 import {ENV_DEPLOYED} from "./constants/environment";
+import * as http from "http";
+import { Server } from "socket.io";
 
 dotenv.config();
 
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 8080;
 const app = express().set('port', PORT);
+const server = http.createServer(app); // Create HTTP server
+const io = new Server(server);
 
 app.use(morgan('combined'));
 app.use(express.json());
@@ -53,6 +57,23 @@ app.get('/', function (req, res) {
 app.listen(app.get('port'), async function () {
     logger.info(`Backend is running on port ${app.get('port')}`)
 
+});
+
+// WebSocket handling
+io.on('connection', (socket) => {
+    console.log('New WebSocket connection');
+
+    // Example: Handle incoming messages
+    socket.on('sendMessage', (message) => {
+        console.log('Received new message:', message);
+        // Broadcast the message to all connected clients
+        io.emit('newMessage', message);
+    });
+
+    // Handle disconnection
+    socket.on('disconnect', () => {
+        console.log('WebSocket disconnected');
+    });
 });
 
 if (
