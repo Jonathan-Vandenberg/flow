@@ -1,70 +1,106 @@
 import { checkSchema } from 'express-validator';
 
 /**
- * create push notification
+ * Create push notification validation schema
  */
 export const createPushNotificationValidation = checkSchema({
     title: {
         in: ['body'],
         isString: {
-            errorMessage: 'The documentId must be a string.'
+            errorMessage: 'The title must be a string.',
         },
         notEmpty: {
-            errorMessage: 'The documentId field is required'
-        }
+            errorMessage: 'The title field is required',
+        },
     },
     body: {
         in: ['body'],
         isString: {
-            errorMessage: 'The body must be a string.'
+            errorMessage: 'The body must be a string.',
         },
         notEmpty: {
-            errorMessage: 'The body field is required'
-        }
+            errorMessage: 'The body field is required',
+        },
     },
-    tokens: {
+    recipients: {
         in: ['body'],
         isArray: {
-            errorMessage: 'The tokens must be in an array.'
+            errorMessage: 'The recipients must be an array.',
         },
         notEmpty: {
-            errorMessage: 'The tokens field is required'
-        }
+            errorMessage: 'The recipients field is required',
+        },
+    },
+    'recipients.*.id': {
+        in: ['body'],
+        isString: {
+            errorMessage: 'Each recipient id must be a string.',
+        },
+        notEmpty: {
+            errorMessage: 'Each recipient must have an id',
+        },
+    },
+    'recipients.*.email': {
+        in: ['body'],
+        isEmail: {
+            errorMessage: 'Each recipient email must be a valid email address.',
+        },
+        notEmpty: {
+            errorMessage: 'Each recipient must have an email',
+        },
+    },
+    'recipients.*.tokens': {
+        in: ['body'],
+        isArray: {
+            errorMessage: 'Each recipient tokens must be an array.',
+        },
+        notEmpty: {
+            errorMessage: 'Each recipient must have at least one token',
+        },
+    },
+    'recipients.*.tokens.*': {
+        in: ['body'],
+        isString: {
+            errorMessage: 'Each token must be a string.',
+        },
+        notEmpty: {
+            errorMessage: 'Tokens cannot be empty strings',
+        },
     },
     groupId: {
         in: ['body'],
         isString: {
-            errorMessage: 'The groupId must be a string.'
+            errorMessage: 'The groupId must be a string.',
         },
         notEmpty: {
-            errorMessage: 'The groupId field is required'
-        }
+            errorMessage: 'The groupId field is required',
+        },
     },
     userId: {
         in: ['body'],
         isString: {
-            errorMessage: 'The userId must be a string.'
+            errorMessage: 'The userId must be a string.',
         },
         notEmpty: {
-            errorMessage: 'The userId field is required'
-        }
+            errorMessage: 'The userId field is required',
+        },
     },
     userEmail: {
         in: ['body'],
         isString: {
-            errorMessage: 'The userEmail must be a string.'
+            errorMessage: 'The userEmail must be a string.',
         },
         notEmpty: {
-            errorMessage: 'The userEmail field is required'
-        }
+            errorMessage: 'The userEmail field is required',
+        },
     },
     type: {
         in: ['body'],
         isString: {
-            errorMessage: 'The type must be a string.'
+            errorMessage: 'The type must be a string.',
         },
         notEmpty: {
-            errorMessage: 'The type field is required'
-        }
+            errorMessage: 'The type field is required',
+        },
     },
 });
