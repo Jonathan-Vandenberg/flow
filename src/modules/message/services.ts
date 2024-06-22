@@ -40,18 +40,20 @@ const getGroup = async (id: string) => {
                     include: {
                         user: {
                             select: {
-                                deviceToken: {
-                                    select: {
-                                        userId: true,
-                                        token: true
-                                    }
-                                },
-                                usersOnOrganisations: {
-                                    select: {
-                                        userId: true,
-                                        role: true,
+                                id: true,
+                                email: true,
+                                    deviceToken: {
+                                        select: {
+                                            userId: true,
+                                            token: true
+                                        }
                                     },
-                                },
+                                    usersOnOrganisations: {
+                                        select: {
+                                            userId: true,
+                                            role: true,
+                                        },
+                                    },
                             },
                         },
                     },
