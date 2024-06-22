@@ -1,6 +1,7 @@
 import {PrismaClient} from '@prisma/client';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import * as admin from 'firebase-admin';
 import dotenv from 'dotenv';
 import express, {NextFunction, Request, Response} from 'express';
 import morgan from 'morgan';
@@ -17,9 +18,11 @@ import userJobs from '../src/jobs/scanner'
 import requirement from './modules/requirement/routes'
 import course from './modules/course/routes'
 import message from './modules/message/routes'
+import notification from './modules/notification/routes'
 import {ENV_DEPLOYED} from "./constants/environment";
 import * as http from "http";
 import { Server } from "socket.io";
+import {applicationDefault} from "firebase-admin/lib/app";
 
 dotenv.config();
 
@@ -27,6 +30,10 @@ const prisma = new PrismaClient();
 const PORT = process.env.PORT || 8080;
 const app = express().set('port', PORT);
 const server = http.createServer(app);
+
+admin.initializeApp({
+    credential: applicationDefault()
+});
 
 const io = new Server(server, {
     cors: {
@@ -55,6 +62,7 @@ app.use('/document', document)
 app.use('/requirement', requirement)
 app.use('/course', course)
 app.use('/message', message)
+app.use('/notification', notification)
 
 app.get('/', function (req, res) {
     res.send('Backend API service is running!');
