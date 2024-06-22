@@ -58,4 +58,13 @@ export const createPushNotificationValidation = checkSchema({
             errorMessage: 'The userEmail field is required'
         }
     },
+    type: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The type must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The type field is required'
+        }
+    },
 });

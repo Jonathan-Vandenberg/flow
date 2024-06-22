@@ -14,6 +14,7 @@ const createPushNotification = async (data: any) => {
                 groupId: data.groupId || '',
                 userEmail: data.userEmail || '',
                 userId: data.userId || '',
+                type: data.type || ''
             },
             tokens: data.tokens,
         };
