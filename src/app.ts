@@ -21,8 +21,6 @@ import notification from './modules/notification/routes'
 import {ENV_DEPLOYED} from "./constants/environment";
 import * as http from "http";
 import { Server } from "socket.io";
-import {applicationDefault} from "firebase-admin/lib/app";
-import {initializeApp} from "firebase-admin";
 
 dotenv.config();
 
@@ -30,9 +28,16 @@ const prisma = new PrismaClient();
 const PORT = process.env.PORT || 8080;
 const app = express().set('port', PORT);
 const server = http.createServer(app);
+import * as admin from 'firebase-admin';
 
-initializeApp({
-    credential: applicationDefault()
+import * as path from 'path';
+import {ServiceAccount} from "firebase-admin";
+
+const serviceAccountPath = path.join('/home/user/Downloads/service-account-firebase.json');
+const serviceAccount = require(serviceAccountPath) as ServiceAccount;
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
 });
 
 const io = new Server(server, {
