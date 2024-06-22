@@ -1,5 +1,6 @@
 import * as admin from 'firebase-admin';
-import {BatchResponse} from "firebase-admin/lib/messaging";
+import {messaging} from "firebase-admin";
+import BatchResponse = messaging.BatchResponse;
 const createPushNotification = async (data: any) => {
     let isValid
     let response: BatchResponse | null = null
