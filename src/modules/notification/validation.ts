@@ -30,5 +30,32 @@ export const createPushNotificationValidation = checkSchema({
         notEmpty: {
             errorMessage: 'The tokens field is required'
         }
-    }
+    },
+    groupId: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The groupId must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The groupId field is required'
+        }
+    },
+    userId: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The userId must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The userId field is required'
+        }
+    },
+    userEmail: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The userEmail must be a string.'
+        },
+        notEmpty: {
+            errorMessage: 'The userEmail field is required'
+        }
+    },
 });

@@ -6,7 +6,15 @@ const createPushNotification = async (data: any) => {
     let response: BatchResponse | null = null
     try {
         const message = {
-            notification: { title: data.title, body: data.body },
+            notification: {
+                title: data.title,
+                body: data.body,
+            },
+            data: {
+                groupId: data.groupId || '',
+                userEmail: data.userEmail || '',
+                userId: data.userId || '',
+            },
             tokens: data.tokens,
         };
 
