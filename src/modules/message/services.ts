@@ -15,7 +15,7 @@ const getMessagesByDocumentId = async (documentId: string) => {
     return { isValid: !!messages, data: messages };
 };
 
-const getGroup = async (id: string) => {
+const getGroup = async (id: string, page: number = 1, pageSize: number = 25) => {
     let group: Group | null = null;
     try {
         group = await prisma.group.findUnique({
@@ -25,16 +25,21 @@ const getGroup = async (id: string) => {
                     select: {
                         id: true,
                         createdAt: true,
-                       content: true,
-                       sender: {
-                           select: {
-                               id: true,
-                               firstName: true,
-                               lastName: true,
-                               imageUrl: true,
-                           }
-                       }
-                    }
+                        content: true,
+                        sender: {
+                            select: {
+                                id: true,
+                                firstName: true,
+                                lastName: true,
+                                imageUrl: true,
+                            }
+                        }
+                    },
+                    orderBy: {
+                        createdAt: 'desc'
+                    },
+                    take: pageSize,
+                    skip: (page - 1) * pageSize
                 },
                 groupMembers: {
                     include: {
@@ -42,23 +47,18 @@ const getGroup = async (id: string) => {
                             select: {
                                 id: true,
                                 email: true,
-                                    deviceToken: {
-                                        select: {
-                                            userId: true,
-                                            token: true
-                                        }
-                                    },
-                                    usersOnOrganisations: {
-                                        select: {
-                                            userId: true,
-                                            role: true,
-                                        },
-                                    },
+                                deviceToken: {
+                                    select: { userId: true, token: true }
+                                },
+                                usersOnOrganisations: {
+                                    select: { userId: true, role: true },
+                                },
                             },
                         },
                     },
                 },
-                student: true, },
+                student: true,
+            },
         });
     } catch (e: any) {
         logger.error('ERROR::getGroup: Could not get group: ' + e.message);

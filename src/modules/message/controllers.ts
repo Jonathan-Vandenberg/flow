@@ -20,9 +20,11 @@ export const getMessagesByDocumentIdController = async (req: Request, res: Respo
  * Get group
  */
 export const getGroupController = async (req: Request, res: Response) => {
-    const { id } = req.params
+    const { id, page, pageSize } = req.params
+    const pageData = Number(page)
+    const pageSizeData = Number(pageSize)
     try {
-        const data = await messageService.getGroup(id);
+        const data = await messageService.getGroup(id, pageData, pageSizeData);
         return res.status(200).json(data);
     } catch (e: any) {
         logger.info(e);

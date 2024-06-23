@@ -39,7 +39,7 @@ router.get(
  * Get group
  */
 router.get(
-    '/group/:id',
+    '/group/:id/:page/:pageSize',
     getGroupValidationRules,
     // isAuthenticated,
     // isValidationResult,
