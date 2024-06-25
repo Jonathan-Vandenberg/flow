@@ -1,6 +1,8 @@
 import * as admin from 'firebase-admin';
 import { messaging } from "firebase-admin";
 import BatchResponse = messaging.BatchResponse;
+import prisma from "../../../prisma/prisma";
+import {Notification, NotificationType} from "@prisma/client";
 
 interface Recipient {
     id: string;
@@ -8,7 +10,7 @@ interface Recipient {
     tokens: string[];
 }
 
-interface NotificationData {
+interface PushNotificationData {
     title: string;
     body: string;
     groupId: string;
@@ -18,7 +20,13 @@ interface NotificationData {
     recipients: Recipient[];
 }
 
-const createPushNotification = async (data: NotificationData) => {
+interface NotificationData {
+    userId: string;
+    type: NotificationType
+    data: any;
+}
+
+const createPushNotification = async (data: PushNotificationData) => {
     let isValid = false;
     let responses: BatchResponse[] = [];
 
@@ -58,4 +66,22 @@ const createPushNotification = async (data: NotificationData) => {
     return { isValid, data: responses };
 };
 
-export default { createPushNotification };
+const createNotification = async (data: NotificationData) => {
+    let isValid
+    let notification : Notification | null = null
+
+    try {
+        notification = await prisma.notification.create({
+            data
+        })
+
+        isValid = true;
+    } catch (error: any) {
+        console.log('Error sending notifications:', error.message);
+        isValid = false;
+    }
+
+    return { isValid, data: notification };
+};
+
+export { createPushNotification, createNotification };

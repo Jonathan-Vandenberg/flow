@@ -104,3 +104,36 @@ export const createPushNotificationValidation = checkSchema({
         },
     },
 });
+
+/**
+ * Create notification validation schema
+ */
+export const createNotificationValidation = checkSchema({
+    userId: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The userId must be a string.',
+        },
+        notEmpty: {
+            errorMessage: 'The userId field is required',
+        },
+    },
+    type: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The type must be a string.',
+        },
+        notEmpty: {
+            errorMessage: 'The type field is required',
+        },
+    },
+    data: {
+        in: ['body'],
+        isJSON: {
+            errorMessage: 'The data must be in JSON format.',
+        },
+        notEmpty: {
+            errorMessage: 'The data field is required',
+        },
+    },
+});

@@ -1,6 +1,7 @@
 import prisma from "../../../prisma/prisma";
 import { logger } from "../../utils/logger";
 import { Group, Message } from "@prisma/client";
+import {createNotification} from '../notification/services'
 
 const getMessagesByDocumentId = async (documentId: string) => {
     let messages: Message[] | null = null;
@@ -82,18 +83,41 @@ const getMessagesByUserId = async (userId: string) => {
 const createMessage = async (data: any) => {
     let messages: Message[] = [];
     try {
-        for (const message of data) {
-            const createdMessage = await prisma.message.create({
-                data: {
-                    content: message.content,
-                    sender: { connect: { id: message.senderId } },
-                    group: { connect: { id: message.groupId } },
-                    ...(message.documentId && { document: { connect: { id: message.documentId } } }),
-                },
-            });
+        await prisma.$transaction(async (t) => {
+            for (const message of data) {
+                const createdMessage = await t.message.create({
+                    data: {
+                        content: message.content,
+                        sender: { connect: { id: message.senderId } },
+                        group: { connect: { id: message.groupId } },
+                        ...(message.documentId && { document: { connect: { id: message.documentId } } }),
+                    },
+                });
 
-            messages.push(createdMessage);
-        }
+                messages.push(createdMessage);
+
+                const groupMembers = await t.groupMember.findMany({
+                    where: {
+                        groupId: message.groupId,
+                        userId: { not: message.senderId },
+                    },
+                    select: { userId: true },
+                });
+
+                for (const member of groupMembers) {
+                    await createNotification({
+                        type: 'NEW_MESSAGE',
+                        userId: member.userId,
+                        data: {
+                            messageId: createdMessage.id,
+                            groupId: message.groupId,
+                            senderId: message.senderId,
+                            content: message.content,
+                        },
+                    });
+                }
+            }
+        })
     } catch (e: any) {
         console.error(`ERROR::createMessage: Failed to create messages: ` + e.message);
         throw e;

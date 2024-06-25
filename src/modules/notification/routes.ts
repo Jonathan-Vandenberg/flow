@@ -1,6 +1,6 @@
 import router from "../user/routes";
-import {createPushNotificationController} from "./controller";
-import {createPushNotificationValidation} from "./validation";
+import {createNotificationController, createPushNotificationController} from "./controller";
+import {createNotificationValidation, createPushNotificationValidation} from "./validation";
 
 /**
  * Create push notification
@@ -12,5 +12,18 @@ router.post(
     // isValidationResult,
     createPushNotificationController
 );
+
+/**
+ * Create notification
+ */
+router.post(
+    '/',
+    createNotificationValidation,
+    // isAuthenticated,
+    // isValidationResult,
+    createNotificationController
+);
+
+
 
 export default router;
