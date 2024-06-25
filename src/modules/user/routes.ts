@@ -14,7 +14,6 @@ import {
     getUserByIdValidationRules,
     getUsersByOrganisationIdValidationRules, updateUserValidationRules,
 } from './validation';
-import {createUserOrganisationValidationRules} from "../organisation/validation";
 
 const router = express.Router();
 

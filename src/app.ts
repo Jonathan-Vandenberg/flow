@@ -13,11 +13,11 @@ import contact from './modules/contact/routes'
 import student from './modules/student/routes'
 import directory from './modules/directory/routes'
 import document from './modules/document/routes'
+import notification from './modules/notification/routes'
 import userJobs from '../src/jobs/scanner'
 import requirement from './modules/requirement/routes'
 import course from './modules/course/routes'
 import message from './modules/message/routes'
-import notification from './modules/notification/routes'
 import {ENV_DEPLOYED} from "./constants/environment";
 import * as http from "http";
 import { Server } from "socket.io";
