@@ -84,4 +84,24 @@ const createNotification = async (data: NotificationData) => {
     return { isValid, data: notification };
 };
 
-export { createPushNotification, createNotification };
+const getNotifications = async (id: string) => {
+    let isValid
+    let notifications : Notification[] | null = null
+
+    try {
+        notifications = await prisma.notification.findMany({
+            where: {
+                userId: id
+            }
+        })
+
+        isValid = true;
+    } catch (error: any) {
+        console.log('Error fetching notifications:', error.message);
+        isValid = false;
+    }
+
+    return { isValid, data: notifications };
+};
+
+export { createPushNotification, createNotification, getNotifications };

@@ -137,3 +137,18 @@ export const createNotificationValidation = checkSchema({
         },
     },
 });
+
+/**
+ * Get notification validation schema
+ */
+export const getNotificationsValidation = checkSchema({
+    id: {
+        in: ['body'],
+        isString: {
+            errorMessage: 'The id must be a string.',
+        },
+        notEmpty: {
+            errorMessage: 'The id field is required',
+        },
+    },
+});
