@@ -28,7 +28,7 @@ router.post(
  * Get notifications
  */
 router.get(
-    '/',
+    '/:id',
     getNotificationsValidation,
     // isAuthenticated,
     // isValidationResult,
