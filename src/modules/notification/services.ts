@@ -121,4 +121,32 @@ const getNotifications = async (id: string, page: number = 1, pageSize: number =
     return { isValid, data: notifications, totalUnreadNotifications };
 };
 
-export { createPushNotification, createNotification, getNotifications };
+const updateNotifications = async (ids: string[]) => {
+    let isValid: boolean;
+    let notifications: Notification[] | null = null;
+    let totalUnreadNotifications: number = 0;
+
+    try {
+        await prisma.$transaction([
+            prisma.notification.updateMany({
+                where: {
+                    id: {
+                        in: ids
+                    }
+                },
+                data: {
+                    isRead: true
+                }
+            }),
+        ]);
+
+        isValid = true;
+    } catch (error: any) {
+        console.log('Error updating notifications:', error.message);
+        isValid = false;
+    }
+
+    return { isValid };
+};
+
+export { createPushNotification, createNotification, getNotifications, updateNotifications };

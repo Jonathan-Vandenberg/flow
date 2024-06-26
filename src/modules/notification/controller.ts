@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { logger } from '../../utils/logger';
-import {createNotification, createPushNotification, getNotifications} from "./services";
+import {createNotification, createPushNotification, getNotifications, updateNotifications} from "./services";
 
 /**
  * Send push notification
@@ -44,5 +44,20 @@ export const getNotificationsController = async (req: Request, res: Response) =>
     } catch (e: any) {
         logger.info(e);
         res.status(500).send('Unexpected error. Could not get notifications - ' + e.message);
+    }
+};
+
+/**
+ * Update notification
+ */
+export const updateNotificationsController = async (req: Request, res: Response) => {
+    const ids = req.body
+
+    try {
+        const data = await updateNotifications(ids);
+        return res.status(200).json(data);
+    } catch (e: any) {
+        logger.info(e);
+        res.status(500).send('Unexpected error. Could not update notification - ' + e.message);
     }
 };

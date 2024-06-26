@@ -170,3 +170,18 @@ export const getNotificationsValidation = checkSchema({
         }
     },
 });
+
+/**
+ * Update notification validation schema
+ */
+export const updateNotificationsValidation = checkSchema({
+    ids: {
+        in: ['body'],
+        isArray: {
+            errorMessage: 'The ids must be in an array.'
+        },
+        notEmpty: {
+            errorMessage: 'The ids must be in an array'
+        }
+    }
+});

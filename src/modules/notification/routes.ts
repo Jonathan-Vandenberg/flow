@@ -1,6 +1,16 @@
 import router from "../user/routes";
-import {createNotificationController, createPushNotificationController, getNotificationsController} from "./controller";
-import {createNotificationValidation, createPushNotificationValidation, getNotificationsValidation} from "./validation";
+import {
+    createNotificationController,
+    createPushNotificationController,
+    getNotificationsController,
+    updateNotificationsController
+} from "./controller";
+import {
+    createNotificationValidation,
+    createPushNotificationValidation,
+    getNotificationsValidation,
+    updateNotificationsValidation
+} from "./validation";
 
 /**
  * Get notifications
@@ -35,6 +45,15 @@ router.post(
     createNotificationController
 );
 
-
+/**
+ * Update notification
+ */
+router.patch(
+    '/',
+    updateNotificationsValidation,
+    // isAuthenticated,
+    // isValidationResult,
+    updateNotificationsController
+);
 
 export default router;
