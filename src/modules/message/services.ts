@@ -1,6 +1,6 @@
 import prisma from "../../../prisma/prisma";
 import { logger } from "../../utils/logger";
-import { Group, Message } from "@prisma/client";
+import {Group, Message, NotificationType, RequirementType} from "@prisma/client";
 import {createNotification} from '../notification/services'
 
 const getMessagesByDocumentId = async (documentId: string) => {
@@ -139,7 +139,7 @@ const createMessage = async (data: CreateMessageData[]): Promise<{ data: Message
 
                 for (const member of groupMembers) {
                     await createNotification({
-                        type: 'NEW_MESSAGE',
+                        type: NotificationType.NEW_MESSAGE,
                         userId: member.userId,
                         data: {
                             groupId: message.groupId,

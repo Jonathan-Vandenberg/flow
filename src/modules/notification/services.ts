@@ -20,12 +20,6 @@ interface PushNotificationData {
     recipients: Recipient[];
 }
 
-interface NotificationData {
-    userId: string;
-    type: NotificationType
-    data: any;
-}
-
 const createPushNotification = async (data: PushNotificationData) => {
     let isValid = false;
     let responses: BatchResponse[] = [];
@@ -66,7 +60,7 @@ const createPushNotification = async (data: PushNotificationData) => {
     return { isValid, data: responses };
 };
 
-const createNotification = async (data: NotificationData) => {
+const createNotification = async (data: any) => {
     let isValid
     let notification : Notification | null = null
 
@@ -123,8 +117,6 @@ const getNotifications = async (id: string, page: number = 1, pageSize: number =
 
 const updateNotifications = async (ids: string[]) => {
     let isValid: boolean;
-
-    console.log('IDS to update: ', ids)
 
     try {
         await prisma.notification.updateMany({

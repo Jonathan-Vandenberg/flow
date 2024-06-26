@@ -1,7 +1,16 @@
 import prisma from "../../../prisma/prisma";
 import { S3 } from 'aws-sdk';
 import {logger} from "../../utils/logger";
-import {DirectoryStatus, DocStatus, Document, RequirementStatus, StudentStatus} from "@prisma/client";
+import {
+    DirectoryStatus,
+    DocStatus,
+    Document,
+    NotificationType,
+    RequirementStatus,
+    Role,
+    StudentStatus
+} from "@prisma/client";
+import {createNotification} from "../notification/services";
 
 const s3 = new S3();
 
@@ -98,14 +107,51 @@ const createDoc = async (data: any) => {
                 },
             });
 
-            await t.directory.update({
+            const directory = await t.directory.update({
                 where: { id: data.directoryId },
                 data: { status: DirectoryStatus.IN_PROGRESS },
+                select: {
+                    requirement: {
+                        select: {
+                            name: true
+                        }
+                    }
+                }
             });
 
             await t.student.update({
                 where: { id: data.studentId },
                 data: { status: StudentStatus.PENDING },
+            });
+
+            const student = await t.student.findUnique({
+                where: {
+                    id: data.studentId
+                },
+                select: {
+                    agency: {
+                        select: {
+                            usersOnAgencies: {
+                                where: {
+                                    role: Role.MANAGER
+                                },
+                                select: {
+                                    userId: true
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+
+            await createNotification({
+                type: NotificationType.DOCUMENT_ADDED,
+                userId: student?.agency.usersOnAgencies[0].userId ?? '',
+                data: {
+                    documentName: data.name,
+                    directoryId: data.directoryId,
+                    requirementName: directory.requirement.name
+                },
             });
         } catch (e: any) {
             console.log(e.message);
