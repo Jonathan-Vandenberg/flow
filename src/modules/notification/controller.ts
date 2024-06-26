@@ -36,10 +36,10 @@ export const createNotificationController = async (req: Request, res: Response) 
  * Get notifications
  */
 export const getNotificationsController = async (req: Request, res: Response) => {
-    const { id } = req.params
+    const { id, page, pageSize } = req.params
 
     try {
-        const data = await getNotifications(id);
+        const data = await getNotifications(id, page, pageSize);
         return res.status(200).json(data);
     } catch (e: any) {
         logger.info(e);

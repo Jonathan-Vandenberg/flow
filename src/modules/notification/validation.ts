@@ -151,4 +151,22 @@ export const getNotificationsValidation = checkSchema({
             errorMessage: 'The id field is required',
         },
     },
+    page: {
+        in: ['body'],
+        isNumeric: {
+            errorMessage: 'The page must be a number.'
+        },
+        notEmpty: {
+            errorMessage: 'The page must be present.'
+        }
+    },
+    pageSize: {
+        in: ['body'],
+        isNumeric: {
+            errorMessage: 'The pageSize must be a number.'
+        },
+        notEmpty: {
+            errorMessage: 'The pageSize must be present.'
+        }
+    },
 });

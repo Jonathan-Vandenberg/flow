@@ -84,7 +84,7 @@ const createNotification = async (data: NotificationData) => {
     return { isValid, data: notification };
 };
 
-const getNotifications = async (id: string) => {
+const getNotifications = async (id: string, page: number = 1, pageSize: number = 20) => {
     let isValid
     let notifications : Notification[] | null = null
 
@@ -92,7 +92,12 @@ const getNotifications = async (id: string) => {
         notifications = await prisma.notification.findMany({
             where: {
                 userId: id
-            }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            },
+            take: pageSize,
+            skip: (page - 1) * pageSize
         })
 
         isValid = true;
