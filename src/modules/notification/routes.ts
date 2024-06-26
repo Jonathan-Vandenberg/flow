@@ -49,7 +49,7 @@ router.post(
  * Update notification
  */
 router.patch(
-    '/',
+    '/update-notification',
     updateNotificationsValidation,
     // isAuthenticated,
     // isValidationResult,
