@@ -6,7 +6,7 @@ import {createNotificationValidation, createPushNotificationValidation, getNotif
  * Get notifications
  */
 router.get(
-    '/get-notifications/:id',
+    '/get-notifications/:id/:page/:pageSize',
     getNotificationsValidation,
     // isAuthenticated,
     // isValidationResult,
