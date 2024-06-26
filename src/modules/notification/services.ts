@@ -84,29 +84,41 @@ const createNotification = async (data: NotificationData) => {
     return { isValid, data: notification };
 };
 
-const getNotifications = async (id: string, page: number = 1, pageSize: number = 20) => {
-    let isValid
-    let notifications : Notification[] | null = null
+interface NotificationResult {
+    isValid: boolean;
+    data: Notification[] | null;
+    totalUnreadNotifications: number;
+}
+const getNotifications = async (id: string, page: number = 1, pageSize: number = 20): Promise<NotificationResult> => {
+    let isValid: boolean;
+    let notifications: Notification[] | null = null;
+    let totalUnreadNotifications: number = 0;
 
     try {
-        notifications = await prisma.notification.findMany({
-            where: {
-                userId: id
-            },
-            orderBy: {
-                createdAt: 'desc'
-            },
-            take: pageSize,
-            skip: (page - 1) * pageSize
-        })
+        const [notificationsResult, unreadCount] = await prisma.$transaction([
+            prisma.notification.findMany({
+                where: { userId: id },
+                orderBy: { createdAt: 'desc' },
+                take: pageSize,
+                skip: (page - 1) * pageSize
+            }),
+            prisma.notification.count({
+                where: {
+                    userId: id,
+                    isRead: false
+                }
+            })
+        ]);
 
+        notifications = notificationsResult;
+        totalUnreadNotifications = unreadCount;
         isValid = true;
     } catch (error: any) {
         console.log('Error fetching notifications:', error.message);
         isValid = false;
     }
 
-    return { isValid, data: notifications };
+    return { isValid, data: notifications, totalUnreadNotifications };
 };
 
 export { createPushNotification, createNotification, getNotifications };
