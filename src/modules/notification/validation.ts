@@ -143,7 +143,7 @@ export const createNotificationValidation = checkSchema({
  */
 export const getNotificationsValidation = checkSchema({
     id: {
-        in: ['body'],
+        in: ['params'],
         isString: {
             errorMessage: 'The id must be a string.',
         },
@@ -152,7 +152,7 @@ export const getNotificationsValidation = checkSchema({
         },
     },
     page: {
-        in: ['body'],
+        in: ['params'],
         isNumeric: {
             errorMessage: 'The page must be a number.'
         },
@@ -161,7 +161,7 @@ export const getNotificationsValidation = checkSchema({
         }
     },
     pageSize: {
-        in: ['body'],
+        in: ['params'],
         isNumeric: {
             errorMessage: 'The pageSize must be a number.'
         },
