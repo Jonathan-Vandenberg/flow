@@ -129,6 +129,7 @@ const createDoc = async (data: any) => {
                     id: data.studentId
                 },
                 select: {
+                    name: true,
                     agency: {
                         select: {
                             usersOnAgencies: {
@@ -150,6 +151,7 @@ const createDoc = async (data: any) => {
                 data: {
                     documentName: data.name,
                     directoryId: data.directoryId,
+                    studentName: student?.name ?? '',
                     requirementName: directory.requirement.name
                 },
             });
