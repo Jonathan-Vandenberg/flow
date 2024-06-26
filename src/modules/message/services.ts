@@ -80,11 +80,29 @@ const getMessagesByUserId = async (userId: string) => {
     return { isValid: !!messages, data: messages };
 };
 
-const createMessage = async (data: any) => {
+interface CreateMessageData {
+    content: string;
+    senderId: string;
+    groupId: string;
+    documentId?: string;
+}
+
+const createMessage = async (data: CreateMessageData[]): Promise<{ data: Message[], isValid: boolean }> => {
     let messages: Message[] = [];
+
     try {
         await prisma.$transaction(async (t) => {
             for (const message of data) {
+                const sender = await t.user.findUnique({
+                    where: { id: message.senderId },
+                    select: { firstName: true, lastName: true }
+                });
+
+                if (!sender) {
+                    console.error(`ERROR::createMessage: No sender found!`);
+                    continue;
+                }
+
                 const createdMessage = await t.message.create({
                     data: {
                         content: message.content,
@@ -101,29 +119,46 @@ const createMessage = async (data: any) => {
                         groupId: message.groupId,
                         userId: { not: message.senderId },
                     },
-                    select: { userId: true },
+                    select: {
+                        userId: true,
+                    },
                 });
+
+                const group = await t.group.findUnique({
+                    where: {
+                        id: message.groupId
+                    },
+                    select: {
+                        student: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
+                })
 
                 for (const member of groupMembers) {
                     await createNotification({
                         type: 'NEW_MESSAGE',
                         userId: member.userId,
                         data: {
-                            messageId: createdMessage.id,
                             groupId: message.groupId,
-                            senderId: message.senderId,
+                            studentName: group?.student?.name ?? '',
+                            senderName: `${sender.firstName} ${sender.lastName}`,
                             content: message.content,
                         },
                     });
                 }
             }
-        })
+        });
     } catch (e: any) {
-        console.error(`ERROR::createMessage: Failed to create messages: ` + e.message);
+        console.error(`ERROR::createMessage: Failed to create messages: ${e.message}`);
         throw e;
     }
+
     return { data: messages, isValid: messages.length > 0 };
 };
+
 
 const updateGroup = async (data: { groupId: string, memberIds: string[], action: 'add' | 'remove' }) => {
     let group: Group | null = null;
