@@ -179,37 +179,104 @@ const updateDoc = async (data: any) => {
                         id: true,
                         documents: {
                             select: {
-                                status: true
+                                status: true,
                             }
                         },
                         requirement: {
                             select: {
-                                id: true
+                                id: true,
+                                name: true
                             }
                         },
                         student: {
                             select:{
-                                id: true
+                                id: true,
+                                name: true,
+                                agent: {
+                                    select: {
+                                        id: true,
+                                    }
+                                },
+                                organisation: {
+                                    select: {
+                                        usersOnOrganisations: {
+                                            where: {
+                                                role: Role.ADMIN
+                                            },
+                                            select: {
+                                                userId: true
+                                            }
+                                        }
+                                    }
+                                }
                             }
-                        }
+                        },
                     },
                 });
 
                 if (directory) {
+                    const adminUserIds = directory.student.organisation.usersOnOrganisations.map(user => user.userId);
+                    const usersToNotify = [directory.student.agent.id, ...adminUserIds];
                     const allDocsComplete = directory.documents.every(
                         (doc) => doc.status === DocStatus.COMPLETE
                     );
+
+                    const notifyUsers = async (type: NotificationType) => {
+                        for (const userId of usersToNotify) {
+                            switch (type) {
+                                case NotificationType.DOCUMENT_REVIEWED:
+                                    await createNotification({
+                                        type: type,
+                                        userId: userId,
+                                        data: {
+                                            directoryId: directory.id,
+                                            studentName: directory.student.name,
+                                            requirementName: directory.requirement.name,
+                                            content: data.status,
+                                        },
+                                    });
+                                    break;
+                                case NotificationType.REQUIREMENT_COMPLETE || NotificationType.REQUIREMENT_NOT_COMPLETE:
+                                    await createNotification({
+                                        type: type,
+                                        userId: userId,
+                                        data: {
+                                            directoryId: directory.id,
+                                            studentName: directory.student.name,
+                                            requirementName: directory.requirement.name,
+                                            content: data.status,
+                                        },
+                                    });
+                                    break;
+                                case NotificationType.ALL_REQUIREMENTS_COMPLETE:
+                                    await createNotification({
+                                        type: type,
+                                        userId: userId,
+                                        data: {
+                                            studentId: directory.student.id,
+                                            studentName: directory.student.name,
+                                            requirementName: directory.requirement.name,
+                                            content: data.status,
+                                        },
+                                    });
+                            }
+                        }
+                    }
+
+                    await notifyUsers(NotificationType.DOCUMENT_REVIEWED)
 
                     if (allDocsComplete) {
                         await t.directory.update({
                             where: { id: directory.id },
                             data: { status: DirectoryStatus.COMPLETE },
                         });
+                        await notifyUsers(NotificationType.REQUIREMENT_COMPLETE)
                     } else {
                         await t.directory.update({
                             where: { id: directory.id },
                             data: { status: DirectoryStatus.IN_PROGRESS },
                         });
+                        await notifyUsers(NotificationType.REQUIREMENT_NOT_COMPLETE)
                     }
 
                     const studentDirectories = await t.directory.findMany({
@@ -226,6 +293,7 @@ const updateDoc = async (data: any) => {
                             where: { id: directory.student.id },
                             data: { status: StudentStatus.ACCEPTED },
                         });
+                        await notifyUsers(NotificationType.ALL_REQUIREMENTS_COMPLETE)
                     } else {
                         await t.student.update({
                             where: { id: directory.student.id },
