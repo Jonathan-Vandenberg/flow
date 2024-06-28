@@ -32,6 +32,7 @@ import * as admin from 'firebase-admin';
 
 import * as path from 'path';
 import {ServiceAccount} from "firebase-admin";
+import {setupSocketIO} from "./websocket/websocket";
 
 const serviceAccountPath = path.join('/home/user/Downloads/service-account-firebase.json');
 const serviceAccount = require(serviceAccountPath) as ServiceAccount;
@@ -46,6 +47,8 @@ const io = new Server(server, {
         methods: ['GET', 'POST']
     }
 });
+
+setupSocketIO(io);
 
 app.use(morgan('combined'));
 app.use(express.json());
@@ -71,21 +74,6 @@ app.use('/notification', notification)
 
 app.get('/', function (req, res) {
     res.send('Backend API service is running!');
-});
-
-// WebSocket handling
-io.on('connection', (socket) => {
-    console.log('New WebSocket connection');
-
-    socket.on('sendMessage', (message) => {
-        console.log('Received new message:', message);
-        // Broadcast the message to all connected clients
-        io.emit('newMessage', message);
-    });
-
-    socket.on('disconnect', () => {
-        console.log('WebSocket disconnected');
-    });
 });
 
 server.listen(app.get('port'), async function () {
