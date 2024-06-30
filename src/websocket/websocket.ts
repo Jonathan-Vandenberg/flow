@@ -31,6 +31,16 @@ export const setupSocketIO = (io: Server) => {
             }
         });
 
+        socket.on('documentReviewed', ({ recipientId, message }: { recipientId: string; message: string }) => {
+            console.log(`Sending message to user: ${recipientId}`);
+            const recipientSockets = userSockets.get(recipientId);
+            if (recipientSockets) {
+                recipientSockets.forEach((recipientSocket) => {
+                    recipientSocket.emit(`reviewedDocument:${recipientId}`, message);
+                });
+            }
+        });
+
         socket.on('disconnect', () => {
             if (socket.userId) {
                 const userSocketSet = userSockets.get(socket.userId);
