@@ -210,10 +210,8 @@ const createRequirement = async (data: any) => {
 };
 
 const updateRequirement = async (data: any) => {
-    let requirement;
-
     try {
-        requirement = await prisma.$transaction(async (t) => {
+        await prisma.$transaction(async (t) => {
             const updatedRequirement = await t.requirement.update({
                 where: { id: data.id },
                 data,
@@ -255,7 +253,7 @@ const updateRequirement = async (data: any) => {
                         type: NotificationType.REQUIREMENT_UPDATED,
                         userId: user.userId,
                         data: {
-                            organisationId: updatedRequirement.organisationId,
+                            requirementId: updatedRequirement.id,
                             name: data.name,
                             type: data.type,
                         },
@@ -265,10 +263,10 @@ const updateRequirement = async (data: any) => {
 
             await Promise.all(notificationPromises);
 
-            return updatedRequirement;
+        return { isValid: !!updatedRequirement, data: updatedRequirement };
         });
 
-        return { isValid: !!requirement, data: requirement };
+        return { isValid: false, data: {} };
     } catch (error) {
         console.error('Error updating requirement:', error);
         return { isValid: false, error: 'Failed to update requirement' };
