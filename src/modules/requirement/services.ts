@@ -1,7 +1,6 @@
 import prisma from "../../../prisma/prisma";
 import {logger} from "../../utils/logger";
 import {DirectoryStatus, NotificationType, Requirement, RequirementStatus, StudentStatus} from "@prisma/client";
-import {createNotification} from "../notification/services";
 
 const getRequirementsByOrgId = async (organisationId: string
 ) => {
@@ -211,30 +210,26 @@ const createRequirement = async (data: any) => {
 
 const updateRequirement = async (data: any) => {
     try {
-        await prisma.$transaction(async (t) => {
+        return await prisma.$transaction(async (t) => {
             const updatedRequirement = await t.requirement.update({
-                where: { id: data.id },
+                where: {id: data.id},
                 data,
-                select: { id: true, organisationId: true }
+                select: {id: true, organisationId: true}
             });
 
             if (!updatedRequirement.organisationId) {
                 console.log(`No organisation found for this requirement: ${updatedRequirement.id}`);
-                return updatedRequirement;
+                return {isValid: true, data: updatedRequirement};
             }
 
             const organisation = await t.organisation.findUnique({
-                where: { id: updatedRequirement.organisationId },
-                select: {
-                    usersOnOrganisations: {
-                        select: { userId: true }
-                    }
-                }
+                where: {id: updatedRequirement.organisationId},
+                select: {usersOnOrganisations: {select: {userId: true}}}
             });
 
             if (!organisation) {
                 console.log('No organisation found!');
-                return updatedRequirement;
+                return {isValid: true, data: updatedRequirement};
             }
 
             // Handle example images if needed
@@ -263,7 +258,7 @@ const updateRequirement = async (data: any) => {
 
             await Promise.all(notificationPromises);
 
-        return { isValid: !!updatedRequirement, data: updatedRequirement };
+            return {isValid: true, data: updatedRequirement};
         });
     } catch (error) {
         console.error('Error updating requirement:', error);
