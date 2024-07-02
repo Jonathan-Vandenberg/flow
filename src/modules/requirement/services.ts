@@ -255,7 +255,7 @@ const updateRequirement = async (data: any) => {
                         data: {
                             requirementId: updatedRequirement.id,
                             name: data.name,
-                            type: data.type,
+                            requirementType: data.type,
                         },
                     }
                 })
