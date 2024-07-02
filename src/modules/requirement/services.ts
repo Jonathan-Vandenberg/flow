@@ -265,8 +265,6 @@ const updateRequirement = async (data: any) => {
 
         return { isValid: !!updatedRequirement, data: updatedRequirement };
         });
-
-        return { isValid: false, data: {} };
     } catch (error) {
         console.error('Error updating requirement:', error);
         return { isValid: false, error: 'Failed to update requirement' };
