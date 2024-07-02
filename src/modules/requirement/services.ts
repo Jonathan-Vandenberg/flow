@@ -1,6 +1,7 @@
 import prisma from "../../../prisma/prisma";
 import {logger} from "../../utils/logger";
-import {DirectoryStatus, Requirement, RequirementStatus, StudentStatus} from "@prisma/client";
+import {DirectoryStatus, NotificationType, Requirement, RequirementStatus, StudentStatus} from "@prisma/client";
+import {createNotification} from "../notification/services";
 
 const getRequirementsByOrgId = async (organisationId: string
 ) => {
@@ -208,35 +209,70 @@ const createRequirement = async (data: any) => {
     };
 };
 
-const updateRequirement = async (data: any
-) => {
+const updateRequirement = async (data: any) => {
     let requirement;
 
-    await prisma.$transaction(async (t) => {
-         requirement = await t.requirement.update({
-            where: {
-                id: data.id,
-            },
-            data
-        })
+    try {
+        requirement = await prisma.$transaction(async (t) => {
+            const updatedRequirement = await t.requirement.update({
+                where: { id: data.id },
+                data,
+                select: { id: true, organisationId: true }
+            });
 
-        // for (const image of data.exampleImages) {
-        //     await t.exampleImage.update({
-        //         where:{
-        //             id: image.requirementId
-        //         },
-        //         data: {
-        //             requirementId: requirement.id,
-        //             url: image.url
-        //         }
-        //     });
-        // }
-    })
+            if (!updatedRequirement.organisationId) {
+                console.log(`No organisation found for this requirement: ${updatedRequirement.id}`);
+                return updatedRequirement;
+            }
 
-    return {
-        isValid: !!requirement,
-        data: requirement
-    };
+            const organisation = await t.organisation.findUnique({
+                where: { id: updatedRequirement.organisationId },
+                select: {
+                    usersOnOrganisations: {
+                        select: { userId: true }
+                    }
+                }
+            });
+
+            if (!organisation) {
+                console.log('No organisation found!');
+                return updatedRequirement;
+            }
+
+            // Handle example images if needed
+            // for (const image of data.exampleImages) {
+            //   await t.exampleImage.upsert({
+            //     where: { id: image.id },
+            //     update: { url: image.url },
+            //     create: { requirementId: updatedRequirement.id, url: image.url }
+            //   });
+            // }
+
+            // Create notifications for all users in the organisation
+            const notificationPromises = organisation.usersOnOrganisations.map(user =>
+                t.notification.create({
+                    data: {
+                        type: NotificationType.REQUIREMENT_UPDATED,
+                        userId: user.userId,
+                        data: {
+                            organisationId: updatedRequirement.organisationId,
+                            name: data.name,
+                            type: data.type,
+                        },
+                    }
+                })
+            );
+
+            await Promise.all(notificationPromises);
+
+            return updatedRequirement;
+        });
+
+        return { isValid: !!requirement, data: requirement };
+    } catch (error) {
+        console.error('Error updating requirement:', error);
+        return { isValid: false, error: 'Failed to update requirement' };
+    }
 };
 
 export default {
