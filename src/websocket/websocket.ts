@@ -41,6 +41,26 @@ export const setupSocketIO = (io: Server) => {
             }
         });
 
+        socket.on('requirementUpdated', ({ recipientId, message }: { recipientId: string; message: string }) => {
+            console.log(`Sending message to user: ${recipientId}`);
+            const recipientSockets = userSockets.get(recipientId);
+            if (recipientSockets) {
+                recipientSockets.forEach((recipientSocket) => {
+                    recipientSocket.emit(`updatedRequirement:${recipientId}`, message);
+                });
+            }
+        });
+
+        socket.on('requirementAdded', ({ recipientId, message }: { recipientId: string; message: string }) => {
+            console.log(`Sending message to user: ${recipientId}`);
+            const recipientSockets = userSockets.get(recipientId);
+            if (recipientSockets) {
+                recipientSockets.forEach((recipientSocket) => {
+                    recipientSocket.emit(`addedRequirement:${recipientId}`, message);
+                });
+            }
+        });
+
         socket.on('disconnect', () => {
             if (socket.userId) {
                 const userSocketSet = userSockets.get(socket.userId);

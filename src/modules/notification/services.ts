@@ -25,12 +25,17 @@ const createPushNotification = async (data: PushNotificationData) => {
     let responses: BatchResponse[] = [];
 
     try {
+                // recipients
         const messages = data.recipients.flatMap(recipient =>
             recipient.tokens.map(token => ({
+                // title
+                // body
                 notification: {
                     title: data.title,
                     body: data.body,
                 },
+                // groupId
+                // type
                 data: {
                     groupId: data.groupId || '',
                     userEmail: data.userEmail || '',

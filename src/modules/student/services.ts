@@ -107,8 +107,6 @@ const getStudentsByOrganisationId = async (id: string) => {
 const createStudent = async (data: any) => {
     let student;
 
-    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CREATING STUDENT~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-
     await prisma.$transaction(async (t) => {
         const organisation = await t.organisation.findUnique({
             where: { id: data.organisationId },
@@ -134,11 +132,8 @@ const createStudent = async (data: any) => {
             },
         });
 
-        console.log('ORGANISATION: ', organisation)
-
         if (!organisation) {
             console.log(`No organisation found with id ${data.organisationId}`)
-            logger.error(`No organisation found with id ${data.organisationId}`);
             return;
         }
 
@@ -153,11 +148,8 @@ const createStudent = async (data: any) => {
             }
         })
 
-        console.log('AGENT: ', agent)
-
         if(!agent || !agent.managerId){
             console.log(`No agent or manager ID found with agent ID ${data.agentId}`)
-            logger.error(`No agent or manager ID found with agent ID ${data.agentId}`);
             return;
         }
 
@@ -171,11 +163,8 @@ const createStudent = async (data: any) => {
             }
         })
 
-        console.log('MANAGER: ', manager)
-
         if(!manager){
             console.log(`No manager found with agent ID ${data.agentId}`)
-            logger.error(`No manager found with agent ID ${data.agentId}`);
             return;
         }
 
@@ -230,8 +219,6 @@ const createStudent = async (data: any) => {
                 },
             });
 
-            console.log('STUDENT: ', student)
-
             const group = await t.group.create({
                 data: {
                     user: { connect: { id: manager.id } },
@@ -256,8 +243,6 @@ const createStudent = async (data: any) => {
                     student: true
                 }
             });
-
-            console.log('GROUP: ', group)
         } catch (error: any) {
             logger.error(`Error creating student: ${error.message}`);
             console.log(error.message);
