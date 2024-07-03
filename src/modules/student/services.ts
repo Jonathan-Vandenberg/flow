@@ -224,6 +224,13 @@ const createStudent = async (data: any) => {
                         ],
                     },
                 },
+                include: {
+                    course: {
+                        select: {
+                            name: true
+                        }
+                    }
+                }
             });
 
             await t.group.create({
@@ -256,7 +263,7 @@ const createStudent = async (data: any) => {
             const notificationData = {
                 studentId: student.id,
                 studentName: student.name,
-                courseId: student.courseId,
+                courseName: student?.course?.name,
                 country: student.country,
                 agencyId: student.agencyId,
             };
