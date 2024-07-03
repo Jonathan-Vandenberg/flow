@@ -11,7 +11,7 @@ interface EmailConfig {
 }
 
 export enum EmailAction {
-    AGENCY_CREATED = 'agencyCreated',
+    AGENCY_ADDED = 'agencyAdded',
     MANAGER_ADDED = 'managerAdded'
 }
 

@@ -1,9 +1,10 @@
 import prisma from '../../../prisma/prisma';
-import {Role, User, UsersOnOrganisations} from "@prisma/client";
+import {Prisma, PrismaClient, Role, User, UsersOnOrganisations} from "@prisma/client";
 import {logger} from "../../utils/logger";
 import {create} from "domain";
 import {createUserController} from "./controller";
 import admin from "firebase-admin";
+import {ITXClientDenyList} from "@prisma/client/runtime/library";
 
 
 const getUserById = async (id: string): Promise<{ isValid: boolean; message: string; data: any }> => {
@@ -582,9 +583,10 @@ const createDeviceToken = async (
 };
 
 export const getAdminAndManagers = async (
+    t: Omit<PrismaClient, ITXClientDenyList>,
     organisationId: string
 ): Promise<{ isValid: boolean; message: string; data: any }> => {
-    const organisation = await prisma.organisation.findUnique({
+    const organisation = await t.organisation.findUnique({
         where: {
             id: organisationId
         },

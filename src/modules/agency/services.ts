@@ -3,7 +3,7 @@ import {logger} from "../../utils/logger";
 import {sendTransactionalEmail} from "../../email/utils/email-utils";
 import {EmailAction} from "../../email/config";
 import * as countries from "i18n-iso-countries";
-import {NotificationType, Role} from "@prisma/client";
+import {NotificationType, Prisma, Role} from "@prisma/client";
 import notificationService from "../notification/notification-service";
 import NotificationService from "../notification/notification-service";
 import {getAdminAndManagers} from "../user/services";
@@ -138,13 +138,13 @@ const createAgency = async (data: any) => {
                 },
             });
 
-            const {data: adminAndManagersIds} = await getAdminAndManagers(organisation.id)
+            const {data: adminAndManagersIds} = await getAdminAndManagers(t, organisation.id)
 
             await notificationService.sendNotification({
                 userIds: adminAndManagersIds,
                 eventType: NotificationType.AGENCY_ADDED,
                 emailData: {
-                    action: EmailAction.AGENCY_CREATED,
+                    action: EmailAction.AGENCY_ADDED,
                     recipientEmail: "admin@hotclick.pro", // TODO add user emails
                     dynamicData: {
                         agencyName: data.name,
@@ -168,6 +168,7 @@ const createAgency = async (data: any) => {
                         agencyName: data.name,
                     },
                 },
+                transaction: t
             });
         });
     } catch(e: any) {

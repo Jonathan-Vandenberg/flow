@@ -1,5 +1,5 @@
 import { Server } from 'socket.io';
-import { PrismaClient, NotificationType, DeviceToken } from '@prisma/client';
+import { NotificationType, Prisma } from '@prisma/client';
 import admin from 'firebase-admin';
 import { EmailAction } from "../../email/config";
 import { sendTransactionalEmail } from "../../email/utils/email-utils";
@@ -7,24 +7,22 @@ import { sendTransactionalEmail } from "../../email/utils/email-utils";
 class NotificationService {
     private static instance: NotificationService | null = null;
     private io: Server;
-    private prisma: PrismaClient;
 
-    private constructor(io: Server, prisma: PrismaClient) {
+    private constructor(io: Server) {
         this.io = io;
-        this.prisma = prisma;
     }
 
-    public static getInstance(io?: Server, prisma?: PrismaClient): NotificationService {
+    public static getInstance(io?: Server): NotificationService {
         if (!NotificationService.instance) {
-            if (!io || !prisma) {
-                throw new Error('IO and Prisma must be provided when creating the NotificationService instance');
+            if (!io) {
+                throw new Error('IO must be provided when creating the NotificationService instance');
             }
-            NotificationService.instance = new NotificationService(io, prisma);
+            NotificationService.instance = new NotificationService(io);
         }
         return NotificationService.instance;
     }
 
-    async sendNotification({userIds, eventType, emailData, pushNotificationData, dbNotificationData}: {
+    async sendNotification({userIds, eventType, emailData, pushNotificationData, dbNotificationData, transaction}: {
         userIds: string[];
         eventType: string;
         emailData?: {
@@ -41,10 +39,11 @@ class NotificationService {
             type: NotificationType;
             data: Record<string, any>;
         };
+        transaction: Prisma.TransactionClient;
     }) {
         this.sendWebSocketEvents(userIds, eventType, dbNotificationData.data);
-        await this.createDatabaseNotifications(userIds, dbNotificationData);
-        await this.sendPushNotifications(userIds, pushNotificationData);
+        await this.createDatabaseNotifications(transaction, userIds, dbNotificationData);
+        await this.sendPushNotifications(transaction, userIds, pushNotificationData);
         if (emailData) {
             await this.sendEmail(emailData);
         }
@@ -62,8 +61,8 @@ class NotificationService {
         });
     }
 
-    private async createDatabaseNotifications(userIds: string[], notificationData: { type: NotificationType; data: Record<string, any> }) {
-        await this.prisma.notification.createMany({
+    private async createDatabaseNotifications(transaction: Prisma.TransactionClient, userIds: string[], notificationData: { type: NotificationType; data: Record<string, any> }) {
+        await transaction.notification.createMany({
             data: userIds.map(userId => ({
                 userId,
                 type: notificationData.type,
@@ -72,8 +71,8 @@ class NotificationService {
         });
     }
 
-    private async sendPushNotifications(userIds: string[], notificationData: { title: string; body: string; data?: Record<string, string> }) {
-        const deviceTokens = await this.prisma.deviceToken.findMany({
+    private async sendPushNotifications(transaction: Prisma.TransactionClient, userIds: string[], notificationData: { title: string; body: string; data?: Record<string, string> }) {
+        const deviceTokens = await transaction.deviceToken.findMany({
             where: { userId: { in: userIds } },
         });
 

@@ -50,8 +50,7 @@ const io = new Server(server, {
 
 setupSocketIO(io);
 
-// Initialize NotificationService singleton
-NotificationService.getInstance(io, prisma);
+NotificationService.getInstance(io);
 
 app.use(morgan('combined'));
 app.use(express.json());
