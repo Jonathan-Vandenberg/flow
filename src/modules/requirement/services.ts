@@ -62,26 +62,28 @@ const getRequirementById = async (id: string
 };
 
 const createRequirement = async (data: any) => {
-    let requirement: Requirement | null = null;
-
     try {
-        await prisma.$transaction(async (t) => {
+        return await prisma.$transaction(async (t) => {
             const organisation = await t.organisation.findUnique({
                 where: { id: data.organisationId },
                 include: {
+                    usersOnOrganisations: {
+                        select: { userId: true }
+                    },
                     students: {
                         include: {
                             course: true,
-                            }
-                    }},
+                        }
+                    }
+                },
             });
 
             if (!organisation) {
-                logger.error(`No organisation found with id ${data.organisationId}`);
-                throw new Error(`No organisation found with id ${data.organisationId}`);
+                console.log(`No organisation found with id ${data.organisationId}`);
+                return { isValid: false, error: 'Organisation not found' };
             }
 
-            requirement = await t.requirement.create({
+            const requirement = await t.requirement.create({
                 data: {
                     details: data.details,
                     type: data.type,
@@ -124,9 +126,10 @@ const createRequirement = async (data: any) => {
                         },
                     }),
                 },
+                select: { id: true, organisationId: true }
             });
 
-            if (organisation.students.length > 0 && requirement && !data?.studentId) {
+            if (organisation.students.length > 0 && !data?.studentId) {
                 for (const student of organisation.students) {
                     const isCountryRelevant = data?.countries?.includes(student.country);
                     const isCourseRelevant = data?.courseIds?.includes(student.course?.id);
@@ -148,8 +151,6 @@ const createRequirement = async (data: any) => {
                                 status: DirectoryStatus.IN_PROGRESS,
                             },
                         });
-
-                        // TODO email/notification
                     }
                 }
             }
@@ -180,32 +181,35 @@ const createRequirement = async (data: any) => {
                     (dir) => dir.status === DirectoryStatus.COMPLETE
                 );
 
-                if (allDirectoriesComplete) {
-                    await t.student.update({
-                        where: { id: data?.studentId },
-                        data: { status: StudentStatus.ACCEPTED },
-                    });
-                } else {
-                    await t.student.update({
-                        where: { id: data?.studentId },
-                        data: { status: StudentStatus.PENDING },
-                    });
-                }
+                await t.student.update({
+                    where: { id: data?.studentId },
+                    data: { status: allDirectoriesComplete ? StudentStatus.ACCEPTED : StudentStatus.PENDING },
+                });
             }
 
-        });
-    } catch (e: any) {
-        console.error(e.message);
-        return {
-            isValid: false,
-            data: null,
-        };
-    }
+            // Create notifications for all users in the organisation
+            const notificationPromises = organisation.usersOnOrganisations.map(user =>
+                t.notification.create({
+                    data: {
+                        type: NotificationType.REQUIREMENT_ADDED,
+                        userId: user.userId,
+                        data: {
+                            requirementId: requirement.id,
+                            name: data.name,
+                            requirementType: data.type,
+                        },
+                    }
+                })
+            );
 
-    return {
-        isValid: requirement !== null,
-        data: requirement,
-    };
+            await Promise.all(notificationPromises);
+
+            return { isValid: true, data: requirement };
+        });
+    } catch (error) {
+        console.error('Error creating requirement:', error);
+        return { isValid: false, error: 'Failed to create requirement' };
+    }
 };
 
 const updateRequirement = async (data: any) => {
