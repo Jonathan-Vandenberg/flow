@@ -3,6 +3,7 @@ import {Role, User, UsersOnOrganisations} from "@prisma/client";
 import {logger} from "../../utils/logger";
 import {create} from "domain";
 import {createUserController} from "./controller";
+import admin from "firebase-admin";
 
 
 const getUserById = async (id: string): Promise<{ isValid: boolean; message: string; data: any }> => {
@@ -580,6 +581,38 @@ const createDeviceToken = async (
     };
 };
 
+export const getAdminAndManagers = async (
+    organisationId: string
+): Promise<{ isValid: boolean; message: string; data: any }> => {
+    const organisation = await prisma.organisation.findUnique({
+        where: {
+            id: organisationId
+        },
+        select: {
+            usersOnOrganisations: {
+                select: {
+                    role: true,
+                    userId: true
+                }
+            }
+        }
+    })
+
+    if(!organisation) {
+        throw new Error(`No organisation with id ${organisationId} found!`)
+    }
+
+    const adminAndManagerIds = organisation.usersOnOrganisations
+        .filter(u => u.role === Role.ADMIN || u.role === Role.MANAGER)
+        .map(u => u.userId);
+
+    return {
+        data: adminAndManagerIds,
+        message: adminAndManagerIds.length > 0 ? 'Admin and Manager IDs Found' : 'No Admin or Manager IDs Found!',
+        isValid: adminAndManagerIds.length > 0
+    };
+}
+
 export default {
     createUser,
     createUserOrg,
@@ -587,5 +620,6 @@ export default {
     getUserById,
     getUserByEmail,
     getUserByOrganisationId,
-    createDeviceToken
+    createDeviceToken,
+    getAdminAndManagers
 };

@@ -42,16 +42,9 @@ class NotificationService {
             data: Record<string, any>;
         };
     }) {
-        // Send WebSocket events
         this.sendWebSocketEvents(userIds, eventType, dbNotificationData.data);
-
-        // Create database notifications
         await this.createDatabaseNotifications(userIds, dbNotificationData);
-
-        // Send push notifications
         await this.sendPushNotifications(userIds, pushNotificationData);
-
-        // Send email if emailData is provided
         if (emailData) {
             await this.sendEmail(emailData);
         }

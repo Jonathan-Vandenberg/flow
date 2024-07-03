@@ -6,6 +6,7 @@ import * as countries from "i18n-iso-countries";
 import {NotificationType, Role} from "@prisma/client";
 import notificationService from "../notification/notification-service";
 import NotificationService from "../notification/notification-service";
+import {getAdminAndManagers} from "../user/services";
 
 const getAgenciesOnOrganisations = async (agencyId: string, organisationId: string
 ) => {
@@ -53,7 +54,8 @@ const createAgency = async (data: any) => {
                     id: data.organisationId
                 },
                 select: {
-                    name: true
+                    name: true,
+                    id: true
                 }
             })
 
@@ -136,13 +138,14 @@ const createAgency = async (data: any) => {
                 },
             });
 
+            const {data: adminAndManagersIds} = await getAdminAndManagers(organisation.id)
 
             await notificationService.sendNotification({
-                userIds: [data.managerId],
-                eventType: 'AGENCY_CREATED',
+                userIds: adminAndManagersIds,
+                eventType: NotificationType.AGENCY_ADDED,
                 emailData: {
                     action: EmailAction.AGENCY_CREATED,
-                    recipientEmail: "admin@hotclick.pro",
+                    recipientEmail: "admin@hotclick.pro", // TODO add user emails
                     dynamicData: {
                         agencyName: data.name,
                         organisationName: organisation.name,
@@ -166,23 +169,6 @@ const createAgency = async (data: any) => {
                     },
                 },
             });
-
-            // if (agency?.id && manager && !!manager?.usersOnOrganisations?.length) {
-            //     isValid = true;
-            //     await sendTransactionalEmail({
-            //         action: EmailAction.AGENCY_CREATED,
-            //         recipientEmail: "admin@hotclick.pro",
-            //         dynamicData: {
-            //             agencyName: data.name,
-            //             organisationName: manager.usersOnOrganisations[0].organisation?.name || '',
-            //             managerFirstName: manager.firstName,
-            //             managerLastName: manager.lastName,
-            //             commissionPercentage: data.commissionPercentage,
-            //             country: data.countries.map((c: string) => countries.getName(c, 'en') ?? ''),
-            //             sector: data.sector,
-            //         },
-            //     });
-            // }
         });
     } catch(e: any) {
         console.log(e.message)
