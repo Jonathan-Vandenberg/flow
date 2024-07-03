@@ -26,7 +26,6 @@ const emailConfig: EmailConfig = {
         fromEmail: "info@hotclick.pro",
         template: path.join(__dirname, "../templates/managerAddedTemplate.html"),
     },
-    // Add more actions and their corresponding configurations
 };
 
 export default emailConfig;

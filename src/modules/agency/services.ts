@@ -3,7 +3,9 @@ import {logger} from "../../utils/logger";
 import {sendTransactionalEmail} from "../../email/utils/email-utils";
 import {EmailAction} from "../../email/config";
 import * as countries from "i18n-iso-countries";
-import {Role} from "@prisma/client";
+import {NotificationType, Role} from "@prisma/client";
+import notificationService from "../notification/notification-service";
+import NotificationService from "../notification/notification-service";
 
 const getAgenciesOnOrganisations = async (agencyId: string, organisationId: string
 ) => {
@@ -37,6 +39,7 @@ const getAgencyById = async (id: string
 };
 
 const createAgency = async (data: any) => {
+    const notificationService = NotificationService.getInstance();
     let agency;
     let isValid = false;
 
@@ -44,6 +47,19 @@ const createAgency = async (data: any) => {
         await prisma.$transaction(async (t) => {
             let existingCountries = []
             let newCountries = []
+
+            const organisation = await t.organisation.findUnique({
+                where: {
+                    id: data.organisationId
+                },
+                select: {
+                    name: true
+                }
+            })
+
+            if(!organisation){
+                return console.log(`No Organisation found with ID: ${data.organisationId}`)
+            }
 
             for (const countryName of data.countries) {
                 const country = await prisma.country.findUnique({
@@ -120,22 +136,53 @@ const createAgency = async (data: any) => {
                 },
             });
 
-            if (agency?.id && manager && !!manager?.usersOnOrganisations?.length) {
-                isValid = true;
-                await sendTransactionalEmail({
+
+            await notificationService.sendNotification({
+                userIds: [data.managerId],
+                eventType: 'AGENCY_CREATED',
+                emailData: {
                     action: EmailAction.AGENCY_CREATED,
                     recipientEmail: "admin@hotclick.pro",
                     dynamicData: {
                         agencyName: data.name,
-                        organisationName: manager.usersOnOrganisations[0].organisation?.name || '',
+                        organisationName: organisation.name,
                         managerFirstName: manager.firstName,
                         managerLastName: manager.lastName,
-                        commissionPercentage: data.commissionPercentage,
-                        country: data.countries.map((c: string) => countries.getName(c, 'en') ?? ''),
+                        commissionPercentage: data.commissionPercentage.toString(),
+                        country: data.countries.map((c: string) => countries.getName(c, 'en') ?? '').join(', '),
                         sector: data.sector,
                     },
-                });
-            }
+                },
+                pushNotificationData: {
+                    title: 'New Agency Created',
+                    body: `A new agency "${data.name}" has been created.`,
+                    data: { agencyId: agency.id },
+                },
+                dbNotificationData: {
+                    type: NotificationType.AGENCY_ADDED,
+                    data: {
+                        agencyId: agency.id,
+                        agencyName: data.name,
+                    },
+                },
+            });
+
+            // if (agency?.id && manager && !!manager?.usersOnOrganisations?.length) {
+            //     isValid = true;
+            //     await sendTransactionalEmail({
+            //         action: EmailAction.AGENCY_CREATED,
+            //         recipientEmail: "admin@hotclick.pro",
+            //         dynamicData: {
+            //             agencyName: data.name,
+            //             organisationName: manager.usersOnOrganisations[0].organisation?.name || '',
+            //             managerFirstName: manager.firstName,
+            //             managerLastName: manager.lastName,
+            //             commissionPercentage: data.commissionPercentage,
+            //             country: data.countries.map((c: string) => countries.getName(c, 'en') ?? ''),
+            //             sector: data.sector,
+            //         },
+            //     });
+            // }
         });
     } catch(e: any) {
         console.log(e.message)
