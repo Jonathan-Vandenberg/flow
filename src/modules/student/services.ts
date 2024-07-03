@@ -188,7 +188,8 @@ const createStudent = async (data: any) => {
                             ...organisation.requirements
                                 .filter((requirement) =>
                                     requirement.requirementsOnCountries.length === 0 &&
-                                    requirement.requirementsOnCourses.length === 0
+                                    requirement.requirementsOnCourses.length === 0 &&
+                                    !requirement.studentId
                                 )
                                 .map((requirement) => ({
                                     requirement: { connect: { id: requirement.id } },
