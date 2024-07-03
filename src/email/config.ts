@@ -16,10 +16,10 @@ export enum EmailAction {
 }
 
 const emailConfig: EmailConfig = {
-    agencyCreated: {
+    agencyAdded: {
         subject: "New Agency Created",
         fromEmail: "info@hotclick.pro",
-        template: path.join(__dirname, "../email/templates/agency-created.html"),
+        template: path.join(__dirname, "../email/templates/agency-added.html"),
     },
     managerAdded: {
         subject: "New Manager Added",
