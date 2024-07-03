@@ -41,22 +41,22 @@ export const setupSocketIO = (io: Server) => {
             }
         });
 
-        socket.on('requirementUpdated', ({ recipientId, message }: { recipientId: string; message: string }) => {
+        socket.on('callAll', ({ recipientId, message }: { recipientId: string; message: string }) => {
             console.log(`Sending message to user: ${recipientId}`);
             const recipientSockets = userSockets.get(recipientId);
             if (recipientSockets) {
                 recipientSockets.forEach((recipientSocket) => {
-                    recipientSocket.emit(`updatedRequirement:${recipientId}`, message);
+                    recipientSocket.emit(`allCall:${recipientId}`, message);
                 });
             }
         });
 
-        socket.on('requirementAdded', ({ recipientId, message }: { recipientId: string; message: string }) => {
+        socket.on('studentAdded', ({ recipientId, message }: { recipientId: string; message: string }) => {
             console.log(`Sending message to user: ${recipientId}`);
             const recipientSockets = userSockets.get(recipientId);
             if (recipientSockets) {
                 recipientSockets.forEach((recipientSocket) => {
-                    recipientSocket.emit(`addedRequirement:${recipientId}`, message);
+                    recipientSocket.emit(`addedStudent:${recipientId}`, message);
                 });
             }
         });

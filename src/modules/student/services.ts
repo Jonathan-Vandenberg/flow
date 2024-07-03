@@ -1,7 +1,7 @@
 import prisma from "../../../prisma/prisma";
 import { v4 as uuidv4 } from 'uuid';
 import {logger} from "../../utils/logger";
-import {DirectoryStatus} from "@prisma/client";
+import {DirectoryStatus, NotificationType} from "@prisma/client";
 
 const getAllStudentsByAgentId = async (agentId: string
 ) => {
@@ -111,6 +111,12 @@ const createStudent = async (data: any) => {
         const organisation = await t.organisation.findUnique({
             where: { id: data.organisationId },
             include: {
+                usersOnOrganisations: {
+                    select: {
+                        role: true,
+                        userId: true
+                    }
+                },
                 requirements: {
                     include: {
                         exampleImages: true,
@@ -220,7 +226,7 @@ const createStudent = async (data: any) => {
                 },
             });
 
-            const group = await t.group.create({
+            await t.group.create({
                 data: {
                     user: { connect: { id: manager.id } },
                     student: { connect: { id: student.id } },
@@ -244,6 +250,38 @@ const createStudent = async (data: any) => {
                     student: true
                 }
             });
+
+            const adminUsers = organisation.usersOnOrganisations.filter(user => user.role === 'ADMIN');
+
+            const notificationData = {
+                studentId: student.id,
+                studentName: student.name,
+                courseId: student.courseId,
+                country: student.country,
+                agencyId: student.agencyId,
+            };
+
+            // Create notifications for all admin users and the manager
+            const notificationPromises = [
+                ...adminUsers.map(admin =>
+                    t.notification.create({
+                        data: {
+                            type: NotificationType.STUDENT_ADDED,
+                            userId: admin.userId,
+                            data: notificationData,
+                        }
+                    })
+                ),
+                t.notification.create({
+                    data: {
+                        type: NotificationType.STUDENT_ADDED,
+                        userId: manager.id,
+                        data: notificationData,
+                    }
+                })
+            ];
+
+            await Promise.all(notificationPromises)
         } catch (error: any) {
             logger.error(`Error creating student: ${error.message}`);
             console.log(error.message);
