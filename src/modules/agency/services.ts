@@ -168,6 +168,8 @@ const createAgency = async (data: any) => {
                 transaction: t
             });
         });
+
+        isValid = true
     } catch(e: any) {
         console.log(e.message)
     }
@@ -179,8 +181,6 @@ const updateAgency = async (data: any
 ) => {
     let agency: Agency | null = null;
     let isValid = false;
-    let existingCountries = []
-    let newCountries = []
     const notificationService = NotificationService.getInstance();
 
     try{
@@ -250,6 +250,7 @@ const updateAgency = async (data: any
                 transaction: t
             });
 
+            isValid = true
         })
     } catch(e: any){console.log('ERROR::updateAgency: ', e.message)}
 
