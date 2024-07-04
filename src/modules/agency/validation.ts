@@ -148,6 +148,17 @@ export const updateAgencyValidationRules = checkSchema({
             errorMessage: 'The id must be a string.'
         }
     },
+    organisationId: {
+        in: ['body'],
+        optional: {
+            options: {
+                checkFalsy: true
+            }
+        },
+        isString: {
+            errorMessage: 'The organisationId must be a string.'
+        },
+    },
     managerId: {
         in: ['body'],
         optional: {
@@ -170,15 +181,13 @@ export const updateAgencyValidationRules = checkSchema({
             errorMessage: 'The sector must be a string'
         }
     },
-    country: {
+    countries: {
         in: ['body'],
-        optional: {
-            options: {
-                checkFalsy: true
-            }
+        notEmpty: {
+            errorMessage: 'The name field is required'
         },
-        isString: {
-            errorMessage: 'The country must be a stirng.'
+        isArray: {
+            errorMessage: 'The countries must be in an Array'
         }
     },
     district: {

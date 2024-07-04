@@ -70,20 +70,22 @@ export const createAgencyController = async (req: Request, res: Response) => {
  */
 export const updateAgencyController = async (req: Request, res: Response) => {
     const { id,
+        organisationId,
         managerId,
         name,
         sector,
-        country,
+        countries,
         district,
         market,
         commissionPercentage} = req.body;
 
     const updateAgencyData = {
         id,
+        organisationId,
         managerId,
         name,
         sector,
-        country,
+        countries,
         district,
         market,
         commissionPercentage,

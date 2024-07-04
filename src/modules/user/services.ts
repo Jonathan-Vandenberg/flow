@@ -582,36 +582,47 @@ const createDeviceToken = async (
     };
 };
 
-export const getAdminAndManagers = async (
-    t: Omit<PrismaClient, ITXClientDenyList>,
-    organisationId: string
-): Promise<{ isValid: boolean; message: string; data: any }> => {
+type GetUsersIdsParams = {
+    t: Omit<PrismaClient, ITXClientDenyList>;
+    organisationId: string;
+    managers?: boolean;
+    admins?: boolean;
+    agents?: boolean;
+}
+
+export const getUsersIds = async ({t, organisationId, managers, admins, agents}: GetUsersIdsParams): Promise<{ isValid: boolean; message: string; data: string[] }> => {
     const organisation = await t.organisation.findUnique({
-        where: {
-            id: organisationId
-        },
+        where: { id: organisationId },
         select: {
             usersOnOrganisations: {
-                select: {
-                    role: true,
-                    userId: true
-                }
+                select: { role: true, userId: true }
             }
         }
     })
 
-    if(!organisation) {
+    if (!organisation) {
         throw new Error(`No organisation with id ${organisationId} found!`)
     }
 
-    const adminAndManagerIds = organisation.usersOnOrganisations
-        .filter(u => u.role === Role.ADMIN || u.role === Role.MANAGER)
+    const userIds = organisation.usersOnOrganisations
+        .filter(u => {
+            if (admins && u.role === Role.ADMIN) return true;
+            if (managers && u.role === Role.MANAGER) return true;
+            if (agents && u.role === Role.AGENT) return true;
+            return false;
+        })
         .map(u => u.userId);
 
+    const roleNames = [
+        admins && 'Admin',
+        managers && 'Manager',
+        agents && 'Agent'
+    ].filter(Boolean).join(', ');
+
     return {
-        data: adminAndManagerIds,
-        message: adminAndManagerIds.length > 0 ? 'Admin and Manager IDs Found' : 'No Admin or Manager IDs Found!',
-        isValid: adminAndManagerIds.length > 0
+        data: userIds,
+        message: userIds.length > 0 ? `${roleNames} IDs Found` : `No ${roleNames} IDs Found!`,
+        isValid: userIds.length > 0
     };
 }
 
@@ -623,5 +634,5 @@ export default {
     getUserByEmail,
     getUserByOrganisationId,
     createDeviceToken,
-    getAdminAndManagers
+    getUsersIds
 };

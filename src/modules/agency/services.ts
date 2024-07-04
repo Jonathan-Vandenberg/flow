@@ -1,12 +1,9 @@
 import prisma from "../../../prisma/prisma";
-import {logger} from "../../utils/logger";
-import {sendTransactionalEmail} from "../../email/utils/email-utils";
 import {EmailAction} from "../../email/config";
 import * as countries from "i18n-iso-countries";
-import {NotificationType, Prisma, Role} from "@prisma/client";
-import notificationService from "../notification/notification-service";
+import {Agency, NotificationType, Prisma, Role} from "@prisma/client";
 import NotificationService from "../notification/notification-service";
-import {getAdminAndManagers} from "../user/services";
+import {getUsersIds} from "../user/services";
 
 const getAgenciesOnOrganisations = async (agencyId: string, organisationId: string
 ) => {
@@ -138,10 +135,10 @@ const createAgency = async (data: any) => {
                 },
             });
 
-            const {data: adminAndManagersIds} = await getAdminAndManagers(t, organisation.id)
+            const {data: userIds} = await getUsersIds({t, organisationId: organisation.id, managers: true, admins: true})
 
             await notificationService.sendNotification({
-                userIds: adminAndManagersIds,
+                userIds: userIds,
                 eventType: NotificationType.AGENCY_ADDED,
                 emailData: {
                     action: EmailAction.AGENCY_ADDED,
@@ -180,17 +177,56 @@ const createAgency = async (data: any) => {
 
 const updateAgency = async (data: any
 ) => {
-    const agency = await prisma.agency.update({
-        where: {
-            id: data.id,
-        },
-        data
-    })
+    let agency: Agency | null = null;
+    let isValid = false;
+    const notificationService = NotificationService.getInstance();
 
-    return {
-        isValid: !!agency?.id,
-        data: agency
-    };
+    try{
+        await prisma.$transaction(async (t) => {
+            const organisation = await t.organisation.findUnique({
+                where: {
+                    id: data.organisationId
+                },
+                select: {
+                    name: true
+                }
+            })
+
+            if(!organisation){
+                return console.log(`No Organisation found with ID: ${data.organisationId}`)
+            }
+
+            agency = await t.agency.update({
+                where: {
+                    id: data.id,
+                },
+                data,
+            })
+
+            const {data: userIds} = await getUsersIds({t, organisationId: data.organisationId, admins: true})
+
+            await notificationService.sendNotification({
+                userIds: userIds,
+                eventType: NotificationType.AGENCY_UPDATED,
+                pushNotificationData: {
+                    title: 'Agency Updated',
+                    body: `The agency, "${agency.name}", has been updated.`,
+                    data: { agencyId: agency.id },
+                },
+                dbNotificationData: {
+                    type: NotificationType.AGENCY_UPDATED,
+                    data: {
+                        agencyId: agency.id,
+                        agencyName: data.name,
+                    },
+                },
+                transaction: t
+            });
+
+        })
+    } catch(e: any){console.log('ERROR::updateAgency: ', e.message)}
+
+    return { isValid: isValid, data: agency };
 };
 
 export default {
