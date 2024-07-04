@@ -198,22 +198,23 @@ const updateAgency = async (data: any
                 return console.log(`No Organisation found with ID: ${data.organisationId}`)
             }
 
-            for (const countryName of data.countries) {
-                const country = await prisma.country.findUnique({
-                    where: { name: countryName },
-                });
+            const existingRelations = await t.agenciesOnCountries.findMany({
+                where: { agencyId: data.id },
+                include: { country: true }
+            });
+            const existingCountryNames = new Set(existingRelations.map(r => r.country.name));
 
-                if (country) {
-                    existingCountries.push(country);
-                } else {
-                    const newCountry = await t.country.create({
-                        data: {
-                            name: countryName,
-                        },
+            const countryOperations = await Promise.all(data.countries.map(async (countryName: string) => {
+                if (!existingCountryNames.has(countryName)) {
+                    const country = await t.country.upsert({
+                        where: { name: countryName },
+                        create: { name: countryName },
+                        update: {},
                     });
-                    newCountries.push(newCountry);
+                    return { create: { countryId: country.id } };
                 }
-            }
+                return null; // Skip if relation already exists
+            }));
 
             agency = await t.agency.update({
                 where: {
@@ -223,14 +224,7 @@ const updateAgency = async (data: any
                     name: data.name,
                     sector: data.sector,
                     agenciesOnCountries: {
-                        create: [
-                            ...existingCountries.map((country) => ({
-                                country: { connect: { id: country.id } },
-                            })),
-                            ...newCountries.map((country) => ({
-                                country: { connect: { id: country.id } },
-                            })),
-                        ],
+                        create: countryOperations.filter(op => op !== null) as any,
                     },
                     commissionPercentage: data.commissionPercentage,
                 }
