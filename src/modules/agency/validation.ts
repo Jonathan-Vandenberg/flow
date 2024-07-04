@@ -150,10 +150,8 @@ export const updateAgencyValidationRules = checkSchema({
     },
     organisationId: {
         in: ['body'],
-        optional: {
-            options: {
-                checkFalsy: true
-            }
+        notEmpty: {
+            errorMessage: 'The organisationId field is required'
         },
         isString: {
             errorMessage: 'The organisationId must be a string.'
@@ -161,10 +159,8 @@ export const updateAgencyValidationRules = checkSchema({
     },
     managerId: {
         in: ['body'],
-        optional: {
-            options: {
-                checkFalsy: true
-            }
+        notEmpty: {
+          errorMessage: 'The managerId is required'
         },
         isString: {
             errorMessage: 'The managerId must be a string.'

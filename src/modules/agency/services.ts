@@ -179,6 +179,8 @@ const updateAgency = async (data: any
 ) => {
     let agency: Agency | null = null;
     let isValid = false;
+    let existingCountries = []
+    let newCountries = []
     const notificationService = NotificationService.getInstance();
 
     try{
@@ -196,11 +198,42 @@ const updateAgency = async (data: any
                 return console.log(`No Organisation found with ID: ${data.organisationId}`)
             }
 
+            for (const countryName of data.countries) {
+                const country = await prisma.country.findUnique({
+                    where: { name: countryName },
+                });
+
+                if (country) {
+                    existingCountries.push(country);
+                } else {
+                    const newCountry = await t.country.create({
+                        data: {
+                            name: countryName,
+                        },
+                    });
+                    newCountries.push(newCountry);
+                }
+            }
+
             agency = await t.agency.update({
                 where: {
                     id: data.id,
                 },
-                data,
+                data: {
+                    name: data.name,
+                    sector: data.sector,
+                    agenciesOnCountries: {
+                        create: [
+                            ...existingCountries.map((country) => ({
+                                country: { connect: { id: country.id } },
+                            })),
+                            ...newCountries.map((country) => ({
+                                country: { connect: { id: country.id } },
+                            })),
+                        ],
+                    },
+                    commissionPercentage: data.commissionPercentage,
+                }
             })
 
             const {data: userIds} = await getUsersIds({t, organisationId: data.organisationId, admins: true})
