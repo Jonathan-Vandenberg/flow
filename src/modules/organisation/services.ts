@@ -185,6 +185,7 @@ const getAgenciesOnOrganisations = async (id: string) => {
                                 students: {
                                     select: {
                                         course: true,
+                                        status: true
                                     },
                                     orderBy: { createdAt: 'desc' },
                                 },
